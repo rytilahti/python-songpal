@@ -29,6 +29,17 @@ The library has been tested for now with following devices:
 Getting started
 ---------------
 
+Installation
+~~~~~~~~~~~~
+
+The easiest way for installing this project is by using pypi inside a virtualenv.
+
+.. code-block::
+
+    $ pip install python-songpal
+
+Locating the endpoint
+~~~~~~~~~~~~~~~~~~~~~
 To communicate with the device you need to locate its endpoint URL.
 The easiest way to do is to execute the discover command:
 
