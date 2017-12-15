@@ -23,7 +23,7 @@ setup(
 
     packages=['songpal'],
 
-    install_requires=['click', 'websockets', 'upnpclient'],
+    install_requires=['click', 'websockets', 'upnpclient', 'attrs'],
     python_requires='>=3.5',
     entry_points={
         'console_scripts': [
