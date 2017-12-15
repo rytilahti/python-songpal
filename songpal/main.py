@@ -59,7 +59,7 @@ pass_dev = click.make_pass_decorator(Protocol)
 
 
 @click.group(invoke_without_command=True)
-@click.option("--endpoint", envvar="SONGPAL_ENDPOINT")
+@click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=True)
 @click.option('-d', '--debug', default=False, count=True)
 @click.pass_context
 @click.version_option()
