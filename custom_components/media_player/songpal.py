@@ -23,7 +23,7 @@ SUPPORT_SONGPAL = SUPPORT_VOLUME_SET | SUPPORT_VOLUME_MUTE | \
 _LOGGER = logging.getLogger(__name__)
 
 # to ignore: Failing the WebSocket connection: 1006
-logging.getLogger("websockets.protocol").setLevel(logging.WARNING)
+# logging.getLogger("websockets.protocol").setLevel(logging.WARNING)
 
 CONF_ENDPOINT = "endpoint"
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -84,11 +84,12 @@ class SongpalDevice(MediaPlayerDevice):
         try:
             volumes = yield from self.dev.get_volume_information()
             if len(volumes) != 1:
-                _LOGGER.error("Unknown amount of volumes, bailing out: %s" % volumes)
+                _LOGGER.warning("Got %s volume controls, using the first one",
+                                volumes)
                 return
 
             vol = volumes.pop()
-            _LOGGER.debug("Got volume info: %s vol", vol)
+            _LOGGER.debug("Current volume: %s", vol)
             self._volume_max = vol.maxVolume
             self._volume_min = vol.minVolume
             self._volume = vol.volume
@@ -137,14 +138,16 @@ class SongpalDevice(MediaPlayerDevice):
 
     @property
     def volume_level(self):
-        """We gotta return volume [0,1]"""
+        """Return volume level."""
+        # Returned volume must be [0,1]
         volume = self._volume / self._volume_max
-        _LOGGER.debug("current volume: %s" % volume)
+        _LOGGER.debug("Current volume: %s" % volume)
         return volume
 
     @asyncio.coroutine
     def async_set_volume_level(self, volume):
-        """We receive volume [0,1]"""
+        """Set volume level."""
+        # Input volume is [0,1]
         vol = int(volume * self._volume_max)
         _LOGGER.info("Setting volume to %s" % vol)
         return self._volume_control.set_volume(vol)
@@ -159,7 +162,7 @@ class SongpalDevice(MediaPlayerDevice):
 
     @asyncio.coroutine
     def async_mute_volume(self, mute):
-        _LOGGER.info("set mute: %s" % mute)
+        _LOGGER.info("Set mute: %s" % mute)
         return self._volume_control.set_mute(mute)
 
     @property
