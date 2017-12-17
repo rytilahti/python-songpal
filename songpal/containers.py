@@ -164,7 +164,7 @@ class Volume:
 
 @attr.s
 class Power:
-    standbyDetail = attr.ib()
+    standbyDetail = attr.ib(default=None)
     status = attr.ib(convert=lambda x: True if x == "active" else False)
 
     def __bool__(self):
