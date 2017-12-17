@@ -4,7 +4,9 @@ class Notification:
         self.endpoint = endpoint
         self.versions = payload["versions"]
         self.name = payload["name"]
-        self.version = max(self.versions)
+        self.version = max([x['version']
+                            for x in self.versions
+                            if 'version' in x])
 
     def asdict(self):
         return {'name': self.name,
