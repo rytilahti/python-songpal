@@ -58,8 +58,8 @@ logging.getLogger("websockets.protocol").setLevel(logging.WARNING)
 pass_dev = click.make_pass_decorator(Protocol)
 
 
-@click.group(invoke_without_command=True)
-@click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=True)
+@click.group(invoke_without_command=False)
+@click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=False)
 @click.option('-d', '--debug', default=False, count=True)
 @click.pass_context
 @click.version_option()
@@ -74,6 +74,9 @@ async def cli(ctx, endpoint, debug):
         ctx.obj = "discover"
         return
 
+    if endpoint is None:
+        click.echo("Endpoint is required except when with 'discover'!")
+
     logging.debug("Using endpoint %s", endpoint)
     x = Protocol(endpoint, debug=debug)
     try:
@@ -83,8 +86,10 @@ async def cli(ctx, endpoint, debug):
         return
     ctx.obj = x
 
-    if ctx.invoked_subcommand is None:
-        ctx.invoke(status)
+
+    # this causes RuntimeError: This event loop is already running
+    # if ctx.invoked_subcommand is None:
+    # ctx.invoke(status)
 
 
 @cli.command()
