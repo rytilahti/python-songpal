@@ -49,14 +49,6 @@ class Method:
         _LOGGER.debug("%s got called with args (%s) kwargs (%s)" % (
             self.name, args, kwargs))
 
-        # TODO check for type correctness
-        if len(args) != len(self.signature.input) and \
-                len(kwargs) != len(self.signature.input):
-            _LOGGER.debug("args: %s signature: %s" % (args,
-                                                      self.signature.input))
-            raise Exception("Invalid number of inputs, wanted %s got %s" % (
-                len(self.signature.input), len(args)))
-
         if len(kwargs) == 0 and len(args) == 0:
             params = []  # params need to be empty array, if none is given
         elif len(kwargs) > 0:
@@ -66,6 +58,15 @@ class Method:
             params = [args[0]]
         else:
             params = []
+
+        # TODO check for type correctness
+        # TODO note parameters are not always necessary, see getPlaybackModeSettings
+        # which signatures to need 'target' and 'uri' but works just fine without anything
+        #if len(params) != len(self._inputs):
+        #    _LOGGER.error("args: %s signature: %s" % (args,
+        #                                              self.signature.input))
+        #    raise Exception("Invalid number of inputs, wanted %s got %s / %s" % (
+        #        len(self.signature.input), len(args), len(kwargs)))
 
         async with websockets.connect(self.endpoint) as s:
             req = {"method": self.name,
