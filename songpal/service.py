@@ -41,6 +41,8 @@ class Service:
 
         versions = set()
         for method in payload['apis']:
+            # TODO we take only the first version here per method
+            # should we prefer the newest version instead of that?
             versions.add(method["versions"][0]["version"])
 
         service_endpoint = "%s/%s" % (endpoint, service)
