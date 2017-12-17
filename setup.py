@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='python-songpal',
 
-    version='0.0.1',
+    version='0.0.2',
     description="Python library for interfacing with Sony's Songpal devices",
     url='https://github.com/rytilahti/python-songpal',
 
