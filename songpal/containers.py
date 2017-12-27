@@ -109,6 +109,7 @@ class Sysinfo:
     macAddr = attr.ib()
     version = attr.ib()
     wirelessMacAddr = attr.ib()
+    bssid = attr.ib(default=None)
 
 
 @attr.s
@@ -179,14 +180,15 @@ class Power:
 
 @attr.s
 class Output:
-    services = attr.ib(repr=False)
+    meta = attr.ib()
+    connection = attr.ib()
     title = attr.ib()
     uri = attr.ib()
-    active = attr.ib(convert=lambda x: True if x == 'active' else False)
-    meta = attr.ib()
-    label = attr.ib()
-    iconUrl = attr.ib()
-    connection = attr.ib()
+
+    services = attr.ib(repr=False, default=None)
+    active = attr.ib(convert=lambda x: True if x == 'active' else False, default=None)
+    label = attr.ib(default=None)
+    iconUrl = attr.ib(default=None)
 
     def __str__(self):
         s = "%s (uri: %s)" % (self.title, self.uri)
