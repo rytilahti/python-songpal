@@ -2,6 +2,7 @@ import ast
 import asyncio
 import logging
 import json
+import sys
 from pprint import pprint as pp
 
 import click
@@ -83,7 +84,7 @@ async def cli(ctx, endpoint, debug):
         await x.get_supported_methods()
     except requests.exceptions.ConnectionError as ex:
         click.echo("Unable to get supported methods: %s" % ex)
-        return
+        sys.exit(-1)
     ctx.obj = x
 
 
