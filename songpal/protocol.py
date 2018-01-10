@@ -10,7 +10,7 @@ import requests
 from songpal.containers import (
     Power, PlayInfo, Setting, SettingsEntry, InterfaceInfo, Sysinfo,
     UpdateInfo, Storage, SupportedFunctions, Output, Source,
-    ContentInfo, Volume, Scheme, Content)
+    ContentInfo, Volume, Scheme, Content, make)
 from songpal.service import Service
 
 _LOGGER = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ class Protocol:
     async def get_power(self) -> Power:
         """Get the device state"""
         res = await self.services["system"]["getPowerStatus"]()
-        return Power(**res)
+        return Power.make(**res)
 
     async def set_power(self, value: bool):
         """Toggle the device on and off."""
@@ -103,7 +103,7 @@ class Protocol:
     async def get_play_info(self) -> PlayInfo:
         """Return  of the device."""
         info = await self.services["avContent"]["getPlayingContentInfo"]({})
-        return PlayInfo(**info.pop())
+        return PlayInfo.make(**info.pop())
 
     async def get_power_settings(self) -> List[Setting]:
         """Get power settings."""
@@ -131,12 +131,12 @@ class Protocol:
 
     async def get_settings(self) -> List[SettingsEntry]:
         settings = await self.request_settings()
-        return [SettingsEntry(**x) for x in settings["settings"]]
+        return [SettingsEntry.make(**x) for x in settings["settings"]]
 
     async def get_misc_settings(self) -> List[Setting]:
         """Return miscellaneous settings such as name and timezone."""
         misc = await self.services["system"]["getDeviceMiscSettings"](target="")
-        return [Setting(**x) for x in misc]
+        return [Setting.make(**x) for x in misc]
 
     async def set_misc_settings(self, target: str, value: str):
         """Change miscellaneous settings."""
@@ -146,26 +146,26 @@ class Protocol:
     async def get_interface_information(self) -> InterfaceInfo:
         """Return generic product information."""
         iface = await self.services["system"]["getInterfaceInformation"]()
-        return InterfaceInfo(**iface)
+        return InterfaceInfo.make(**iface)
 
     async def get_system_info(self) -> Sysinfo:
         """Return system information including mac addresses and current version."""
-        return Sysinfo(**await self.services["system"]["getSystemInformation"]())
+        return Sysinfo.make(**await self.services["system"]["getSystemInformation"]())
 
     async def get_sleep_timer_settings(self) -> List[Setting]:
         """Get sleep timer settings."""
-        return [Setting(**x) for x
+        return [Setting.make(**x) for x
                 in await self.services["system"]["getSleepTimerSettings"]({})]
 
     async def get_storage_list(self) -> List[Storage]:
         """Return information about connected storage devices."""
-        return [Storage(**x) for x
+        return [Storage.make(**x) for x
                 in await self.services["system"]["getStorageList"]({})]
 
     async def get_update_info(self) -> UpdateInfo:
         """Get information about updates."""
         info = await self.services["system"]["getSWUpdateInfo"](network="false")
-        return UpdateInfo(**info)
+        return UpdateInfo.make(**info)
 
     async def activate_system_update(self) -> None:
         return await self.services["system"]["actSWUpdate"]()
@@ -173,7 +173,7 @@ class Protocol:
     async def get_outputs(self) -> List[Output]:
         """Return list of available outputs."""
         res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        return [Output(self.services, **x) for x in res]
+        return [Output.make(services=self.services, **x) for x in res]
 
     async def get_setting(self, service: str, method: str, target: str):
         return await self.services[service][method](target=target)
@@ -199,12 +199,12 @@ class Protocol:
 
     async def get_supported_playback_functions(self, uri='') -> List[SupportedFunctions]:
         """Return list of inputs and their supported functions."""
-        return [SupportedFunctions(**x) for x in
+        return [SupportedFunctions.make(**x) for x in
                 await self.services["avContent"]["getSupportedPlaybackFunction"](uri=uri)]
 
     async def get_playback_settings(self) -> List[Setting]:
         """Get playback settings such as shuffle and repeat."""
-        return [Setting(**x) for x
+        return [Setting.make(**x) for x
                 in await self.services["avContent"]["getPlaybackModeSettings"]({})]
 
     async def set_playback_settings(self, target, value) -> None:
@@ -214,13 +214,13 @@ class Protocol:
 
     async def get_schemes(self) -> List[Scheme]:
         """Return supported uri schemes."""
-        return [Scheme(**x) for x
+        return [Scheme.make(**x) for x
                 in await self.services["avContent"]["getSchemeList"]()]
 
     async def get_source_list(self, scheme: str = '') -> List[Source]:
         """Return available sources for playback?"""
         res = await self.services["avContent"]["getSourceList"](scheme=scheme)
-        return [Source(**x) for x in res]
+        return [Source.make(**x) for x in res]
 
     async def get_content_count(self, source: str):
         """Return file listing for source."""
@@ -230,11 +230,11 @@ class Protocol:
             'target': 'all',
             'view': 'flat'
         }
-        return ContentInfo(
+        return ContentInfo.make(
             **await self.services["avContent"]["getContentCount"](params))
 
     async def get_contents(self, uri, depth=0):
-        contents = [Content(**x) for x
+        contents = [Content.make(**x) for x
                     in await self.services["avContent"]["getContentList"](uri=uri)]
         contentlist = []
 
@@ -251,7 +251,7 @@ class Protocol:
     async def get_volume_information(self) -> List[Volume]:
         """Get the volume information."""
         res = await self.services["audio"]["getVolumeInformation"]({})
-        volume_info = [Volume(self.services, **x) for x in res]
+        volume_info = [Volume.make(services=self.services, **x) for x in res]
         if len(volume_info) < 1:
             logging.warning("Unable to get volume information")
         elif len(volume_info) > 1:
@@ -261,7 +261,7 @@ class Protocol:
     async def get_sound_settings(self) -> List[Setting]:
         """Get the current sound settings."""
         res = await self.services["audio"]["getSoundSettings"]({})
-        return [Setting(**x) for x in res]
+        return [Setting.make(**x) for x in res]
 
     async def set_sound_settings(self, target: str, value: str):
         """Change a sound setting."""
@@ -272,7 +272,7 @@ class Protocol:
         """Return speaker settings. External speakers?"""
         # raise NotImplementedError("Returns 15, unsupported")
         speaker_settings = await self.services["audio"]["getSpeakerSettings"]({})
-        return [Setting(**x) for x in speaker_settings]
+        return [Setting.make(**x) for x in speaker_settings]
 
     async def set_speaker_settings(self, target: str, value: str):
         """Set speaker settings."""

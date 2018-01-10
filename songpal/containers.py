@@ -1,32 +1,77 @@
 from datetime import timedelta
+import logging
 from typing import List
 import attr
 
 
+_LOGGER = logging.getLogger(__name__)
+
+
+def make(cls, **kwargs):
+    """A wrapper for constructing containers.
+
+    Reports extra keys as well as missing ones.
+    Thanks to habnabit for the idea!
+    """
+    cls_attrs = {f.name for f in attr.fields(cls)}
+
+    unknown = {k: v for k, v in kwargs.items() if k not in cls_attrs}
+    if len(unknown) > 0:
+        _LOGGER.warning("Got unknowns for %s: %s - please create an issue!",
+                      cls.__name__, unknown)
+
+    missing = [k for k in cls_attrs if k not in kwargs]
+    if len(missing) > 0:
+        _LOGGER.debug("Missing keys for %s: %s", cls.__name__, missing)
+
+    data = {k: v for k, v in kwargs.items() if k in cls_attrs}
+
+    # initialize missing values to avoid passing default=None
+    # for the attrs attribute definitions
+    for m in missing:
+        data[m] = None
+
+    # initialize and store raw data for debug purposes
+    inst = cls(**data)
+    setattr(inst, 'raw', kwargs)
+
+    return inst
+
+
 @attr.s
 class Scheme:
+    make = classmethod(make)
+
     scheme = attr.ib()
 
 
 @attr.s
 class PlaybackFunction:
+    make = classmethod(make)
+
     function = attr.ib()
 
 
 @attr.s
 class SupportedFunctions:
+    make = classmethod(make)
+
     uri = attr.ib()
-    functions = attr.ib(convert=lambda x: [PlaybackFunction(y) for y in x])
+    functions = attr.ib(convert=lambda x: [PlaybackFunction.make(y) for y in x])
 
 
 @attr.s
 class ContentInfo:
+    make = classmethod(make)
+
     capability = attr.ib()
     count = attr.ib()
 
 
 @attr.s
 class Content:
+    make = classmethod(make)
+
     isBrowsable = attr.ib()
     uri = attr.ib()
     contentKind = attr.ib()
@@ -47,6 +92,8 @@ class Content:
 
 @attr.s
 class StateInfo:
+    make = classmethod(make)
+
     state = attr.ib()
     supplement = attr.ib()
 
@@ -55,6 +102,8 @@ class StateInfo:
 class PlayInfo:
     """This is only tested on music files,
     the outs for the method call is much, much larger"""
+    make = classmethod(make)
+
     stateInfo = attr.ib(convert=lambda x: StateInfo(**x))
     contentKind = attr.ib()
     uri = attr.ib()
@@ -96,6 +145,8 @@ class PlayInfo:
 
 @attr.s
 class InterfaceInfo:
+    make = classmethod(make)
+
     productName = attr.ib()
     modelName = attr.ib()
     productCategory = attr.ib()
@@ -105,20 +156,27 @@ class InterfaceInfo:
 
 @attr.s
 class Sysinfo:
+    make = classmethod(make)
+
     bdAddr = attr.ib()
     macAddr = attr.ib()
     version = attr.ib()
     wirelessMacAddr = attr.ib()
     bssid = attr.ib(default=None)
+    ssid = attr.ib(default=None)
 
 
 @attr.s
 class UpdateInfo:
+    make = classmethod(make)
+
     isUpdatable = attr.ib()
 
 
 @attr.s
 class Source:
+    make = classmethod(make)
+
     title = attr.ib()
     source = attr.ib()
 
@@ -134,6 +192,8 @@ class Source:
 
 @attr.s
 class Volume:
+    make = classmethod(make)
+
     services = attr.ib(repr=False)
     maxVolume = attr.ib()
     minVolume = attr.ib()
@@ -165,6 +225,8 @@ class Volume:
 
 @attr.s
 class Power:
+    make = classmethod(make)
+
     status = attr.ib(convert=lambda x: True if x == "active" else False)
     standbyDetail = attr.ib(default=None)
 
@@ -180,6 +242,8 @@ class Power:
 
 @attr.s
 class Output:
+    make = classmethod(make)
+
     meta = attr.ib()
     connection = attr.ib()
     title = attr.ib()
@@ -203,6 +267,8 @@ class Output:
 
 @attr.s
 class Storage:
+    make = classmethod(make)
+
     deviceName = attr.ib()
     uri = attr.ib()
     volumeLabel = attr.ib()
@@ -234,6 +300,8 @@ class Storage:
 
 @attr.s
 class ApiMapping:
+    make = classmethod(make)
+
     service = attr.ib()
     getApi = attr.ib()
 
@@ -244,12 +312,14 @@ class ApiMapping:
 
 @attr.s
 class SettingsEntry:
+    make = classmethod(make)
+
     isAvailable = attr.ib()
     type = attr.ib()
 
     def convert_if_available(x):
         if x is not None:
-            return [SettingsEntry(**y) for y in x]
+            return [SettingsEntry.make(**y) for y in x]
 
     def convert_if_available_mapping(x):
         if x is not None:
@@ -280,6 +350,8 @@ class SettingsEntry:
 @attr.s
 class SettingCandidate:
     """Representation of a setting candidate aka. option."""
+    make = classmethod(make)
+
     title = attr.ib()
     value = attr.ib()
     isAvailable = attr.ib()
@@ -293,10 +365,12 @@ class SettingCandidate:
 class Setting:
     """Representation of a setting.
     Use candidate to access the potential values"""
+    make = classmethod(make)
+
     currentValue = attr.ib()
     target = attr.ib()
     type = attr.ib()
-    candidate = attr.ib(convert=lambda x: [SettingCandidate(**y) for y in x], default=[])  # type: List[SettingCandidate]
+    candidate = attr.ib(convert=lambda x: [SettingCandidate.make(**y) for y in x], default=[])  # type: List[SettingCandidate]
     isAvailable = attr.ib(default=None)
     title = attr.ib(default=None)
     titleTextID = attr.ib(default=None)
