@@ -226,8 +226,11 @@ please consider attaching the output of ``songpal dump_devinfo`` with your repor
 API information
 ~~~~~~~~~~~~~~~
 
-The API resembles `Camera Remote API <https://developer.sony.com/develop/cameras/get-started/>`_,
-whose documentation can be useful for developers.
+`Audio Control API <https://developer.sony.com/develop/audio-control-api/>`_ describes
+the API this project (currently partially) implements.
+
+The `Camera Remote API <https://developer.sony.com/develop/cameras/get-started/>`_
+is also similar to this, and may also be useful for developers.
 
 
 Home assistant support
