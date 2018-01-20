@@ -241,7 +241,7 @@ class Power:
 
 
 @attr.s
-class Output:
+class Input:
     make = classmethod(make)
 
     meta = attr.ib()
@@ -261,7 +261,7 @@ class Output:
         return s
 
     async def activate(self):
-        """Activate this output."""
+        """Activate this input."""
         return await self.services["avContent"]["setPlayContent"](uri=self.uri)
 
 

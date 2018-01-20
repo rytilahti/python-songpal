@@ -9,8 +9,8 @@ import requests
 
 from songpal.containers import (
     Power, PlayInfo, Setting, SettingsEntry, InterfaceInfo, Sysinfo,
-    UpdateInfo, Storage, SupportedFunctions, Output, Source,
-    ContentInfo, Volume, Scheme, Content, make)
+    UpdateInfo, Storage, SupportedFunctions, Input, Source,
+    ContentInfo, Volume, Scheme, Content)
 from songpal.service import Service
 
 _LOGGER = logging.getLogger(__name__)
@@ -170,10 +170,10 @@ class Protocol:
     async def activate_system_update(self) -> None:
         return await self.services["system"]["actSWUpdate"]()
 
-    async def get_outputs(self) -> List[Output]:
+    async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
         res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        return [Output.make(services=self.services, **x) for x in res]
+        return [Input.make(services=self.services, **x) for x in res]
 
     async def get_setting(self, service: str, method: str, target: str):
         return await self.services[service][method](target=target)
