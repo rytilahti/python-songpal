@@ -12,9 +12,9 @@ import voluptuous as vol
 from homeassistant.components.media_player import (
     PLATFORM_SCHEMA, SUPPORT_SELECT_SOURCE, SUPPORT_TURN_OFF,
     SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_STEP, SUPPORT_VOLUME_SET,
-    SUPPORT_TURN_ON, MediaPlayerDevice)
+    SUPPORT_TURN_ON, MediaPlayerDevice, DOMAIN)
 from homeassistant.const import (
-    CONF_NAME, STATE_ON, STATE_OFF)
+    CONF_NAME, STATE_ON, STATE_OFF, ATTR_ENTITY_ID)
 import homeassistant.helpers.config_validation as cv
 
 SUPPORT_SONGPAL = SUPPORT_VOLUME_SET | SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE | \
@@ -22,6 +22,10 @@ SUPPORT_SONGPAL = SUPPORT_VOLUME_SET | SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE
 
 _LOGGER = logging.getLogger(__name__)
 
+
+SET_SOUND_SETTING = "songpal_set_sound_setting"
+PARAM_NAME = "name"
+PARAM_VALUE = "value"
 
 CONF_ENDPOINT = "endpoint"
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -33,7 +37,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 @asyncio.coroutine
 def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     """Set up the Songpal platform."""
-    devices = []
+    devices = []  # type: SongpalDevice
     if discovery_info:
         _LOGGER.error("got autodiscovered device: %s" % discovery_info)
         devices.append(SongpalDevice(discovery_info["name"],
@@ -44,6 +48,22 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
         devices.append(songpal)
 
     async_add_devices(devices, True)
+
+    @asyncio.coroutine
+    def async_service_handler(service):
+        params = {key: value for key, value in service.data.items()
+                  if key != ATTR_ENTITY_ID}
+        entity_id = service.data.get("entity_id", None)
+        _LOGGER.debug("Calling %s (entity: %s) with params %s", service, entity_id, params)
+        for device in devices:
+            if entity_id is None or device.entity_id == entity_id:
+                yield from device.async_set_sound_setting(params[PARAM_NAME], params[PARAM_VALUE])
+
+    schema = vol.Schema({vol.Required(PARAM_NAME): cv.string,
+                         vol.Required(PARAM_VALUE): cv.string})
+    hass.services.async_register(
+        DOMAIN, SET_SOUND_SETTING, async_service_handler,
+        schema=schema)
 
 
 class SongpalDevice(MediaPlayerDevice):
@@ -80,6 +100,13 @@ class SongpalDevice(MediaPlayerDevice):
     def dev(self):
         """Property for accessing the device handle."""
         return self._dev
+
+    @asyncio.coroutine
+    def async_set_sound_setting(self, name, value):
+        """Change a setting on the device."""
+        res = yield from self.dev.set_sound_settings(name, value)
+
+        return res
 
     @asyncio.coroutine
     def async_update(self):
