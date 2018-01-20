@@ -11,19 +11,17 @@ import voluptuous as vol
 
 from homeassistant.components.media_player import (
     PLATFORM_SCHEMA, SUPPORT_SELECT_SOURCE, SUPPORT_TURN_OFF,
-    SUPPORT_TURN_ON, SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_SET,
-    MediaPlayerDevice)
+    SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_STEP, SUPPORT_VOLUME_SET,
+    SUPPORT_TURN_ON, MediaPlayerDevice)
 from homeassistant.const import (
-    CONF_NAME, STATE_UNKNOWN, STATE_ON, STATE_OFF)
+    CONF_NAME, STATE_ON, STATE_OFF)
 import homeassistant.helpers.config_validation as cv
 
-SUPPORT_SONGPAL = SUPPORT_VOLUME_SET | SUPPORT_VOLUME_MUTE | \
+SUPPORT_SONGPAL = SUPPORT_VOLUME_SET | SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE | \
     SUPPORT_TURN_ON | SUPPORT_TURN_OFF | SUPPORT_SELECT_SOURCE
 
 _LOGGER = logging.getLogger(__name__)
 
-# to ignore: Failing the WebSocket connection: 1006
-# logging.getLogger("websockets.protocol").setLevel(logging.WARNING)
 
 CONF_ENDPOINT = "endpoint"
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -60,27 +58,32 @@ class SongpalDevice(MediaPlayerDevice):
         self._volume_max = 1
         self._volume = 0
         self._is_muted = False
-        self._outputs = []
+        self._sources = []
         self._available = False
 
     @property
     def name(self):
+        """Return name of the device."""
         return self._name
 
     @property
     def available(self):
+        """Return availability of the device."""
         return self._available
 
     @asyncio.coroutine
     def async_added_to_hass(self):
+        """Hook to fetch the supported methods."""
         yield from self._dev.get_supported_methods()
 
     @property
     def dev(self):
+        """Property for accessing the device handle."""
         return self._dev
 
     @asyncio.coroutine
     def async_update(self):
+        """Fetch updates from the device."""
         try:
             volumes = yield from self.dev.get_volume_information()
             if len(volumes) != 1:
@@ -100,17 +103,19 @@ class SongpalDevice(MediaPlayerDevice):
             self._state = status.status
             _LOGGER.debug("Got state: %s" % status)
 
-            outs = yield from self.dev.get_outputs()
-            _LOGGER.debug("Got outs: %s" % outs)
-            self._outputs = outs
+            inputs = yield from self.dev.get_inputs()
+            _LOGGER.debug("Got ins: %s" % inputs)
+            self._sources = inputs
 
             self._available = True
-        except Exception as ex:
+        except Exception as ex:  # too wide exception
+            _LOGGER.error("Got an exception %s", ex)
             self._available = False
 
     @asyncio.coroutine
     def async_select_source(self, source):
-        for out in self._outputs:
+        """Select source."""
+        for out in self._sources:
             if out.title == source:
                 yield from out.activate()
                 return
@@ -119,10 +124,12 @@ class SongpalDevice(MediaPlayerDevice):
 
     @property
     def source_list(self):
-        return [x.title for x in self._outputs]
+        """Return list of available sources."""
+        return [x.title for x in self._sources]
 
     @property
     def state(self):
+        """Return current state."""
         if self._state:
             return STATE_ON
         else:
@@ -130,7 +137,7 @@ class SongpalDevice(MediaPlayerDevice):
 
     @property
     def source(self):
-        for out in self._outputs:
+        for out in self._sources:
             if out.active:
                 return out.title
 
@@ -153,22 +160,37 @@ class SongpalDevice(MediaPlayerDevice):
         return self._volume_control.set_volume(vol)
 
     @asyncio.coroutine
+    def async_volume_up(self):
+        """Set volume up!"""
+        return self._volume_control.set_volume(+1)
+
+    @asyncio.coroutine
+    def async_volume_down(self):
+        """Set volume down."""
+        return self._volume_control.set_volume(-1)
+
+    @asyncio.coroutine
     def async_turn_on(self):
+        """Turn the device on."""
         return self.dev.set_power(True)
 
     @asyncio.coroutine
     def async_turn_off(self):
+        """Turn the device off."""
         return self.dev.set_power(False)
 
     @asyncio.coroutine
     def async_mute_volume(self, mute):
+        """Mute or unmute the device."""
         _LOGGER.info("Set mute: %s" % mute)
         return self._volume_control.set_mute(mute)
 
     @property
     def is_volume_muted(self):
+        """Return whether the device is muted."""
         return self._is_muted
 
     @property
     def supported_features(self):
+        """Return supported features."""
         return SUPPORT_SONGPAL
