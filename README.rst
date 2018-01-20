@@ -147,6 +147,12 @@ Volume Control
 
     $ songpal volume [<value>|mute|unmute]
 
+    $ songpal volume 20
+
+    $ songpal volume +5
+
+    $ songpal volume -10
+
 Sound Settings
 --------------
 
