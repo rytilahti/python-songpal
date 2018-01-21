@@ -32,6 +32,8 @@ class Method:
         self.signature = signature
         self.idgen = idgen
 
+        self.timeout = 2
+
         self._inputs = self.parse_inputs(self.signature)
         self._outputs = self.parse_outputs(self.signature)
         self.version = self.signature.version
@@ -68,7 +70,7 @@ class Method:
         #    raise Exception("Invalid number of inputs, wanted %s got %s / %s" % (
         #        len(self.signature.input), len(args), len(kwargs)))
 
-        async with websockets.connect(self.endpoint) as s:
+        async with websockets.connect(self.endpoint, timeout=self.timeout) as s:
             req = {"method": self.name,
                    "params": params,
                    "version": self.version,
