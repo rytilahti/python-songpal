@@ -110,7 +110,7 @@ async def status(dev: Protocol):
     else:
         click.echo("Not playing any media")
 
-    outs = await dev.get_outputs()
+    outs = await dev.get_inputs()
     for out in outs:
         if out.active:
             click.echo("Active output: %s" % out)
@@ -176,22 +176,22 @@ async def power(dev: Protocol, cmd, target, value):
 
 
 @cli.command()
-@click.argument("output", required=False)
+@click.argument("input", required=False)
 @pass_dev
 @coro
-async def output(dev: Protocol, output):
+async def input(dev: Protocol, input):
     """Get and change outputs."""
-    outs = await dev.get_outputs()
-    if output:
-        click.echo("Activating %s" % output)
+    outs = await dev.get_inputs()
+    if input:
+        click.echo("Activating %s" % input)
         try:
-            out = next((x for x in outs if x.title == output))
+            out = next((x for x in outs if x.title == input))
             await out.activate()
         except StopIteration:
-            click.echo("Unable to find output %s" % output)
+            click.echo("Unable to find input %s" % input)
             return
     else:
-        click.echo("Outputs:")
+        click.echo("Inputs:")
         for out in outs:
             act = False
             if out.active:
@@ -208,17 +208,33 @@ async def googlecast(dev: Protocol):
 
 
 @cli.command()
-@click.argument("source", default='storage', required=False)
+@click.argument("scheme", required=False)
 @pass_dev
 @coro
-async def source(dev: Protocol, source):
-    """List contents?"""
-    sources = await dev.get_source_list(source)
-    for src in sources:
-        click.echo(src)
-        click.echo("%s" % await dev.get_content_count(src.source))
-        for content in await dev.get_contents(src.source):
-            click.echo("   %s\n\t%s" % (content.title, content.uri))
+async def source(dev: Protocol, scheme):
+    """List available sources.
+
+    If no `scheme` is given, will list sources for all sc hemes.
+    """
+    if scheme is None:
+        schemes = await dev.get_schemes()
+        schemes = [scheme.scheme for scheme in schemes]
+    else:
+        schemes = [scheme]
+
+    for schema in schemes:
+        sources = await dev.get_source_list(schema)
+        for src in sources:
+            click.echo(src)
+            try:
+                click.echo("  %s" % await dev.get_content_count(src.source))
+            except Exception as ex:
+                click.echo("  %s" % ex)
+            try:
+                for content in await dev.get_contents(src.source):
+                    click.echo("   %s\n\t%s" % (content.title, content.uri))
+            except Exception as ex:
+                click.echo("  %s" % ex)
 
 
 @cli.command()
@@ -381,7 +397,14 @@ async def speaker(dev: Protocol, target, value):
 async def notifications(dev: Protocol):
     """Get list of available notifications.
     Useful for developers only."""
-    click.echo(await dev.get_notifications())
+    notifications = await dev.get_notifications()
+    click.echo(notifications)
+
+    # for i in notifications:
+    #     if i.name == "notifyVolumeInformation":
+    #         for i in await i.activate():
+    #             print(i)
+
 
 
 @cli.command()
