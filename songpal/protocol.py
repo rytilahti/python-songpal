@@ -12,6 +12,7 @@ from songpal.containers import (
     UpdateInfo, Storage, SupportedFunctions, Input, Source,
     ContentInfo, Volume, Scheme, Content)
 from songpal.service import Service
+from songpal.notification import Notification
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -284,9 +285,12 @@ class Protocol:
         if no output is given the current is assumed."""
         await self.services["avContent"]["getAvailablePlaybackFunction"](output=output)
 
-    async def get_notifications(self):
+    async def get_notifications(self) -> List[Notification]:
+        notifications = []
         for serv in self.services:
-            pp(self.services[serv].notifications)
+            for notification in self.services[serv].notifications:
+                notifications.append(notification)
+        return notifications
 
     async def raw_command(self, service, method, params):
         _LOGGER.info("Calling %s.%s(%s)", service, method, params)
