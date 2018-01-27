@@ -55,6 +55,7 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
                   if key != ATTR_ENTITY_ID}
         entity_id = service.data.get("entity_id", None)
         _LOGGER.debug("Calling %s (entity: %s) with params %s", service, entity_id, params)
+
         for device in devices:
             if entity_id is None or device.entity_id == entity_id:
                 yield from device.async_set_sound_setting(params[PARAM_NAME], params[PARAM_VALUE])
@@ -72,14 +73,16 @@ class SongpalDevice(MediaPlayerDevice):
         self._name = name
         self.endpoint = endpoint
         self._dev = songpal.Protocol(self.endpoint)
-        self._is_initialized = False
+
         self._state = False
+        self._available = False
+
         self._volume_min = 0
         self._volume_max = 1
         self._volume = 0
         self._is_muted = False
+
         self._sources = []
-        self._available = False
 
     @property
     def name(self):
@@ -136,7 +139,7 @@ class SongpalDevice(MediaPlayerDevice):
 
             self._available = True
         except Exception as ex:  # too wide exception
-            _LOGGER.error("Got an exception %s", ex)
+            #_LOGGER.error("Got an exception %s", ex)
             self._available = False
 
     @asyncio.coroutine
@@ -189,12 +192,12 @@ class SongpalDevice(MediaPlayerDevice):
     @asyncio.coroutine
     def async_volume_up(self):
         """Set volume up!"""
-        return self._volume_control.set_volume(+1)
+        return self._volume_control.set_volume("+1")
 
     @asyncio.coroutine
     def async_volume_down(self):
         """Set volume down."""
-        return self._volume_control.set_volume(-1)
+        return self._volume_control.set_volume("-1")
 
     @asyncio.coroutine
     def async_turn_on(self):
