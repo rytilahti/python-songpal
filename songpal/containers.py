@@ -166,11 +166,30 @@ class Sysinfo:
     ssid = attr.ib(default=None)
 
 
+def convert_bool(x):
+    return x == 'true'
+
+
+@attr.s
+class SoftwareUpdateInfo:
+    make = classmethod(make)
+
+    estimatedTimeSec = attr.ib()
+    target = attr.ib()
+    updatableVersion = attr.ib()
+    forcedUpdate = attr.ib(convert=convert_bool, default=None)
+
+
 @attr.s
 class UpdateInfo:
     make = classmethod(make)
 
-    isUpdatable = attr.ib()
+    def convert_if_available(x):
+        if x is not None:
+            return SoftwareUpdateInfo.make(**x[0])
+
+    isUpdatable = attr.ib(convert=convert_bool)
+    swInfo = attr.ib(convert=convert_if_available, default=None)
 
 
 @attr.s
@@ -280,7 +299,7 @@ class Storage:
     formattable = attr.ib()
     formatting = attr.ib()
 
-    isAvailable = attr.ib(convert=lambda x: True if x == 'true' else False)
+    isAvailable = attr.ib(convert=convert_bool)
     mounted = attr.ib(convert=lambda x: True if x == 'mounted' else False)
     permission = attr.ib()
     position = attr.ib()

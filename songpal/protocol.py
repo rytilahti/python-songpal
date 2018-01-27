@@ -163,9 +163,14 @@ class Protocol:
         return [Storage.make(**x) for x
                 in await self.services["system"]["getStorageList"]({})]
 
-    async def get_update_info(self) -> UpdateInfo:
+    async def get_update_info(self, from_network=True) -> UpdateInfo:
         """Get information about updates."""
-        info = await self.services["system"]["getSWUpdateInfo"](network="false")
+        if from_network:
+            from_network = "true"
+        else:
+            from_network = "false"
+        #from_network = ""
+        info = await self.services["system"]["getSWUpdateInfo"](network=from_network)
         return UpdateInfo.make(**info)
 
     async def activate_system_update(self) -> None:

@@ -273,11 +273,24 @@ async def schemes(dev: Protocol):
 
 
 @cli.command()
+@click.option("--network", is_flag=True, default=False)
+@click.option("--update", is_flag=True, default=False)
 @pass_dev
 @coro
-async def check_update(dev: Protocol):
+async def check_update(dev: Protocol, network: bool, update: bool):
     """Print out update information."""
-    click.echo(await dev.get_update_info())
+    click.echo("Checking updates from network: %s" % network)
+    update_info = await dev.get_update_info(from_network=network)
+    if not update_info.isUpdatable:
+        click.echo("No updates available.")
+        return
+    if not update:
+        click.echo("Update available: %s" % update_info.swInfo)
+        click.echo("Use --update to activate update!")
+    else:
+        click.echo("Activating update, please be seated.")
+        res = await dev.activate_system_update()
+        click.echo("Update result: %s" % res)
 
 
 @cli.command()
