@@ -162,8 +162,8 @@ class Sysinfo:
     macAddr = attr.ib()
     version = attr.ib()
     wirelessMacAddr = attr.ib()
-    bssid = attr.ib(default=None)
-    ssid = attr.ib(default=None)
+    bssid = attr.ib()
+    ssid = attr.ib()
 
 
 def convert_bool(x):
@@ -236,10 +236,13 @@ class Volume:
         if activate:
             enabled = "on"
 
-        return await self.services["audio"]["setAudioMute"](mute=enabled)
+        return await self.services["audio"]["setAudioMute"](mute=enabled, output=self.output)
+
+    async def toggle_mute(self):
+        return await self.services["audio"]["setAudioMute"](mute="toggle", output=self.output)
 
     async def set_volume(self, volume):
-        return await self.services["audio"]["setAudioVolume"](volume=str(volume))
+        return await self.services["audio"]["setAudioVolume"](volume=str(volume), output=self.output)
 
 
 @attr.s
@@ -324,9 +327,9 @@ class ApiMapping:
     service = attr.ib()
     getApi = attr.ib()
 
-    setApi = attr.ib(default=None)
-    target = attr.ib(default=None)
-    targetSuppl = attr.ib(default=None)
+    setApi = attr.ib()
+    target = attr.ib()
+    targetSuppl = attr.ib()
 
 
 @attr.s
@@ -342,14 +345,14 @@ class SettingsEntry:
 
     def convert_if_available_mapping(x):
         if x is not None:
-            return ApiMapping(**x)
+            return ApiMapping.make(**x)
 
     async def get_value(self, dev):
         """Returns current value for this setting."""
         res = await dev.get_setting(self.apiMapping.service,
                                     self.apiMapping.getApi['name'],
                                     self.apiMapping.target)
-        return Setting(**res.pop())
+        return Setting.make(**res.pop())
 
     @property
     def is_directory(self):
@@ -386,10 +389,16 @@ class Setting:
     Use candidate to access the potential values"""
     make = classmethod(make)
 
+    def create_candidates(x):
+        if x is not None:
+            return [SettingCandidate.make(**y) for y in x]
+
+        return []
+
     currentValue = attr.ib()
     target = attr.ib()
     type = attr.ib()
-    candidate = attr.ib(convert=lambda x: [SettingCandidate.make(**y) for y in x], default=[])  # type: List[SettingCandidate]
+    candidate = attr.ib(convert=create_candidates)  # type: List[SettingCandidate]
     isAvailable = attr.ib(default=None)
     title = attr.ib(default=None)
     titleTextID = attr.ib(default=None)
