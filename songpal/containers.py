@@ -222,12 +222,12 @@ class Volume:
     volume = attr.ib()
 
     @property
-    def muted(self):
+    def is_muted(self):
         return self.mute == 'on'
 
     def __str__(self):
         s = "Volume: %s/%s" % (self.volume, self.maxVolume)
-        if self.muted:
+        if self.is_muted:
             s += " (muted)"
         return s
 
