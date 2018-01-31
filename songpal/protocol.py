@@ -1,7 +1,7 @@
 import itertools
 import json
 import logging
-from pprint import pprint as pp
+from pprint import pprint as pp, pformat as pf
 from typing import List
 from urllib.parse import urlparse
 
@@ -56,7 +56,7 @@ class Protocol:
         response = response.json()
 
         if self.debug > 1:
-            _LOGGER.debug("Got getSupportedApiInfo: %s", response)
+            _LOGGER.debug("Got getSupportedApiInfo: %s", pf(response))
 
         return response
 
