@@ -8,6 +8,7 @@ import logging
 import asyncio
 
 import voluptuous as vol
+from typing import List
 
 from homeassistant.components.media_player import (
     PLATFORM_SCHEMA, SUPPORT_SELECT_SOURCE, SUPPORT_TURN_OFF,
@@ -37,8 +38,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 @asyncio.coroutine
 def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     """Set up the Songpal platform."""
-    devices = []  # type: SongpalDevice
-    if discovery_info:
+    devices = []  # type: List[SongpalDevice]
+    if discovery_info is not None:
         _LOGGER.error("got autodiscovered device: %s" % discovery_info)
         devices.append(SongpalDevice(discovery_info["name"],
                        discovery_info["properties"]["endpoint"]))
@@ -73,9 +74,11 @@ class SongpalDevice(MediaPlayerDevice):
         self._name = name
         self.endpoint = endpoint
         self._dev = songpal.Protocol(self.endpoint)
+        self._sysinfo = None  # type: songpal.Sysinfo
 
         self._state = False
         self._available = False
+        self._initialized = False
 
         self._volume_min = 0
         self._volume_max = 1
@@ -90,14 +93,14 @@ class SongpalDevice(MediaPlayerDevice):
         return self._name
 
     @property
+    def unique_id(self):
+        """Return an unique ID."""
+        return self._sysinfo.macAddr
+
+    @property
     def available(self):
         """Return availability of the device."""
         return self._available
-
-    @asyncio.coroutine
-    def async_added_to_hass(self):
-        """Hook to fetch the supported methods."""
-        yield from self._dev.get_supported_methods()
 
     @property
     def dev(self):
@@ -114,9 +117,21 @@ class SongpalDevice(MediaPlayerDevice):
     @asyncio.coroutine
     def async_update(self):
         """Fetch updates from the device."""
+        if not self._initialized:
+            try:
+                yield from self._dev.get_supported_methods()
+                self._sysinfo = yield from self.dev.get_system_info()
+                self._initialized = True
+            except Exception as ex:  # too broad exception
+                _LOGGER.error("Unable to get methods from songpal: %s", ex)
+                return
+
         try:
             volumes = yield from self.dev.get_volume_information()
-            if len(volumes) != 1:
+            if len(volumes) == 0:
+                _LOGGER.error("Got no volume controls, bailing out")
+                return
+            if len(volumes) > 1:
                 _LOGGER.warning("Got %s volume controls, using the first one",
                                 volumes)
                 return
@@ -127,7 +142,7 @@ class SongpalDevice(MediaPlayerDevice):
             self._volume_min = vol.minVolume
             self._volume = vol.volume
             self._volume_control = vol
-            self._is_muted = self._volume_control.mute == 'on'
+            self._is_muted = self._volume_control.is_muted
 
             status = yield from self.dev.get_power()
             self._state = status.status
@@ -139,7 +154,9 @@ class SongpalDevice(MediaPlayerDevice):
 
             self._available = True
         except Exception as ex:  # too wide exception
-            #_LOGGER.error("Got an exception %s", ex)
+            # if we were available, print out the exception
+            if self._available:
+                _LOGGER.error("Got an exception %s", ex, exc_info=True)
             self._available = False
 
     @asyncio.coroutine
