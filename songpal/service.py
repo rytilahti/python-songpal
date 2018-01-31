@@ -43,6 +43,11 @@ class Service:
         for method in payload['apis']:
             # TODO we take only the first version here per method
             # should we prefer the newest version instead of that?
+            if len(method["versions"]) == 0:
+                _LOGGER.warning("No versions found for %s", method)
+            elif len(method["versions"]) > 1:
+                _LOGGER.warning("More than on version for %s, "
+                                "using the first one", method)
             versions.add(method["versions"][0]["version"])
 
         service_endpoint = "%s/%s" % (endpoint, service)
@@ -56,6 +61,7 @@ class Service:
                 sigs = json.loads(sigs)
 
                 for sig in sigs["results"]:
+                    # _LOGGER.info("sig: %s", sig)
                     signatures[sig[0]] = Signature(*sig)
             except websockets.exceptions.InvalidHandshake as ex:
                 if service != "guide":
