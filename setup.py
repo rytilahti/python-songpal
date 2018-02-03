@@ -7,7 +7,7 @@ def readme():
 setup(
     name='python-songpal',
 
-    version='0.0.4.1',
+    version='0.0.5',
     description="Python library for interfacing with Sony's Songpal devices",
     long_description=readme(),
     url='https://github.com/rytilahti/python-songpal',
