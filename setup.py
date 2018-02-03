@@ -2,12 +2,12 @@ from setuptools import setup
 
 def readme():
     with open("README.rst") as f:
-        f.read()
+        return f.read()
 
 setup(
     name='python-songpal',
 
-    version='0.0.4',
+    version='0.0.4.1',
     description="Python library for interfacing with Sony's Songpal devices",
     long_description=readme(),
     url='https://github.com/rytilahti/python-songpal',
