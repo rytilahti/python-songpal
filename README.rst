@@ -16,14 +16,15 @@ Supported devices
 The library has been tested for now with following devices:
 
 * Sony HT-XT3
+* SRS-X88
 
 
 .. NOTE::
   Sony's `Supported devices page <http://vssupport.sony.net/en_ww/device.html>`_ lists devices,
   which will probably also work with this library.
 
-  If you have a device which is not listed above, please let me know.
-  Please also attach the output of ``songpal dump_devinfo`` to your report.
+  If you have a device which is not listed above, please create a pull request
+  or an issue on github!
 
 
 Getting started
@@ -218,6 +219,21 @@ You can access the available methods by calling ``songpal list_all``.
 .. code-block::
 
     $ songpal command system getSystemInformation
+
+
+Notification support
+--------------------
+
+The protocol supports subscribing to notifications on subsystem basis.
+Executing `songpal notifications` without any parameters will list
+available notifications.
+
+Every notification can be listened to separately, or alternatively
+all notifications from a single subsystem can be subscribed to.
+
+.. code-block::
+
+    $ songpal notifications --listen-all avContent
 
 Contributing
 ------------
