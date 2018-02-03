@@ -79,8 +79,10 @@ class Service:
 
         notifications = []
         if "notifications" in payload:
-            notifications = [Notification(service_endpoint, x)
-                             for x in payload["notifications"]]
+            notifications = [Notification(service_endpoint,
+                                          methods["switchNotifications"],
+                                          notification)
+                             for notification in payload["notifications"]]
 
         return cls(service, methods, notifications, idgen)
 
@@ -100,6 +102,12 @@ class Service:
     @property
     def notifications(self):
         return self._notifications
+
+    async def listen_all_notifications(self, callback):
+        """A helper to listen for all notifications by this service."""
+        everything = [noti.asdict() for noti in self.notifications]
+        await self._methods["switchNotifications"]({"enabled": everything},
+                                                  _consumer=callback)
 
     def asdict(self):
         return {'methods': {m.name: m.asdict() for m in self.methods},

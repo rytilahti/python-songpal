@@ -405,13 +405,35 @@ async def speaker(dev: Protocol, target, value):
 
 
 @cli.command()
+@click.argument("notification", required=False)
+@click.option("--listen-all", is_flag=True)
 @pass_dev
 @coro
-async def notifications(dev: Protocol):
-    """Get list of available notifications.
-    Useful for developers only."""
+async def notifications(dev: Protocol, notification: str, listen_all: bool):
+    """List available notifications and listen to them.
+
+    Using --listen-all with a subsystem will allow listening for all
+    notifications from the given subsystem.
+    """
     notifications = await dev.get_notifications()
-    click.echo(notifications)
+
+    async def handle_notification(x):
+        click.echo("got notification: %s" % x)
+
+    if not notification:
+        click.echo(click.style("Available notifications", bold=True))
+        for notification in notifications:
+            click.echo("* %s" % notification)
+    else:
+        if listen_all:
+            await dev.services[notification].listen_all_notifications(handle_notification)
+        click.echo("Subscribing to notification %s" % notification)
+        for notif in notifications:
+            if notif.name == notification:
+                await notif.activate(handle_notification)
+                return
+
+        click.echo("Unable to find notification!")
 
     # for i in notifications:
     #     if i.name == "notifyVolumeInformation":

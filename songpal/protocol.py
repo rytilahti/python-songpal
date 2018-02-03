@@ -32,7 +32,7 @@ class Protocol:
 
         self.ws = None
         self.idgen = itertools.count(start=1)
-        self.services = {}
+        self.services = {}  # type: Service
 
     async def __aenter__(self):
         await self.get_supported_methods()
@@ -275,8 +275,7 @@ class Protocol:
         return await self.services["audio"]["setSoundSettings"](params)
 
     async def get_speaker_settings(self) -> List[Setting]:
-        """Return speaker settings. External speakers?"""
-        # raise NotImplementedError("Returns 15, unsupported")
+        """Return speaker settings."""
         speaker_settings = await self.services["audio"]["getSpeakerSettings"]({})
         return [Setting.make(**x) for x in speaker_settings]
 

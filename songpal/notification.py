@@ -1,53 +1,37 @@
 import websockets
 import logging
 import json
+from pprint import pformat as pf
 
 _LOGGER = logging.getLogger(__name__)
 
 class Notification:
-    """Wrapper for notifications, currently unused"""
-    def __init__(self, endpoint, payload):
+    """Wrapper for notifications.
+
+    In order to listen for notifications, call `activate(callback)`
+    with a coroutine to be called when a notification is received.
+    """
+    def __init__(self, endpoint, switch_method, payload):
         self.endpoint = endpoint
+        self.switch_method = switch_method
         self.versions = payload["versions"]
         self.name = payload["name"]
         self.version = max([x['version']
                             for x in self.versions
                             if 'version' in x])
 
+        _LOGGER.debug("notification payload: %s", pf(payload))
+
     def asdict(self):
         return {'name': self.name,
-                #'endpoint': self.endpoint,
-                #'versions': self.versions,
                 'version': self.version}
 
-    async def activate(self):
-        # notifyPowerStatus, notifySWUpdateInfo,
-        # notifySettingsUpdate, notifyStorageStatus
-        # {"method": "switchNotifications",
-        # "params": [{"enabled": [{"name": name, "version": version}]}]}
-        async with websockets.connect(self.endpoint, timeout=5) as s:
-            req = {"method": "switchNotifications",
-                   "params": [{"enabled": [],
-                               "disabled": []}],
-                   "version": self.version,
-                   "id": 1}
-            json_req = json.dumps(req)
-            print("sending %s" % json_req)
-            await s.send(json_req)
-            res = await s.recv()
-            print("received subscription: %s" % res)
-            req = {"method": "switchNotifications",
-                   "params": [{"enabled": [self.asdict()],
-                               "disabled": []}],
-                   "version": self.version,
-                   "id": 2}
-            json_req = json.dumps(req)
-            print("sending %s" % json_req)
-            await s.send(json_req)
-            while True:
-                _LOGGER.info("going to wait for input")
-                res = await s.recv()
-                _LOGGER.info("got from loop: %s" % res)
+    async def activate(self, callback):
+        """Start listening for this notification.
+
+        Emits received notifications by calling the passed `callback`.
+        """
+        await self.switch_method({"enabled": [self.asdict()]}, _consumer=callback)
 
     def __repr__(self):
         return "<Notification %s, versions=%s, endpoint=%s>" % (self.name,

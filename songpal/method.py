@@ -51,6 +51,12 @@ class Method:
         _LOGGER.debug("%s got called with args (%s) kwargs (%s)" % (
             self.name, args, kwargs))
 
+        # Used for allowing keeping reading from the socket
+        _consumer = None
+        if '_consumer' in kwargs:
+            _consumer = kwargs['_consumer']
+            del kwargs['_consumer']
+
         if len(kwargs) == 0 and len(args) == 0:
             params = []  # params need to be empty array, if none is given
         elif len(kwargs) > 0:
@@ -79,6 +85,14 @@ class Method:
             if self.debug > 1:
                 _LOGGER.debug("sending request: %s" % json_req)
             await s.send(json_req)
+
+            # If we have a consumer, we are going to loop forever while
+            # emiting the incoming payloads to e.g. notification handler.
+            if _consumer is not None:
+                while True:
+                    res = await s.recv()
+                    await _consumer(res)
+
             return await s.recv()
 
     async def __call__(self, *args, **kwargs):
@@ -95,6 +109,10 @@ class Method:
 
         if self.debug > 0:
             _LOGGER.debug("got res: %s" % pf(res))
+
+        if 'result' not in res:
+            _LOGGER.error("No result in response, how to handle? %s" % res)
+            return
 
         res = res["result"]
         if len(res) > 1:
