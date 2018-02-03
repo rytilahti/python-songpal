@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import List
 
 import websockets
 
@@ -92,13 +93,13 @@ class Service:
 
         return cls(service, methods, notifications, idgen)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> Method:
         if item not in self._methods:
             raise Exception("%s does not contain method %s" % (self, item))
         return self._methods[item]
 
     @property
-    def methods(self):
+    def methods(self) -> List[Method]:
         return self._methods.values()
 
     @property
@@ -106,7 +107,7 @@ class Service:
         return self._protocols
 
     @property
-    def notifications(self):
+    def notifications(self) -> List[Notification]:
         return self._notifications
 
     async def listen_all_notifications(self, callback):

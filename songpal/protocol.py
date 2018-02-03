@@ -2,7 +2,7 @@ import itertools
 import json
 import logging
 from pprint import pprint as pp, pformat as pf
-from typing import List
+from typing import List, Dict
 from urllib.parse import urlparse
 
 import requests
@@ -32,7 +32,7 @@ class Protocol:
 
         self.ws = None
         self.idgen = itertools.count(start=1)
-        self.services = {}  # type: Service
+        self.services = {}  # type: Dict[str, Service]
 
     async def __aenter__(self):
         await self.get_supported_methods()
@@ -95,11 +95,11 @@ class Protocol:
     async def set_power(self, value: bool):
         """Toggle the device on and off."""
         if value:
-            value = "active"
+            status = "active"
         else:
-            value = "off"
+            status = "off"
         # TODO WoL works when quickboot is not enabled
-        await self.services["system"]["setPowerStatus"](status=value)
+        await self.services["system"]["setPowerStatus"](status=status)
 
     async def get_play_info(self) -> PlayInfo:
         """Return  of the device."""
