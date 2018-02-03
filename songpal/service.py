@@ -6,6 +6,7 @@ import websockets
 
 from songpal.method import Signature, Method
 from songpal.notification import Notification
+from songpal.common import SongpalException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,8 +75,8 @@ class Service:
         for method in payload["apis"]:
             name = method["name"]
             if name in methods:
-                raise Exception("Got duplicate %s for %s" % (name,
-                                                             endpoint))
+                raise SongpalException("Got duplicate %s for %s" % (name,
+                                                                    endpoint))
             if name not in signatures:
                 _LOGGER.debug("Got no signature for %s on %s" % (name,
                                                                  endpoint))
@@ -95,7 +96,8 @@ class Service:
 
     def __getitem__(self, item) -> Method:
         if item not in self._methods:
-            raise Exception("%s does not contain method %s" % (self, item))
+            raise SongpalException("%s does not contain method %s" % (self,
+                                                                      item))
         return self._methods[item]
 
     @property

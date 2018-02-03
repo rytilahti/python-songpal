@@ -5,6 +5,8 @@ from pprint import pformat as pf
 import attr
 import websockets
 
+from .common import SongpalException
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -104,8 +106,8 @@ class Method:
 
         if "error" in res:
             _LOGGER.debug(self)
-            raise Exception("Got an error for %s: %s" % (self.name,
-                                                         res["error"]))
+            raise SongpalException("Got an error for %s: %s" % (self.name,
+                                                                res["error"]))
 
         if self.debug > 0:
             _LOGGER.debug("got res: %s" % pf(res))
@@ -172,8 +174,8 @@ class Method:
         except json.JSONDecodeError as ex:
             try:
                 return self.return_type(x)
-            except:
-                raise
+            except Exception:
+                raise SongpalException("Unknown return type: %s" % x) from ex
 
         return obj
 

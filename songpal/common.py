@@ -1,0 +1,2 @@
+class SongpalException(Exception):
+    pass
