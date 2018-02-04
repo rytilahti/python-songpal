@@ -13,6 +13,7 @@ from songpal.containers import (
     ContentInfo, Volume, Scheme, Content)
 from songpal.service import Service
 from songpal.notification import Notification
+from songpal.common import SongpalException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,12 +49,15 @@ class Protocol:
                                data=json.dumps(payload), headers=headers)
         prepreq = req.prepare()
         s = requests.Session()
-        response = s.send(prepreq)
-        if response.status_code != 200:
-            _LOGGER.error("Got !200 response: %s" % response.text)
-            return None
+        try:
+            response = s.send(prepreq)
+            if response.status_code != 200:
+                _LOGGER.error("Got !200 response: %s" % response.text)
+                return None
 
-        response = response.json()
+            response = response.json()
+        except requests.RequestException as ex:
+            raise SongpalException("Unable to get APIs: %s" % ex) from ex
 
         if self.debug > 1:
             _LOGGER.debug("Got getSupportedApiInfo: %s", pf(response))

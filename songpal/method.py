@@ -98,8 +98,11 @@ class Method:
             return await s.recv()
 
     async def __call__(self, *args, **kwargs):
-        res = await self.request(*args, **kwargs)
-        res = json.loads(res)
+        try:
+            res = await self.request(*args, **kwargs)
+            res = json.loads(res)
+        except Exception as ex:
+            raise SongpalException("Unable to make a request: %s" % ex) from ex
 
         if self.debug > 1:
             _LOGGER.debug("got payload: %s" % res)
