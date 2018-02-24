@@ -442,3 +442,18 @@ class ContentUpdate:
     source = attr.ib()
     uri = attr.ib()
     applicationName = attr.ib()
+
+
+@attr.s
+class NotificationState:
+    """Container for storing information about state of notifications."""
+    make = classmethod(make)
+
+    enabled = attr.ib(convert=lambda x: [x["name"] for x in x])
+    disabled = attr.ib(convert=lambda x: [x["name"] for x in x])
+
+    def __str__(self):
+        return "<NotificationState enabled: %s disabled: %s>" % (
+            ",".join(self.enabled),
+            ",".join(self.disabled)
+        )

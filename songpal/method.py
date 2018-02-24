@@ -6,6 +6,8 @@ import attr
 import websockets
 
 from .common import SongpalException
+from .containers import (Power, Volume, SettingUpdate,
+                         UpdateInfo, ContentUpdate, NotificationState)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,6 +50,33 @@ class Method:
                 'inputs': self.serialize_types(self.inputs),
                 'outputs': self.serialize_types(self.outputs),
                 'version': self.version}
+
+    def wrap_notification(self, data):
+        data = json.loads(data)
+
+        if "method" in data:
+            method = data["method"]
+            params = data["params"]
+            change = params[0]
+            if method == "notifyPowerStatus":
+                return Power.make(**change)
+            elif method == "notifyVolumeInformation":
+                return Volume.make(**change)
+            elif method == "notifyPlayingContentInfo":
+                return ContentUpdate.make(**change)
+            elif method == "notifySettingsUpdate":
+                return SettingUpdate.make(**change)
+            elif method == "notifySWUpdateInfo":
+                return UpdateInfo.make(**change)
+            else:
+                _LOGGER.warning("Got unknown notification type: %s" % method)
+        elif "result" in data:
+            result = data["result"][0]
+            if "enabled" in result and "enabled" in result:
+                return NotificationState(**result)
+        else:
+            _LOGGER.warning("Unknown notification, returning raw: %s", data)
+            return data
 
     async def request(self, *args, **kwargs):
         _LOGGER.debug("%s got called with args (%s) kwargs (%s)" % (
@@ -93,6 +122,10 @@ class Method:
             if _consumer is not None:
                 while True:
                     res = await s.recv()
+                    res = self.wrap_notification(res)
+                    if self.debug > 1:
+                        _LOGGER.debug("Got notification: %s", res)
+
                     await _consumer(res)
 
             return await s.recv()
@@ -110,7 +143,8 @@ class Method:
         if "error" in res:
             _LOGGER.debug(self)
             raise SongpalException("Got an error for %s: %s" % (self.name,
-                                                                res["error"]))
+                                                                res["error"]),
+                                   error=res["error"])
 
         if self.debug > 0:
             _LOGGER.debug("got res: %s" % pf(res))
