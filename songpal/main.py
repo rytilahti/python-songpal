@@ -170,14 +170,14 @@ async def power(dev: Protocol, cmd, target, value):
     async def try_turn(cmd):
         state = True if cmd == "on" else False
         try:
-            await dev.set_power(state)
+            return await dev.set_power(state)
         except SongpalException as ex:
             if ex.code == 3:
                 err("The device is already %s." % cmd)
             else:
                 raise ex
     if cmd == "on" or cmd == "off":
-        await try_turn(cmd)
+        click.echo(await try_turn(cmd))
     elif cmd == "settings":
         settings = await dev.get_power_settings()
         print_settings(settings)
