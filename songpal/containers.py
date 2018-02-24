@@ -110,6 +110,7 @@ class PlayInfo:
     output = attr.ib()
 
     # only available when being played
+    service = attr.ib()
     artist = attr.ib(default=None)
     albumName = attr.ib(default=None)
     title = attr.ib(default=None)
@@ -404,3 +405,40 @@ class Setting:
     titleTextID = attr.ib(default=None)
     deviceUIInfo = attr.ib(default=None)
     uri = attr.ib(default=None)
+
+
+# weirdly enough this does not follow the same syntax of setting
+# nor settingcandidate, but is a mix of setting and apimapping.
+@attr.s
+class SettingUpdate:
+    make = classmethod(make)
+
+    titleTextID = attr.ib()
+    guideTextID = attr.ib()
+    isAvailable = attr.ib()
+    type = attr.ib()
+    title = attr.ib()
+    apiMappingUpdate = attr.ib()
+
+    target = attr.ib()
+    currentValue = attr.ib()
+
+    def __attrs_post_init__(self):
+        self.currentValue = self.apiMappingUpdate["currentValue"]
+        self.target = self.apiMappingUpdate["target"]
+
+    def __str__(self):
+        return "<SettingUpdate %s (%s): %s>" % (self.title,
+                                                self.target,
+                                                self.currentValue)
+
+@attr.s
+class ContentUpdate:
+    """This gets sent as a notification when the source changes."""
+    make = classmethod(make)
+
+    contentKind = attr.ib()
+    service = attr.ib()
+    source = attr.ib()
+    uri = attr.ib()
+    applicationName = attr.ib()
