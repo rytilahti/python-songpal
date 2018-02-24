@@ -1,6 +1,8 @@
 python-songpal
 ==============
 
+|PyPI version|
+
 Python 3 implementation of SongPal protocol as used by Sony's soundbar
 and potentially other devices.
 
@@ -288,3 +290,6 @@ can provide useful information when trying to debug the platform:
     logger:
       logs:
         songpal: debug
+
+.. |PyPI version| image:: https://badge.fury.io/py/python-songpal.svg
+   :target: https://badge.fury.io/py/python-songpal
