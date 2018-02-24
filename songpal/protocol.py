@@ -103,7 +103,7 @@ class Protocol:
         else:
             status = "off"
         # TODO WoL works when quickboot is not enabled
-        await self.services["system"]["setPowerStatus"](status=status)
+        return await self.services["system"]["setPowerStatus"](status=status)
 
     async def get_play_info(self) -> PlayInfo:
         """Return  of the device."""
