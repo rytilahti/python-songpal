@@ -11,8 +11,11 @@ import upnpclient
 from functools import update_wrapper
 from lxml import objectify, etree
 
-from songpal import Protocol
+from songpal import Protocol, SongpalException
 
+
+def err(msg):
+    click.echo(click.style(msg, fg="red", bold=True))
 
 def coro(f):
     """https://github.com/pallets/click/issues/85#issuecomment-43378930"""
@@ -20,7 +23,10 @@ def coro(f):
 
     def wrapper(*args, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(f(*args, **kwargs))
+        try:
+            return loop.run_until_complete(f(*args, **kwargs))
+        except SongpalException as ex:
+            err("Error: %s" % ex)
 
     return update_wrapper(wrapper, f)
 
@@ -76,14 +82,14 @@ async def cli(ctx, endpoint, debug):
         return
 
     if endpoint is None:
-        click.echo("Endpoint is required except when with 'discover'!")
+        err("Endpoint is required except when with 'discover'!")
 
     logging.debug("Using endpoint %s", endpoint)
     x = Protocol(endpoint, debug=debug)
     try:
         await x.get_supported_methods()
     except requests.exceptions.ConnectionError as ex:
-        click.echo("Unable to get supported methods: %s" % ex)
+        err("Unable to get supported methods: %s" % ex)
         sys.exit(-1)
     ctx.obj = x
 
@@ -161,10 +167,17 @@ async def power(dev: Protocol, cmd, target, value):
 
     Accepts commands 'on', 'off', and 'settings'.
     """
-    if cmd == "on":
-        await dev.set_power(True)
-    elif cmd == "off":
-        await dev.set_power(False)
+    async def try_turn(cmd):
+        state = True if cmd == "on" else False
+        try:
+            await dev.set_power(state)
+        except SongpalException as ex:
+            if ex.code == 3:
+                err("The device is already %s." % cmd)
+            else:
+                raise ex
+    if cmd == "on" or cmd == "off":
+        await try_turn(cmd)
     elif cmd == "settings":
         settings = await dev.get_power_settings()
         print_settings(settings)
@@ -401,7 +414,7 @@ async def speaker(dev: Protocol, target, value):
         click.echo("Setting %s to %s" % (target, value))
         await dev.set_speaker_settings(target, value)
 
-    pp(await dev.get_speaker_settings())
+    print_settings(await dev.get_speaker_settings())
 
 
 @cli.command()
@@ -412,34 +425,39 @@ async def speaker(dev: Protocol, target, value):
 async def notifications(dev: Protocol, notification: str, listen_all: bool):
     """List available notifications and listen to them.
 
-    Using --listen-all with a subsystem will allow listening for all
-    notifications from the given subsystem.
+    Using --listen-all [notification] allows to listen to all notifications
+     from the given subsystem.
+    If the subsystem is omited, notifications from all subsystems are
+    requested.
     """
     notifications = await dev.get_notifications()
 
     async def handle_notification(x):
         click.echo("got notification: %s" % x)
 
-    if not notification:
-        click.echo(click.style("Available notifications", bold=True))
-        for notification in notifications:
-            click.echo("* %s" % notification)
-    else:
-        if listen_all:
+    if listen_all:
+        if notification is not None:
             await dev.services[notification].listen_all_notifications(handle_notification)
+        else:
+            click.echo("Listening to all possible notifications")
+            tasks = []
+            for serv in dev.services.values():
+                tasks.append(asyncio.ensure_future(
+                    serv.listen_all_notifications(handle_notification)))
+
+            await asyncio.wait(tasks)
+    elif notification:
         click.echo("Subscribing to notification %s" % notification)
         for notif in notifications:
             if notif.name == notification:
                 await notif.activate(handle_notification)
-                return
 
-        click.echo("Unable to find notification!")
+        click.echo("Unable to find notification %s" % notification)
 
-    # for i in notifications:
-    #     if i.name == "notifyVolumeInformation":
-    #         for i in await i.activate():
-    #             print(i)
-
+    else:
+        click.echo(click.style("Available notifications", bold=True))
+        for notification in notifications:
+            click.echo("* %s" % notification)
 
 
 @cli.command()
