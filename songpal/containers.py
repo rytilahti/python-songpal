@@ -78,13 +78,13 @@ class Content:
 
     isPlayable = attr.ib()
     index = attr.ib()
-    title = attr.ib(default=None)  # no idea why this would be missing..
-    folderNo = attr.ib(default=None)  # files do not have this
-    fileNo = attr.ib(default=None)  # folders do not have this
-    parentUri = attr.ib(default=None)  # toplevel has no parents
+    title = attr.ib()  # no idea why this would be missing..
+    folderNo = attr.ib()  # files do not have this
+    fileNo = attr.ib()  # folders do not have this
+    parentUri = attr.ib()  # toplevel has no parents
 
-    fileSizeByte = attr.ib(default=None)  # dirs do not have this
-    createdTime = attr.ib(default=None)
+    fileSizeByte = attr.ib()  # dirs do not have this
+    createdTime = attr.ib()
 
     def __str__(self):
         return "%s (%s, kind: %s)" % (self.title, self.uri, self.contentKind)
@@ -111,15 +111,15 @@ class PlayInfo:
 
     # only available when being played
     service = attr.ib()
-    artist = attr.ib(default=None)
-    albumName = attr.ib(default=None)
-    title = attr.ib(default=None)
-    durationMsec = attr.ib(default=None)
-    mediaType = attr.ib(default=None)
-    parentUri = attr.ib(default=None)
-    positionMsec = attr.ib(default=None)
-    repeatType = attr.ib(default=None)
-    source = attr.ib(default=None)
+    artist = attr.ib()
+    albumName = attr.ib()
+    title = attr.ib()
+    durationMsec = attr.ib()
+    mediaType = attr.ib()
+    parentUri = attr.ib()
+    positionMsec = attr.ib()
+    repeatType = attr.ib()
+    source = attr.ib()
 
     @property
     def is_idle(self):
@@ -178,7 +178,7 @@ class SoftwareUpdateInfo:
     estimatedTimeSec = attr.ib()
     target = attr.ib()
     updatableVersion = attr.ib()
-    forcedUpdate = attr.ib(convert=convert_bool, default=None)
+    forcedUpdate = attr.ib(convert=convert_bool)
 
 
 @attr.s
@@ -190,7 +190,7 @@ class UpdateInfo:
             return SoftwareUpdateInfo.make(**x[0])
 
     isUpdatable = attr.ib(convert=convert_bool)
-    swInfo = attr.ib(convert=convert_if_available, default=None)
+    swInfo = attr.ib(convert=convert_if_available)
 
 
 @attr.s
@@ -251,7 +251,7 @@ class Power:
     make = classmethod(make)
 
     status = attr.ib(convert=lambda x: True if x == "active" else False)
-    standbyDetail = attr.ib(default=None)
+    standbyDetail = attr.ib()
 
     def __bool__(self):
         return self.status
@@ -272,10 +272,10 @@ class Input:
     title = attr.ib()
     uri = attr.ib()
 
-    services = attr.ib(repr=False, default=None)
-    active = attr.ib(convert=lambda x: True if x == 'active' else False, default=None)
-    label = attr.ib(default=None)
-    iconUrl = attr.ib(default=None)
+    services = attr.ib(repr=False)
+    active = attr.ib(convert=lambda x: True if x == 'active' else False)
+    label = attr.ib()
+    iconUrl = attr.ib()
 
     def __str__(self):
         s = "%s (uri: %s)" % (self.title, self.uri)
@@ -359,12 +359,12 @@ class SettingsEntry:
     def is_directory(self):
         return self.type == 'directory'
 
-    apiMapping = attr.ib(convert=convert_if_available_mapping, default=None, repr=False)
-    settings = attr.ib(convert=convert_if_available, default=None)
-    title = attr.ib(default=None)
-    titleTextID = attr.ib(default=None)
-    usage = attr.ib(None)
-    deviceUIInfo = attr.ib(None)
+    apiMapping = attr.ib(convert=convert_if_available_mapping, repr=False)
+    settings = attr.ib(convert=convert_if_available)
+    title = attr.ib()
+    titleTextID = attr.ib()
+    usage = attr.ib()
+    deviceUIInfo = attr.ib()
 
     def __str__(self):
         return "%s (%s, %s)" % (self.title, self.titleTextID, self.type)
@@ -378,10 +378,10 @@ class SettingCandidate:
     title = attr.ib()
     value = attr.ib()
     isAvailable = attr.ib()
-    min = attr.ib(default=None)
-    max = attr.ib(default=None)
-    step = attr.ib(default=None)
-    titleTextID = attr.ib(default=None)
+    min = attr.ib()
+    max = attr.ib()
+    step = attr.ib()
+    titleTextID = attr.ib()
 
 
 @attr.s
@@ -400,11 +400,11 @@ class Setting:
     target = attr.ib()
     type = attr.ib()
     candidate = attr.ib(convert=create_candidates)  # type: List[SettingCandidate]
-    isAvailable = attr.ib(default=None)
-    title = attr.ib(default=None)
-    titleTextID = attr.ib(default=None)
-    deviceUIInfo = attr.ib(default=None)
-    uri = attr.ib(default=None)
+    isAvailable = attr.ib()
+    title = attr.ib()
+    titleTextID = attr.ib()
+    deviceUIInfo = attr.ib()
+    uri = attr.ib()
 
 
 # weirdly enough this does not follow the same syntax of setting
