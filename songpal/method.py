@@ -123,7 +123,7 @@ class Method:
             # emiting the incoming payloads to e.g. notification handler.
             if _consumer is not None:
                 while True:
-                    res_raw = await asyncio.wait_for(s.recv(), timeout=5)
+                    res_raw = await s.recv()
                     res = self.wrap_notification(res_raw)
                     _LOGGER.debug("Got notification: %s", res)
                     if self.debug > 1:
