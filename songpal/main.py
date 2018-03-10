@@ -79,7 +79,7 @@ async def cli(ctx, endpoint, debug):
     logging.basicConfig(level=lvl)
 
     if ctx.invoked_subcommand == "discover":
-        ctx.obj = "discover"
+        ctx.obj = {'debug': debug}
         return
 
     if endpoint is None:
@@ -128,14 +128,19 @@ async def status(dev: Device):
 
 @cli.command()
 @coro
-async def discover():
+@click.pass_context
+async def discover(ctx):
     """Discover supported devices."""
     TIMEOUT = 3
-
+    debug = 0
+    if ctx.obj:
+        debug = ctx.obj["debug"] or 0
     click.echo("Discovering for %s seconds" % TIMEOUT)
     devices = upnpclient.discover(TIMEOUT)
     for dev in devices:
         if 'ScalarWebAPI' in dev.service_map:
+            if debug:
+                print(etree.tostring(dev._root_xml, pretty_print=True).decode())
             model = dev.model_name
             model_number = dev.model_number
 
