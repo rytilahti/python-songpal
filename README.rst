@@ -257,39 +257,11 @@ The `Camera Remote API <https://developer.sony.com/develop/cameras/get-started/>
 is also similar to this, and may also be useful for developers.
 
 
-Home assistant support
+Home Assistant support
 ----------------------
 
-A preliminary `Home Assistant <https://home-assistant.io/>`__ can be found
-under `custom_components/media_player/songpal.py`.
+Home Assistant supports devices using this library directly since 0.65: https://home-assistant.io/components/media_player.songpal/
 
-.. NOTE::
-   The platform supports currently only detecting the state of the device,
-   and controlling the volume and output.
-
-   Patches to add support for other functionalities,
-   such as adjusting settings (e.g. for night-mode automation?),
-   are welcome!
-
-To install it copy (or link) the file into your custom components directory
-(``~/.homeassistant/custom_components/media_player/``),
-and add the following configuration to your media player configuration file.
-
-.. code-block::
-
-    media_player:
-      - platform: songpal
-        name: my soundbar
-        endpoint: http://192.168.1.1:10000/sony
-
-Enabling debug for ``songpal`` in ``~/.homeassistant/configuration.yaml``
-can provide useful information when trying to debug the platform:
-
-.. code-block::
-
-    logger:
-      logs:
-        songpal: debug
 
 .. |PyPI version| image:: https://badge.fury.io/py/python-songpal.svg
    :target: https://badge.fury.io/py/python-songpal
