@@ -115,8 +115,11 @@ class Service:
     async def listen_all_notifications(self, callback):
         """A helper to listen for all notifications by this service."""
         everything = [noti.asdict() for noti in self.notifications]
-        await self._methods["switchNotifications"]({"enabled": everything},
-                                                  _consumer=callback)
+        if len(everything) > 0:
+            await self._methods["switchNotifications"]({"enabled": everything},
+                                                       _consumer=callback)
+        else:
+            _LOGGER.debug("No notifications available for %s", self.service)
 
     def asdict(self):
         return {'methods': {m.name: m.asdict() for m in self.methods},

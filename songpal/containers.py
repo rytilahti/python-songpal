@@ -38,6 +38,10 @@ def make(cls, **kwargs):
     return inst
 
 
+class ChangeNotification:
+    """Dummy base-class for notifications."""
+    pass
+
 @attr.s
 class Scheme:
     make = classmethod(make)
@@ -182,7 +186,7 @@ class SoftwareUpdateInfo:
 
 
 @attr.s
-class UpdateInfo:
+class SoftwareUpdateChange(ChangeNotification):
     make = classmethod(make)
 
     def convert_if_available(x):
@@ -247,6 +251,14 @@ class Volume:
 
 
 @attr.s
+class VolumeChange(ChangeNotification):
+    make = classmethod(make)
+
+    mute = attr.ib(convert=lambda x: True if x == "on" else False)
+    volume = attr.ib()
+
+
+@attr.s
 class Power:
     make = classmethod(make)
 
@@ -261,6 +273,11 @@ class Power:
             return "Power on"
         else:
             return "Power off"
+
+
+@attr.s
+class PowerChange(ChangeNotification, Power):
+    pass
 
 
 @attr.s
@@ -407,10 +424,8 @@ class Setting:
     uri = attr.ib()
 
 
-# weirdly enough this does not follow the same syntax of setting
-# nor settingcandidate, but is a mix of setting and apimapping.
 @attr.s
-class SettingUpdate:
+class SettingChange(ChangeNotification):
     make = classmethod(make)
 
     titleTextID = attr.ib()
@@ -428,12 +443,12 @@ class SettingUpdate:
         self.target = self.apiMappingUpdate["target"]
 
     def __str__(self):
-        return "<SettingUpdate %s (%s): %s>" % (self.title,
+        return "<SettingChange %s (%s): %s>" % (self.title,
                                                 self.target,
                                                 self.currentValue)
 
 @attr.s
-class ContentUpdate:
+class ContentChange(ChangeNotification):
     """This gets sent as a notification when the source changes."""
     make = classmethod(make)
 
@@ -443,17 +458,21 @@ class ContentUpdate:
     uri = attr.ib()
     applicationName = attr.ib()
 
+    @property
+    def is_input(self):
+        return self.contentKind == 'input'
+
 
 @attr.s
-class NotificationState:
-    """Container for storing information about state of notifications."""
+class NotificationChange(ChangeNotification):
+    """Container for storing information about state of Notifications."""
     make = classmethod(make)
 
     enabled = attr.ib(convert=lambda x: [x["name"] for x in x])
     disabled = attr.ib(convert=lambda x: [x["name"] for x in x])
 
     def __str__(self):
-        return "<NotificationState enabled: %s disabled: %s>" % (
+        return "<NotificationChange enabled: %s disabled: %s>" % (
             ",".join(self.enabled),
             ",".join(self.disabled)
         )

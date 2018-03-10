@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from pprint import pformat as pf
@@ -6,8 +7,9 @@ import attr
 import websockets
 
 from .common import SongpalException
-from .containers import (Power, Volume, SettingUpdate,
-                         UpdateInfo, ContentUpdate, NotificationState)
+from .containers import (PowerChange, VolumeChange, SettingChange,
+                         SoftwareUpdateChange, ContentChange,
+                         NotificationChange)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,21 +61,21 @@ class Method:
             params = data["params"]
             change = params[0]
             if method == "notifyPowerStatus":
-                return Power.make(**change)
+                return PowerChange.make(**change)
             elif method == "notifyVolumeInformation":
-                return Volume.make(**change)
+                return VolumeChange.make(**change)
             elif method == "notifyPlayingContentInfo":
-                return ContentUpdate.make(**change)
+                return ContentChange.make(**change)
             elif method == "notifySettingsUpdate":
-                return SettingUpdate.make(**change)
+                return SettingChange.make(**change)
             elif method == "notifySWUpdateInfo":
-                return UpdateInfo.make(**change)
+                return SoftwareUpdateChange.make(**change)
             else:
-                _LOGGER.warning("Got unknown notification type: %s" % method)
+                _LOGGER.warning("Got unknown notification type: %s", method)
         elif "result" in data:
             result = data["result"][0]
             if "enabled" in result and "enabled" in result:
-                return NotificationState(**result)
+                return NotificationChange(**result)
         else:
             _LOGGER.warning("Unknown notification, returning raw: %s", data)
             return data
@@ -121,10 +123,11 @@ class Method:
             # emiting the incoming payloads to e.g. notification handler.
             if _consumer is not None:
                 while True:
-                    res = await s.recv()
-                    res = self.wrap_notification(res)
+                    res_raw = await asyncio.wait_for(s.recv(), timeout=5)
+                    res = self.wrap_notification(res_raw)
+                    _LOGGER.debug("Got notification: %s", res)
                     if self.debug > 1:
-                        _LOGGER.debug("Got notification: %s", res)
+                        _LOGGER.debug("Got notification raw: %s", res_raw)
 
                     await _consumer(res)
 

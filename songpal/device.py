@@ -1,15 +1,17 @@
+import asyncio
 import itertools
 import json
 import logging
 from pprint import pprint as pp, pformat as pf
 from typing import List, Dict
 from urllib.parse import urlparse
+from collections import defaultdict
 
 import requests
 
 from songpal.containers import (
     Power, PlayInfo, Setting, SettingsEntry, InterfaceInfo, Sysinfo,
-    UpdateInfo, Storage, SupportedFunctions, Input, Source,
+    Storage, SupportedFunctions, Input, Source, SoftwareUpdateInfo,
     ContentInfo, Volume, Scheme, Content)
 from songpal.service import Service
 from songpal.notification import Notification
@@ -18,7 +20,7 @@ from songpal.common import SongpalException
 _LOGGER = logging.getLogger(__name__)
 
 
-class Protocol:
+class Device:
     WEBSOCKET_PROTOCOL = "v10.webapi.scalar.sony.com"
     WEBSOCKET_VERSION = 13
 
@@ -34,6 +36,8 @@ class Protocol:
         self.ws = None
         self.idgen = itertools.count(start=1)
         self.services = {}  # type: Dict[str, Service]
+
+        self.callbacks = defaultdict(set)
 
     async def __aenter__(self):
         await self.get_supported_methods()
@@ -167,7 +171,7 @@ class Protocol:
         return [Storage.make(**x) for x
                 in await self.services["system"]["getStorageList"]({})]
 
-    async def get_update_info(self, from_network=True) -> UpdateInfo:
+    async def get_update_info(self, from_network=True) -> SoftwareUpdateInfo:
         """Get information about updates."""
         if from_network:
             from_network = "true"
@@ -175,7 +179,7 @@ class Protocol:
             from_network = "false"
         #from_network = ""
         info = await self.services["system"]["getSWUpdateInfo"](network=from_network)
-        return UpdateInfo.make(**info)
+        return SoftwareUpdateInfo.make(**info)
 
     async def activate_system_update(self) -> None:
         return await self.services["system"]["actSWUpdate"]()
@@ -292,6 +296,24 @@ class Protocol:
         """Return available playback functions,
         if no output is given the current is assumed."""
         await self.services["avContent"]["getAvailablePlaybackFunction"](output=output)
+
+    def on_notification(self, type_, callback):
+        self.callbacks[type_].add(callback)
+
+    async def listen_notifications(self):
+        tasks = []
+        async def handle_notification(notification):
+            if type(notification) not in self.callbacks:
+                _LOGGER.debug("No callbacks for %s", notification)
+                return
+            for cb in self.callbacks[type(notification)]:
+                await cb(notification)
+
+        for serv in self.services.values():
+            tasks.append(asyncio.ensure_future(
+                serv.listen_all_notifications(handle_notification)))
+
+        await asyncio.wait(tasks)
 
     async def get_notifications(self) -> List[Notification]:
         notifications = []

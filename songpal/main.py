@@ -11,7 +11,7 @@ import upnpclient
 from functools import update_wrapper
 from lxml import objectify, etree
 
-from songpal import Protocol, SongpalException
+from songpal import Device, SongpalException
 
 
 def err(msg):
@@ -62,7 +62,7 @@ def print_settings(settings, depth=0):
 
 logging.getLogger("websockets.protocol").setLevel(logging.WARNING)
 
-pass_dev = click.make_pass_decorator(Protocol)
+pass_dev = click.make_pass_decorator(Device)
 
 
 @click.group(invoke_without_command=False)
@@ -75,6 +75,7 @@ async def cli(ctx, endpoint, debug):
     lvl = logging.INFO
     if debug:
         lvl = logging.DEBUG
+        click.echo("Setting debug level to %s" % debug)
     logging.basicConfig(level=lvl)
 
     if ctx.invoked_subcommand == "discover":
@@ -85,7 +86,7 @@ async def cli(ctx, endpoint, debug):
         err("Endpoint is required except when with 'discover'!")
 
     logging.debug("Using endpoint %s", endpoint)
-    x = Protocol(endpoint, debug=debug)
+    x = Device(endpoint, debug=debug)
     try:
         await x.get_supported_methods()
     except requests.exceptions.ConnectionError as ex:
@@ -102,7 +103,7 @@ async def cli(ctx, endpoint, debug):
 @cli.command()
 @pass_dev
 @coro
-async def status(dev: Protocol):
+async def status(dev: Device):
     """Display status information."""
     power = await dev.get_power()
     click.echo(click.style("%s" % power, bold=power))
@@ -162,7 +163,7 @@ async def discover():
 @click.argument("value", required=False)
 @pass_dev
 @coro
-async def power(dev: Protocol, cmd, target, value):
+async def power(dev: Device, cmd, target, value):
     """Turn on and off, control power settings.
 
     Accepts commands 'on', 'off', and 'settings'.
@@ -192,7 +193,7 @@ async def power(dev: Protocol, cmd, target, value):
 @click.argument("input", required=False)
 @pass_dev
 @coro
-async def input(dev: Protocol, input):
+async def input(dev: Device, input):
     """Get and change outputs."""
     outs = await dev.get_inputs()
     if input:
@@ -215,7 +216,7 @@ async def input(dev: Protocol, input):
 @cli.command()
 @pass_dev
 @coro
-async def googlecast(dev: Protocol):
+async def googlecast(dev: Device):
     """Return Googlecast settings."""
     print_settings(await dev.get_wutang())
 
@@ -224,7 +225,7 @@ async def googlecast(dev: Protocol):
 @click.argument("scheme", required=False)
 @pass_dev
 @coro
-async def source(dev: Protocol, scheme):
+async def source(dev: Device, scheme):
     """List available sources.
 
     If no `scheme` is given, will list sources for all sc hemes.
@@ -254,7 +255,7 @@ async def source(dev: Protocol, scheme):
 @click.argument("volume", required=False)
 @pass_dev
 @coro
-async def volume(dev: Protocol, volume):
+async def volume(dev: Device, volume):
     """Get and set the volume settings.
 
     Passing 'mute' as new volume will mute the volume,
@@ -278,7 +279,7 @@ async def volume(dev: Protocol, volume):
 @cli.command()
 @pass_dev
 @coro
-async def schemes(dev: Protocol):
+async def schemes(dev: Device):
     """Print supported uri schemes."""
     schemes = await dev.get_schemes()
     for scheme in schemes:
@@ -290,7 +291,7 @@ async def schemes(dev: Protocol):
 @click.option("--update", is_flag=True, default=False)
 @pass_dev
 @coro
-async def check_update(dev: Protocol, network: bool, update: bool):
+async def check_update(dev: Device, network: bool, update: bool):
     """Print out update information."""
     click.echo("Checking updates from network: %s" % network)
     update_info = await dev.get_update_info(from_network=network)
@@ -311,7 +312,7 @@ async def check_update(dev: Protocol, network: bool, update: bool):
 @click.argument("value", required=False)
 @pass_dev
 @coro
-async def bluetooth(dev: Protocol, target, value):
+async def bluetooth(dev: Device, target, value):
     """Get or set bluetooth settings."""
     if target and value:
         await dev.set_bluetooth_settings(target, value)
@@ -322,7 +323,7 @@ async def bluetooth(dev: Protocol, target, value):
 @cli.command()
 @pass_dev
 @coro
-async def sysinfo(dev: Protocol):
+async def sysinfo(dev: Device):
     """Print out system information (version, MAC addrs)."""
     click.echo(await dev.get_system_info())
     click.echo(await dev.get_interface_information())
@@ -331,7 +332,7 @@ async def sysinfo(dev: Protocol):
 @cli.command()
 @pass_dev
 @coro
-async def misc(dev: Protocol):
+async def misc(dev: Device):
     """Print miscellaneous settings."""
     print_settings(await dev.get_misc_settings())
 
@@ -339,7 +340,7 @@ async def misc(dev: Protocol):
 @cli.command()
 @pass_dev
 @coro
-async def settings(dev: Protocol):
+async def settings(dev: Device):
     """Print out all possible settings."""
     settings_tree = await dev.get_settings()
 
@@ -350,7 +351,7 @@ async def settings(dev: Protocol):
 @cli.command()
 @pass_dev
 @coro
-async def storage(dev: Protocol):
+async def storage(dev: Device):
     """Print storage information."""
     storages = await dev.get_storage_list()
     for storage in storages:
@@ -362,7 +363,7 @@ async def storage(dev: Protocol):
 @click.argument("value", required=False)
 @pass_dev
 @coro
-async def sound(dev: Protocol, target, value):
+async def sound(dev: Device, target, value):
     """Get or set sound settings."""
     if target and value:
         click.echo("Setting %s to %s" % (target, value))
@@ -374,7 +375,7 @@ async def sound(dev: Protocol, target, value):
 @cli.command()
 @pass_dev
 @coro
-async def eq(dev: Protocol):
+async def eq(dev: Device):
     """Return EQ information."""
     click.echo(await dev.get_custom_eq())
 
@@ -385,7 +386,7 @@ async def eq(dev: Protocol):
 @click.argument("value", required=False)
 @pass_dev
 @coro
-async def playback(dev: Protocol, cmd, target, value):
+async def playback(dev: Device, cmd, target, value):
     """Get and set playback settings, e.g. repeat and shuffle.."""
     if target and value:
         dev.set_playback_settings(target, value)
@@ -408,7 +409,7 @@ async def playback(dev: Protocol, cmd, target, value):
 @click.argument("value", required=False)
 @pass_dev
 @coro
-async def speaker(dev: Protocol, target, value):
+async def speaker(dev: Device, target, value):
     """Get and set external speaker settings."""
     if target and value:
         click.echo("Setting %s to %s" % (target, value))
@@ -422,7 +423,7 @@ async def speaker(dev: Protocol, target, value):
 @click.option("--listen-all", is_flag=True)
 @pass_dev
 @coro
-async def notifications(dev: Protocol, notification: str, listen_all: bool):
+async def notifications(dev: Device, notification: str, listen_all: bool):
     """List available notifications and listen to them.
 
     Using --listen-all [notification] allows to listen to all notifications
@@ -459,11 +460,28 @@ async def notifications(dev: Protocol, notification: str, listen_all: bool):
         for notification in notifications:
             click.echo("* %s" % notification)
 
+@cli.command()
+@pass_dev
+@coro
+async def listen(dev: Device):
+    from .containers import VolumeChange, PowerChange, ContentChange
+    async def volume_changed(x):
+        print("volume: %s" % x.volume)
+    async def power_changed(x):
+        print("power: %s" % x)
+    async def content_changed(x):
+        print("content: %s" % x)
+    dev.on_notification(VolumeChange, volume_changed)
+    dev.on_notification(PowerChange, power_changed)
+    dev.on_notification(ContentChange, content_changed)
+    await dev.listen_notifications()
+
+
 
 @cli.command()
 @pass_dev
 @coro
-async def sleep(dev: Protocol):
+async def sleep(dev: Device):
     """Return sleep settings."""
     click.echo(await dev.get_sleep_timer_settings())
 
@@ -497,7 +515,7 @@ async def command(dev, service, method, parameters):
 @cli.command()
 @pass_dev
 @coro
-async def dump_devinfo(dev: Protocol):
+async def dump_devinfo(dev: Device):
     """Dumps information for developers."""
     import attr
     methods = await dev.get_supported_methods()
