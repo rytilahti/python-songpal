@@ -17,7 +17,8 @@ Supported devices
 
 The library has been tested for now with following devices:
 
-* Sony HT-XT3
+* HT-XT3
+* HT-MT500
 * SRS-X88
 
 
