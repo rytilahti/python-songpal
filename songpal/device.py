@@ -24,16 +24,19 @@ class Device:
     WEBSOCKET_PROTOCOL = "v10.webapi.scalar.sony.com"
     WEBSOCKET_VERSION = 13
 
-    def __init__(self, endpoint, debug=0):
+    def __init__(self, endpoint, force_protocol=None, debug=0):
         self.debug = debug
         endpoint = urlparse(endpoint)
-        self.endpoint = endpoint._replace(scheme='ws').geturl()
-        _LOGGER.debug("WS endpoint: %s" % self.endpoint)
+        self.endpoint = endpoint.geturl()
+        _LOGGER.debug("Endpoint: %s" % self.endpoint)
 
-        self.http_endpoint = endpoint._replace(path='/sony/guide').geturl()
-        _LOGGER.debug("HTTP endpoint: %s" % self.http_endpoint)
+        self.guide_endpoint = endpoint._replace(path='/sony/guide').geturl()
+        _LOGGER.debug("Guide endpoint: %s" % self.guide_endpoint)
 
-        self.ws = None
+        if force_protocol:
+            _LOGGER.warning("Forcing protocol %s", force_protocol)
+        self.force_protocol = force_protocol
+
         self.idgen = itertools.count(start=1)
         self.services = {}  # type: Dict[str, Service]
 
@@ -42,14 +45,13 @@ class Device:
     async def __aenter__(self):
         await self.get_supported_methods()
 
-    async def request_supported_methods(self):
-        """Return JSON formatted supported API."""
+    async def create_post_request(self, method, params):
         headers = {"Content-Type": "application/json"}
-        payload = {"method": "getSupportedApiInfo",
-                   "params": [{}],
+        payload = {"method": method,
+                   "params": [params],
                    "id": next(self.idgen),
                    "version": "1.0"}
-        req = requests.Request("POST", self.http_endpoint,
+        req = requests.Request("POST", self.guide_endpoint,
                                data=json.dumps(payload), headers=headers)
         prepreq = req.prepare()
         s = requests.Session()
@@ -68,6 +70,10 @@ class Device:
 
         return response
 
+    async def request_supported_methods(self):
+        """Return JSON formatted supported API."""
+        return await self.create_post_request("getSupportedApiInfo", {})
+
     async def get_supported_methods(self):
         """Get information about supported methods.
         Calling this as the first thing before doing anything else is
@@ -83,10 +89,13 @@ class Device:
                 serv = await Service.from_payload(x,
                                                   self.endpoint,
                                                   self.idgen,
-                                                  self.debug)
+                                                  self.debug,
+                                                  self.force_protocol)
                 self.services[x["service"]] = serv
 
             for service in self.services.values():
+                if self.debug > 1:
+                    _LOGGER.debug("Service %s", service)
                 for api in service.methods:
                     # self.logger.debug("%s > %s" % (service, api))
                     if self.debug > 1:

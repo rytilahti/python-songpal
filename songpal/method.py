@@ -4,9 +4,9 @@ import logging
 from pprint import pformat as pf
 
 import attr
-import websockets
+import aiohttp
 
-from .common import SongpalException
+from .common import SongpalException, ProtocolType
 from .containers import (PowerChange, VolumeChange, SettingChange,
                          SoftwareUpdateChange, ContentChange,
                          NotificationChange)
@@ -27,7 +27,9 @@ class Method:
 
     Internally these are called APIs.
     """
-    def __init__(self, service, endpoint, payload, signature, idgen, debug=0):
+    def __init__(self, service, endpoint,
+                 payload, signature, protocol,
+                 idgen, debug=0):
         self.versions = payload["versions"]
         name = payload["name"]
 
@@ -36,6 +38,7 @@ class Method:
         self.service = service
         self.endpoint = endpoint
         self.signature = signature
+        self.protocol = protocol
         self.idgen = idgen
 
         self.timeout = 2
@@ -54,8 +57,6 @@ class Method:
                 'version': self.version}
 
     def wrap_notification(self, data):
-        data = json.loads(data)
-
         if "method" in data:
             method = data["method"]
             params = data["params"]
@@ -87,6 +88,8 @@ class Method:
         # Used for allowing keeping reading from the socket
         _consumer = None
         if '_consumer' in kwargs:
+            if self.protocol != ProtocolType.WebSocket:
+                raise SongpalException("Notifications are only supported over websockets")
             _consumer = kwargs['_consumer']
             del kwargs['_consumer']
 
@@ -109,34 +112,39 @@ class Method:
         #    raise Exception("Invalid number of inputs, wanted %s got %s / %s" % (
         #        len(self.signature.input), len(args), len(kwargs)))
 
-        async with websockets.connect(self.endpoint, timeout=self.timeout) as s:
+        async with aiohttp.ClientSession() as session:
             req = {"method": self.name,
                    "params": params,
                    "version": self.version,
                    "id": next(self.idgen)}
-            json_req = json.dumps(req)
             if self.debug > 1:
-                _LOGGER.debug("sending request: %s" % json_req)
-            await s.send(json_req)
+                _LOGGER.debug("sending request: %s (proto: %s)",
+                              req, self.protocol)
+            if self.protocol == ProtocolType.WebSocket:
+                async with session.ws_connect(self.endpoint,
+                                              timeout=self.timeout) as s:
+                    await s.send_json(req)
+                    # If we have a consumer, we are going to loop forever while
+                    # emiting the incoming payloads to e.g. notification handler.
+                    if _consumer is not None:
+                        while True:
+                            res_raw = await s.receive_json()
+                            res = self.wrap_notification(res_raw)
+                            _LOGGER.debug("Got notification: %s", res)
+                            if self.debug > 1:
+                                _LOGGER.debug("Got notification raw: %s", res_raw)
 
-            # If we have a consumer, we are going to loop forever while
-            # emiting the incoming payloads to e.g. notification handler.
-            if _consumer is not None:
-                while True:
-                    res_raw = await s.recv()
-                    res = self.wrap_notification(res_raw)
-                    _LOGGER.debug("Got notification: %s", res)
-                    if self.debug > 1:
-                        _LOGGER.debug("Got notification raw: %s", res_raw)
+                            await _consumer(res)
 
-                    await _consumer(res)
-
-            return await s.recv()
+                    res = await s.receive_json()
+                    return res
+            else:
+                res = await session.post(self.endpoint, json=req)
+                return await res.json()
 
     async def __call__(self, *args, **kwargs):
         try:
             res = await self.request(*args, **kwargs)
-            res = json.loads(res)
         except Exception as ex:
             raise SongpalException("Unable to make a request: %s" % ex) from ex
 

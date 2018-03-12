@@ -1,6 +1,4 @@
-import websockets
 import logging
-import json
 from pprint import pformat as pf
 
 _LOGGER = logging.getLogger(__name__)

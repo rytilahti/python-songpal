@@ -1,45 +1,69 @@
+import asyncio
 import json
 import logging
 from typing import List
 
-import websockets
+import aiohttp
 
 from songpal.method import Signature, Method
 from songpal.notification import Notification
-from songpal.common import SongpalException
+from songpal.common import SongpalException, ProtocolType
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class Service:
     """Service presents an endpoint providing a set of methods."""
-    def __init__(self, service, methods, notifications, idgen, debug=0):
+    def __init__(self, service,
+                 methods, notifications, protocols,
+                 idgen, debug=0):
         self.service = service
         self._methods = methods
         self.idgen = idgen
-        self._protocols = []
+        self._protocols = protocols
         self._notifications = notifications
         self.debug = debug
+        self.timeout = 2
 
     @staticmethod
-    async def fetch_signatures(endpoint, version, idgen):
-        async with websockets.connect(endpoint) as s:
+    async def fetch_signatures(endpoint, version, protocol, idgen):
+        async with aiohttp.ClientSession() as session:
             req = {"method": "getMethodTypes",
                    "params": [version],
                    "version": "1.0",
                    "id": next(idgen)}
-            await s.send(json.dumps(req))
-            res = await s.recv()
-            return res
+
+            if protocol == ProtocolType.WebSocket:
+                async with session.ws_connect(endpoint, timeout=2) as s:
+                    await s.send_json(req)
+                    res = await s.receive_json()
+                    return res
+            else:
+                res = await session.post(endpoint, json=req)
+                json = await res.json()
+
+                return json
 
     @classmethod
-    async def from_payload(cls, payload, endpoint, idgen, debug):
+    async def from_payload(cls, payload, endpoint, idgen, debug, force_protocol=None):
         service = payload["service"]
         methods = {}
 
-        # 'protocol' contains information such as
-        # xhrpost:jsonizer, websocket:jsonizer,
-        # which are not handled here
+        if 'protocols' not in payload:
+            raise SongpalException("Unable to find protocols from payload: %s" % payload)
+
+        protocols = payload['protocols']
+        _LOGGER.debug("Available protocols for %s: %s", service, protocols)
+        if force_protocol and force_protocol.value in protocols:
+            protocol = force_protocol
+        elif 'websocket:jsonizer' in protocols:
+            protocol = ProtocolType.WebSocket
+        elif 'xhrpost:jsonizer' in protocols:
+            protocol = ProtocolType.XHRPost
+        else:
+            raise SongpalException("No known protocols for %s, got: %s" % (
+                service, protocols))
+        _LOGGER.debug("Using protocol: %s" % protocol)
 
         versions = set()
         for method in payload['apis']:
@@ -56,21 +80,14 @@ class Service:
 
         signatures = {}
         for version in versions:
-            try:
-                sigs = await cls.fetch_signatures(service_endpoint,
-                                                  version,
-                                                  idgen)
-                sigs = json.loads(sigs)
+            sigs = await cls.fetch_signatures(service_endpoint,
+                                              version,
+                                              protocol,
+                                              idgen)
 
-                for sig in sigs["results"]:
-                    # _LOGGER.info("sig: %s", sig)
-                    signatures[sig[0]] = Signature(*sig)
-            except websockets.exceptions.InvalidHandshake as ex:
-                if service != "guide":
-                    _LOGGER.warning("Invalid handshake for %s: %s" % (service,
-                                                                      ex))
-            except json.JSONDecodeError as ex:
-                _LOGGER.warning("Unable to parse json: %s" % sigs)
+            for sig in sigs["results"]:
+                signatures[sig[0]] = Signature(*sig)
+
 
         for method in payload["apis"]:
             name = method["name"]
@@ -83,16 +100,18 @@ class Service:
                 continue
             methods[name] = Method(service, service_endpoint,
                                    method, signatures[name],
+                                   protocol,
                                    idgen, debug)
 
         notifications = []
-        if "notifications" in payload:
+        # TODO switchnotifications check is broken?
+        if "notifications" in payload and "switchNotifications" in methods:
             notifications = [Notification(service_endpoint,
                                           methods["switchNotifications"],
                                           notification)
                              for notification in payload["notifications"]]
 
-        return cls(service, methods, notifications, idgen)
+        return cls(service, methods, notifications, protocols, idgen)
 
     def __getitem__(self, item) -> Method:
         if item not in self._methods:
@@ -128,8 +147,8 @@ class Service:
                                   for n in self.notifications}}
 
     def __repr__(self):
-        return "<Service %s: %s methods, %s protocols, %s notifications" % (
+        return "<Service %s: %s methods, %s notifications, protocols: %s" % (
             self.service,
             len(self.methods),
-            len(self.protocols),
-            len(self.notifications))
+            len(self.notifications),
+            self.protocols)

@@ -12,6 +12,7 @@ from functools import update_wrapper
 from lxml import objectify, etree
 
 from songpal import Device, SongpalException
+from songpal.common import ProtocolType
 
 
 def err(msg):
@@ -27,6 +28,7 @@ def coro(f):
             return loop.run_until_complete(f(*args, **kwargs))
         except SongpalException as ex:
             err("Error: %s" % ex)
+            raise ex
 
     return update_wrapper(wrapper, f)
 
@@ -60,18 +62,18 @@ def print_settings(settings, depth=0):
                             bold=opt.value == cur))
 
 
-logging.getLogger("websockets.protocol").setLevel(logging.WARNING)
-
 pass_dev = click.make_pass_decorator(Device)
 
 
 @click.group(invoke_without_command=False)
 @click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=False)
 @click.option('-d', '--debug', default=False, count=True)
+@click.option('--post', is_flag=True, required=None)
+@click.option('--websocket', is_flag=True, required=None)
 @click.pass_context
 @click.version_option()
 @coro
-async def cli(ctx, endpoint, debug):
+async def cli(ctx, endpoint, debug, websocket, post):
     lvl = logging.INFO
     if debug:
         lvl = logging.DEBUG
@@ -84,9 +86,19 @@ async def cli(ctx, endpoint, debug):
 
     if endpoint is None:
         err("Endpoint is required except when with 'discover'!")
+        return
+
+    protocol = None
+    if post and websocket:
+        err("You can force either --post or --websocket")
+        return
+    elif websocket:
+        protocol = ProtocolType.WebSocket
+    elif post:
+        protocol = ProtocolType.XHRPost
 
     logging.debug("Using endpoint %s", endpoint)
-    x = Device(endpoint, debug=debug)
+    x = Device(endpoint, force_protocol=protocol, debug=debug)
     try:
         await x.get_supported_methods()
     except requests.exceptions.ConnectionError as ex:

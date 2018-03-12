@@ -1,4 +1,4 @@
-websockets
+aiohttp
 click
 upnpclient
 attrs

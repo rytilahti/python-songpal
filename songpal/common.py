@@ -1,3 +1,4 @@
+from enum import Enum
 class SongpalException(Exception):
     """This exception class is used to wrap exceptions coming from this lib.
 
@@ -10,3 +11,8 @@ class SongpalException(Exception):
         self.code = self.message = None
         if error is not None:
             self.code, self.message = error
+
+class ProtocolType(Enum):
+    """Protocol used for communication."""
+    WebSocket = 'websocket:jsonizer'
+    XHRPost = 'xhrpost:jsonizer'
