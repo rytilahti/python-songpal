@@ -293,6 +293,7 @@ class Input:
     active = attr.ib(convert=lambda x: True if x == 'active' else False)
     label = attr.ib()
     iconUrl = attr.ib()
+    outputs = attr.ib()
 
     def __str__(self):
         s = "%s (uri: %s)" % (self.title, self.uri)
