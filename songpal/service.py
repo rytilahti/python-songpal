@@ -84,7 +84,9 @@ class Service:
                                               version,
                                               protocol,
                                               idgen)
-
+            
+            if debug > 1:
+                _LOGGER.debug("Signatures: %s", sigs)
             for sig in sigs["results"]:
                 signatures[sig[0]] = Signature(*sig)
 
