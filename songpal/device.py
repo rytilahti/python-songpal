@@ -91,7 +91,10 @@ class Device:
                                                   self.idgen,
                                                   self.debug,
                                                   self.force_protocol)
-                self.services[x["service"]] = serv
+                if serv is not None:
+                    self.services[x["service"]] = serv
+                else:
+                    _LOGGER.warning("Unable to create service %s", x["service"])
 
             for service in self.services.values():
                 if self.debug > 1:

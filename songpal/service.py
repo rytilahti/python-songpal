@@ -84,9 +84,13 @@ class Service:
                                               version,
                                               protocol,
                                               idgen)
-            
+
             if debug > 1:
                 _LOGGER.debug("Signatures: %s", sigs)
+            if 'error' in sigs:
+                _LOGGER.error("Got error when fetching sigs: %s", sigs['error'])
+                return None
+
             for sig in sigs["results"]:
                 signatures[sig[0]] = Signature(*sig)
 
