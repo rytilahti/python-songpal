@@ -505,12 +505,12 @@ async def sleep(dev: Device):
 
 @cli.command()
 @pass_dev
-def list_all(dev):
+def list_all(dev: Device):
     """List all available API calls."""
     for name, service in dev.services.items():
         click.echo(click.style("\nService %s" % name, bold=True))
-        for api in service.methods:
-            click.echo("  %s" % api)
+        for method in service.methods:
+            click.echo("  %s" % method.name)
 
 
 @cli.command()
