@@ -111,7 +111,7 @@ class PlayInfo:
     the outs for the method call is much, much larger"""
     make = classmethod(make)
 
-    stateInfo = attr.ib(convert=lambda x: StateInfo(**x))
+    stateInfo = attr.ib(convert=lambda x: StateInfo.make(**x))
     contentKind = attr.ib()
     uri = attr.ib()
     output = attr.ib()
@@ -138,11 +138,13 @@ class PlayInfo:
 
     @property
     def duration(self):
-        return timedelta(milliseconds=self.durationMsec)
+        if self.durationMsec is not None:
+            return timedelta(milliseconds=self.durationMsec)
 
     @property
     def position(self):
-        return timedelta(milliseconds=self.positionMsec)
+        if self.positionMsec is not None:
+            return timedelta(milliseconds=self.positionMsec)
 
     def __str__(self):
         return "%s (%s/%s), state %s" % (self.title,
