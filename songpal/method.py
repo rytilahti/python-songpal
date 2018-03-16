@@ -122,7 +122,8 @@ class Method:
                               req, self.protocol)
             if self.protocol == ProtocolType.WebSocket:
                 async with session.ws_connect(self.endpoint,
-                                              timeout=self.timeout) as s:
+                                              timeout=self.timeout,
+                                              heartbeat=self.timeout * 5) as s:
                     await s.send_json(req)
                     # If we have a consumer, we are going to loop forever while
                     # emiting the incoming payloads to e.g. notification handler.
