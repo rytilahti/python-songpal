@@ -273,17 +273,31 @@ async def source(dev: Device, scheme):
 
 
 @cli.command()
+@click.option("--output", type=str, required=False)
 @click.argument("volume", required=False)
 @pass_dev
 @coro
-async def volume(dev: Device, volume):
+async def volume(dev: Device, volume, output):
     """Get and set the volume settings.
 
     Passing 'mute' as new volume will mute the volume,
     'unmute' removes it.
     """
-    vol = await dev.get_volume_information()
-    vol = vol.pop()
+    vol = None
+    vol_controls = await dev.get_volume_information()
+    if output is not None:
+        click.echo("Using output: %s" % output)
+        for v in vol_controls:
+            if v.output == output:
+                vol = v
+                break
+    else:
+        vol = vol_controls.pop()
+
+    if vol is None:
+        err("Unable to find volume controller: %s" % output)
+        return
+
     if volume and volume == "mute":
         click.echo("Muting")
         await vol.set_mute(True)
