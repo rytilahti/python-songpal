@@ -13,7 +13,7 @@ def make(cls, **kwargs):
     Reports extra keys as well as missing ones.
     Thanks to habnabit for the idea!
     """
-    cls_attrs = {f.name for f in attr.fields(cls)}
+    cls_attrs = {f.name:f for f in attr.fields(cls)}
 
     unknown = {k: v for k, v in kwargs.items() if k not in cls_attrs}
     if len(unknown) > 0:
@@ -21,15 +21,22 @@ def make(cls, **kwargs):
                       cls.__name__, unknown)
 
     missing = [k for k in cls_attrs if k not in kwargs]
-    if len(missing) > 0:
-        _LOGGER.debug("Missing keys for %s: %s", cls.__name__, missing)
 
     data = {k: v for k, v in kwargs.items() if k in cls_attrs}
 
     # initialize missing values to avoid passing default=None
     # for the attrs attribute definitions
     for m in missing:
-        data[m] = None
+        default = cls_attrs[m].default
+        if isinstance(default, attr.Factory):
+            if not default.takes_self:
+                data[m] = default.factory()
+            else:
+                raise NotImplementedError
+        else:
+            _LOGGER.debug("Missing key %s with no default for %s: %s",
+                          cls.__name__, m)
+            data[m] = None
 
     # initialize and store raw data for debug purposes
     inst = cls(**data)
@@ -299,7 +306,7 @@ class Input:
     active = attr.ib(convert=lambda x: True if x == 'active' else False)
     label = attr.ib()
     iconUrl = attr.ib()
-    outputs = attr.ib()
+    outputs = attr.ib(default=attr.Factory(list))
 
     def __str__(self):
         s = "%s (uri: %s)" % (self.title, self.uri)

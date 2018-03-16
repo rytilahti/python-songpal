@@ -212,22 +212,24 @@ async def power(dev: Device, cmd, target, value):
 @coro
 async def input(dev: Device, input):
     """Get and change outputs."""
-    outs = await dev.get_inputs()
+    inputs = await dev.get_inputs()
     if input:
         click.echo("Activating %s" % input)
         try:
-            out = next((x for x in outs if x.title == input))
-            await out.activate()
+            input = next((x for x in inputs if x.title == input))
+            await input.activate()
         except StopIteration:
             click.echo("Unable to find input %s" % input)
             return
     else:
         click.echo("Inputs:")
-        for out in outs:
+        for input in inputs:
             act = False
-            if out.active:
+            if input.active:
                 act = True
-            click.echo("  * " + click.style(str(out), bold=act))
+            click.echo("  * " + click.style(str(input), bold=act))
+            for out in input.outputs:
+                click.echo("    - %s" % out)
 
 
 @cli.command()
