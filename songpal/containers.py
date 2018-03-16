@@ -90,6 +90,9 @@ class Content:
     fileSizeByte = attr.ib()  # dirs do not have this
     createdTime = attr.ib()
 
+    broadcastFreqBand = attr.ib()
+    broadcastFreq = attr.ib()
+
     def __str__(self):
         return "%s (%s, kind: %s)" % (self.title, self.uri, self.contentKind)
 
@@ -209,6 +212,7 @@ class Source:
     isPlayable = attr.ib()
     meta = attr.ib()
     playAction = attr.ib()
+    outputs = attr.ib()
 
     def __str__(self):
         return "%s (%s)" % (self.title, self.source)

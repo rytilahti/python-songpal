@@ -254,17 +254,21 @@ async def source(dev: Device, scheme):
         schemes = [scheme]
 
     for schema in schemes:
-        sources = await dev.get_source_list(schema)
+        try:
+            sources = await dev.get_source_list(schema)
+        except SongpalException as ex:
+            click.echo("Unable to get sources for %s" % schema)
+            continue
         for src in sources:
             click.echo(src)
             try:
                 click.echo("  %s" % await dev.get_content_count(src.source))
-            except Exception as ex:
+            except SongpalException as ex:
                 click.echo("  %s" % ex)
             try:
                 for content in await dev.get_contents(src.source):
                     click.echo("   %s\n\t%s" % (content.title, content.uri))
-            except Exception as ex:
+            except SongpalException as ex:
                 click.echo("  %s" % ex)
 
 
