@@ -34,8 +34,8 @@ def make(cls, **kwargs):
             else:
                 raise NotImplementedError
         else:
-            _LOGGER.debug("Missing key %s with no default for %s: %s",
-                          cls.__name__, m)
+            _LOGGER.debug("Missing key %s with no default for %s",
+                          m, cls.__name__)
             data[m] = None
 
     # initialize and store raw data for debug purposes
@@ -181,6 +181,7 @@ class Sysinfo:
     wirelessMacAddr = attr.ib()
     bssid = attr.ib()
     ssid = attr.ib()
+    bleID = attr.ib()
 
 
 def convert_bool(x):
