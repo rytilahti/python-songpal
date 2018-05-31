@@ -12,6 +12,7 @@ from functools import update_wrapper
 from lxml import objectify, etree
 
 from songpal import Device, SongpalException
+from songpal.containers import Setting
 from songpal.common import ProtocolType
 
 
@@ -46,6 +47,9 @@ async def traverse_settings(dev, module, settings, depth=0):
 
 def print_settings(settings, depth=0):
     """Print all available settings of the device."""
+    # handle the case where a single setting is passed
+    if isinstance(settings, Setting):
+        settings = [settings]
     for setting in settings:
         cur = setting.currentValue
         print("%s* %s (%s, value: %s, type: %s)" % (' ' * depth,
@@ -55,6 +59,9 @@ def print_settings(settings, depth=0):
                                                                 bold=True),
                                                     setting.type))
         for opt in setting.candidate:
+            if not opt.isAvailable:
+                logging.debug("Unavailable setting %s", opt)
+                continue
             click.echo(
                 click.style("%s  - %s (%s)" % (' ' * depth,
                                                opt.title,
@@ -408,6 +415,17 @@ async def sound(dev: Device, target, value):
 
     print_settings(await dev.get_sound_settings())
 
+@cli.command()
+@pass_dev
+@click.argument("soundfield", required=False)
+@coro
+async def soundfield(dev: Device, soundfield: str):
+    """Get or set sound field."""
+    if soundfield is not None:
+        await dev.set_sound_settings("soundField", soundfield)
+    soundfields = await dev.get_sound_settings('soundField')
+    print(await dev.get_soundfield())
+    print_settings(soundfields)
 
 @cli.command()
 @pass_dev

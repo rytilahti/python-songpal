@@ -284,10 +284,22 @@ class Device:
             logging.warning("The device seems to have more than one volume setting.")
         return volume_info
 
-    async def get_sound_settings(self) -> List[Setting]:
-        """Get the current sound settings."""
-        res = await self.services["audio"]["getSoundSettings"]({})
+    async def get_sound_settings(self, target='') -> List[Setting]:
+        """Get the current sound settings.
+
+        :param str target: settings target, defaults to all.
+        """
+        res = await self.services["audio"]["getSoundSettings"]({"target": target})
         return [Setting.make(**x) for x in res]
+
+    async def get_soundfield(self) -> List[Setting]:
+        """Get the current sound field settings."""
+        res = await self.services["audio"]["getSoundSettings"]({"target": "soundField"})
+        return Setting.make(**res[0])
+
+    async def set_soundfield(self, value):
+        """Set soundfield."""
+        return await self.set_sound_settings('soundField', value)
 
     async def set_sound_settings(self, target: str, value: str):
         """Change a sound setting."""
