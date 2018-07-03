@@ -18,6 +18,7 @@ Supported devices
 The library has been tested for now with following devices:
 
 * HT-XT3
+* HT-NT5
 * HT-MT500
 * SRS-X88
 * STR-DN1060, STR-DN1070, STR-DN1080 (no multizone support yet)
