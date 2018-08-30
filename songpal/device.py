@@ -281,7 +281,7 @@ class Device:
         if len(volume_info) < 1:
             logging.warning("Unable to get volume information")
         elif len(volume_info) > 1:
-            logging.warning("The device seems to have more than one volume setting.")
+            logging.debug("The device seems to have more than one volume setting.")
         return volume_info
 
     async def get_sound_settings(self, target='') -> List[Setting]:
