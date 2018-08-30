@@ -1,6 +1,22 @@
 # Change Log
 
-## [0.0.7](https://github.com/rytilahti/python-songpal/tree/HEAD)
+## [0.0.8](https://github.com/rytilahti/python-songpal/tree/0.0.8) (2018-08-30)
+
+Some very minor changes, importantly avoid spammimng the logger when several volume
+controllers are provided by the device.
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.7...0.0.8)
+
+**Closed issues:**
+
+- HT-NT5 support [\#22](https://github.com/rytilahti/python-songpal/issues/22)
+- Got unknowns for Input STR DN1080 [\#21](https://github.com/rytilahti/python-songpal/issues/21)
+- Error when trying to run song pal after installation in venv [\#20](https://github.com/rytilahti/python-songpal/issues/20)
+- Help with finding endpoint on hass.io [\#19](https://github.com/rytilahti/python-songpal/issues/19)
+- command not found [\#18](https://github.com/rytilahti/python-songpal/issues/18)
+
+
+## [0.0.7](https://github.com/rytilahti/python-songpal/tree/0.0.7) (2018-03-24)
 
 First real release after getting some feedback from homeassistant users fixing various issues.
 
@@ -13,7 +29,7 @@ Other hilights:
   The protocol to use is decided automatically, but can be overridden with --post or --websocket
 
 
-[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.6...HEAD)
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.6...0.0.7)
 
 **Closed issues:**
 
