@@ -1,0 +1,2216 @@
+{
+  "sysinfo": {
+    "wirelessMacAddr": "8c-57-9b-d3-be-3a",
+    "bdAddr": "8C:57:9B:D3:BE:3B",
+    "bssid": null,
+    "version": "5.03",
+    "macAddr": "70-26-05-0f-de-37",
+    "ssid": "freebox_IYCIED",
+    "bleID": "AB27FE72"
+  },
+  "settings": [
+    {
+      "settings": [
+        {
+          "settings": [
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "sound-clearaudio",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getSoundSettings",
+                  "version": "1.1"
+                },
+                "target": "clearAudio",
+                "service": "audio",
+                "setApi": {
+                  "name": "setSoundSettings",
+                  "version": "1.1"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "booleanTarget",
+              "title": "ClearAudio+"
+            },
+            {
+              "settings": [
+                {
+                  "settings": null,
+                  "isAvailable": true,
+                  "titleTextID": "sound-equalizer-list",
+                  "deviceUIInfo": "",
+                  "apiMapping": {
+                    "getApi": {
+                      "name": "getSoundSettings",
+                      "version": "1.1"
+                    },
+                    "target": "soundField",
+                    "service": "audio",
+                    "setApi": {
+                      "name": "setSoundSettings",
+                      "version": "1.1"
+                    },
+                    "targetSuppl": ""
+                  },
+                  "usage": null,
+                  "type": "enumTarget",
+                  "title": "Preset EQ"
+                },
+                {
+                  "settings": [
+                    {
+                      "settings": null,
+                      "isAvailable": true,
+                      "titleTextID": "sound-equalizer-custom-100hz",
+                      "deviceUIInfo": "sliderVertical",
+                      "apiMapping": {
+                        "getApi": {
+                          "name": "getCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "target": "100HzBandLevel",
+                        "service": "audio",
+                        "setApi": {
+                          "name": "setCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "targetSuppl": ""
+                      },
+                      "usage": null,
+                      "type": "integerTarget",
+                      "title": "100"
+                    },
+                    {
+                      "settings": null,
+                      "isAvailable": true,
+                      "titleTextID": "sound-equalizer-custom-330hz",
+                      "deviceUIInfo": "sliderVertical",
+                      "apiMapping": {
+                        "getApi": {
+                          "name": "getCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "target": "330HzBandLevel",
+                        "service": "audio",
+                        "setApi": {
+                          "name": "setCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "targetSuppl": ""
+                      },
+                      "usage": null,
+                      "type": "integerTarget",
+                      "title": "330"
+                    },
+                    {
+                      "settings": null,
+                      "isAvailable": true,
+                      "titleTextID": "sound-equalizer-custom-1000hz",
+                      "deviceUIInfo": "sliderVertical",
+                      "apiMapping": {
+                        "getApi": {
+                          "name": "getCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "target": "1000HzBandLevel",
+                        "service": "audio",
+                        "setApi": {
+                          "name": "setCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "targetSuppl": ""
+                      },
+                      "usage": null,
+                      "type": "integerTarget",
+                      "title": "1000"
+                    },
+                    {
+                      "settings": null,
+                      "isAvailable": true,
+                      "titleTextID": "sound-equalizer-custom-3300hz",
+                      "deviceUIInfo": "sliderVertical",
+                      "apiMapping": {
+                        "getApi": {
+                          "name": "getCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "target": "3300HzBandLevel",
+                        "service": "audio",
+                        "setApi": {
+                          "name": "setCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "targetSuppl": ""
+                      },
+                      "usage": null,
+                      "type": "integerTarget",
+                      "title": "3300"
+                    },
+                    {
+                      "settings": null,
+                      "isAvailable": true,
+                      "titleTextID": "sound-equalizer-custom-10000hz",
+                      "deviceUIInfo": "sliderVertical",
+                      "apiMapping": {
+                        "getApi": {
+                          "name": "getCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "target": "10000HzBandLevel",
+                        "service": "audio",
+                        "setApi": {
+                          "name": "setCustomEqualizerSettings",
+                          "version": "1.0"
+                        },
+                        "targetSuppl": ""
+                      },
+                      "usage": null,
+                      "type": "integerTarget",
+                      "title": "10000"
+                    }
+                  ],
+                  "isAvailable": false,
+                  "titleTextID": "sound-equalizer-custom",
+                  "deviceUIInfo": "multiSlider",
+                  "apiMapping": null,
+                  "usage": null,
+                  "type": "directory",
+                  "title": "Custom EQ"
+                }
+              ],
+              "isAvailable": true,
+              "titleTextID": "sound-equalizer",
+              "deviceUIInfo": null,
+              "apiMapping": null,
+              "usage": null,
+              "type": "directory",
+              "title": "Equalizer"
+            }
+          ],
+          "isAvailable": true,
+          "titleTextID": "sound",
+          "deviceUIInfo": null,
+          "apiMapping": null,
+          "usage": null,
+          "type": "directory",
+          "title": null
+        },
+        {
+          "settings": [
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "power-autostandby",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getPowerSettings",
+                  "version": "1.0"
+                },
+                "target": "autoStandby",
+                "service": "system",
+                "setApi": {
+                  "name": "setPowerSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "booleanTarget",
+              "title": "Auto Standby"
+            }
+          ],
+          "isAvailable": true,
+          "titleTextID": "power",
+          "deviceUIInfo": null,
+          "apiMapping": null,
+          "usage": null,
+          "type": "directory",
+          "title": null
+        },
+        {
+          "settings": [
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "other-bluetoothcodec",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getBluetoothSettings",
+                  "version": "1.0"
+                },
+                "target": "codec",
+                "service": "avContent",
+                "setApi": {
+                  "name": "setBluetoothSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "enumTarget",
+              "title": "Bluetooth Codec"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "other-srsversion",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getSystemInformation",
+                  "version": "1.3"
+                },
+                "target": "",
+                "service": "system",
+                "setApi": {
+                  "name": "",
+                  "version": ""
+                },
+                "targetSuppl": "version"
+              },
+              "usage": null,
+              "type": "stringTarget",
+              "title": "SRS-ZR5 Version"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "other-ssid",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getSystemInformation",
+                  "version": "1.3"
+                },
+                "target": "",
+                "service": "system",
+                "setApi": {
+                  "name": "",
+                  "version": ""
+                },
+                "targetSuppl": "ssid"
+              },
+              "usage": null,
+              "type": "stringTarget",
+              "title": "SRS-ZR5 SSID"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "system-controlforhdmi",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "target": "controlforHDMI",
+                "service": "system",
+                "setApi": {
+                  "name": "setDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "enumTarget",
+              "title": "Control for HDMI"
+            }
+          ],
+          "isAvailable": true,
+          "titleTextID": "other",
+          "deviceUIInfo": null,
+          "apiMapping": null,
+          "usage": null,
+          "type": "directory",
+          "title": null
+        },
+        {
+          "settings": [
+            {
+              "settings": null,
+              "isAvailable": false,
+              "titleTextID": "system-update",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getSWUpdateInfo",
+                  "version": "1.0"
+                },
+                "target": "",
+                "service": "system",
+                "setApi": {
+                  "name": "actSWUpdate",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "booleanTarget",
+              "title": "Software Update"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "system-networkstandby",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getPowerSettings",
+                  "version": "1.0"
+                },
+                "target": "networkStandby",
+                "service": "system",
+                "setApi": {
+                  "name": "setPowerSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "booleanTarget",
+              "title": "Network Standby"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "system-networkdevicename",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "target": "deviceName",
+                "service": "system",
+                "setApi": {
+                  "name": "setDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "stringTarget",
+              "title": "Device Name"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "system-autoupdate",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "target": "swAutoUpdate",
+                "service": "system",
+                "setApi": {
+                  "name": "setDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "booleanTarget",
+              "title": "Auto Update"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "system-timezone",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "target": "timeZone",
+                "service": "system",
+                "setApi": {
+                  "name": "setDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "stringTarget",
+              "title": "Time Zone"
+            }
+          ],
+          "isAvailable": true,
+          "titleTextID": "system",
+          "deviceUIInfo": null,
+          "apiMapping": null,
+          "usage": null,
+          "type": "directory",
+          "title": null
+        }
+      ],
+      "isAvailable": true,
+      "titleTextID": null,
+      "deviceUIInfo": null,
+      "apiMapping": null,
+      "usage": "deviceConfig",
+      "type": "directory",
+      "title": null
+    },
+    {
+      "settings": [
+        {
+          "settings": [
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "googlecast-activatestatus",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getWuTangInfo",
+                  "version": "1.0"
+                },
+                "target": "activateStatus",
+                "service": "system",
+                "setApi": {
+                  "name": "setWuTangInfo",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "booleanTarget",
+              "title": "WuTang Activation"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "googlecast-shareusagedata",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getWuTangInfo",
+                  "version": "1.0"
+                },
+                "target": "privacySetting",
+                "service": "system",
+                "setApi": {
+                  "name": "setWuTangInfo",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "booleanTarget",
+              "title": "Privacy Policy"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "googlecast-versionnumber",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getWuTangInfo",
+                  "version": "1.0"
+                },
+                "target": "currentVersion",
+                "service": "system",
+                "setApi": {
+                  "name": "setWuTangInfo",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "stringTarget",
+              "title": "Version"
+            }
+          ],
+          "isAvailable": true,
+          "titleTextID": "googlecast",
+          "deviceUIInfo": null,
+          "apiMapping": null,
+          "usage": null,
+          "type": "directory",
+          "title": null
+        }
+      ],
+      "isAvailable": true,
+      "titleTextID": null,
+      "deviceUIInfo": null,
+      "apiMapping": null,
+      "usage": "wuTangSetting",
+      "type": "directory",
+      "title": null
+    },
+    {
+      "settings": [
+        {
+          "settings": [
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "system-networkstandby",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getPowerSettings",
+                  "version": "1.0"
+                },
+                "target": "networkStandby",
+                "service": "system",
+                "setApi": {
+                  "name": "setPowerSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "booleanTarget",
+              "title": "Network Standby"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "system-autoupdate",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "target": "swAutoUpdate",
+                "service": "system",
+                "setApi": {
+                  "name": "setDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "booleanTarget",
+              "title": "Auto Update"
+            },
+            {
+              "settings": null,
+              "isAvailable": true,
+              "titleTextID": "system-timezone",
+              "deviceUIInfo": "",
+              "apiMapping": {
+                "getApi": {
+                  "name": "getDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "target": "timeZone",
+                "service": "system",
+                "setApi": {
+                  "name": "setDeviceMiscSettings",
+                  "version": "1.0"
+                },
+                "targetSuppl": ""
+              },
+              "usage": null,
+              "type": "stringTarget",
+              "title": "Time Zone"
+            }
+          ],
+          "isAvailable": true,
+          "titleTextID": "system",
+          "deviceUIInfo": null,
+          "apiMapping": null,
+          "usage": null,
+          "type": "directory",
+          "title": null
+        }
+      ],
+      "isAvailable": true,
+      "titleTextID": null,
+      "deviceUIInfo": null,
+      "apiMapping": null,
+      "usage": "initialSetting",
+      "type": "directory",
+      "title": null
+    },
+    {
+      "settings": [
+        {
+          "settings": null,
+          "isAvailable": true,
+          "titleTextID": "playbackMode-repeatType",
+          "deviceUIInfo": "",
+          "apiMapping": {
+            "getApi": {
+              "name": "getPlaybackModeSettings",
+              "version": "1.0"
+            },
+            "target": "repeatType",
+            "service": "avContent",
+            "setApi": {
+              "name": "setPlaybackModeSettings",
+              "version": "1.0"
+            },
+            "targetSuppl": ""
+          },
+          "usage": null,
+          "type": "enumTarget",
+          "title": ""
+        },
+        {
+          "settings": null,
+          "isAvailable": true,
+          "titleTextID": "playbackMode-shuffleType",
+          "deviceUIInfo": "",
+          "apiMapping": {
+            "getApi": {
+              "name": "getPlaybackModeSettings",
+              "version": "1.0"
+            },
+            "target": "shuffleType",
+            "service": "avContent",
+            "setApi": {
+              "name": "setPlaybackModeSettings",
+              "version": "1.0"
+            },
+            "targetSuppl": ""
+          },
+          "usage": null,
+          "type": "enumTarget",
+          "title": ""
+        }
+      ],
+      "isAvailable": true,
+      "titleTextID": null,
+      "deviceUIInfo": null,
+      "apiMapping": null,
+      "usage": "playingControl",
+      "type": "directory",
+      "title": null
+    }
+  ],
+  "supported_methods": {
+    "appControl": {
+      "methods": {
+        "getVersions": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getVersions",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getVersions",
+          "service": "appControl",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/appControl"
+        },
+        "getMethodTypes": {
+          "inputs": "str",
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getMethodTypes",
+            "version": "1.0",
+            "output": [
+              "string",
+              "string*",
+              "string*"
+            ]
+          },
+          "name": "getMethodTypes",
+          "service": "appControl",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/appControl"
+        },
+        "getEulaStatus": {
+          "inputs": {
+            "target": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "getEulaStatus",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "getEulaStatus",
+          "service": "appControl",
+          "outputs": {
+            "agreement": "str",
+            "url": "str",
+            "target": "str",
+            "version": "str",
+            "settingRequired": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/appControl"
+        },
+        "switchNotifications": {
+          "inputs": {
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "switchNotifications",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "switchNotifications",
+          "service": "appControl",
+          "outputs": {
+            "unsupported": "ApiIdentity[]",
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]",
+            "rejected": "ApiIdentity[]"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/appControl"
+        },
+        "setEulaStatus": {
+          "inputs": {
+            "agreement": "str",
+            "url": "str",
+            "target": "str",
+            "version": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "setEulaStatus",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "setEulaStatus",
+          "service": "appControl",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/appControl"
+        }
+      },
+      "notifications": {
+        "notifyEulaStatus": {
+          "name": "notifyEulaStatus",
+          "version": "1.0"
+        }
+      },
+      "protocols": [
+        "websocket:jsonizer",
+        "xhrpost:jsonizer"
+      ]
+    },
+    "avContent": {
+      "methods": {
+        "getSourceList": {
+          "inputs": {
+            "scheme": "str"
+          },
+          "version": "1.2",
+          "signature": {
+            "input": [],
+            "name": "getSourceList",
+            "version": "1.2",
+            "output": []
+          },
+          "name": "getSourceList",
+          "service": "avContent",
+          "outputs": {
+            "isPlayable": "bool",
+            "isBrowsable": "bool",
+            "playAction": "str",
+            "protocols": "string*",
+            "source": "str",
+            "iconUrl": "str",
+            "outputs": "string*",
+            "meta": "str",
+            "upnpOperationInfo": "UpnpOperationInfo",
+            "title": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getVersions": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getVersions",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getVersions",
+          "service": "avContent",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getMethodTypes": {
+          "inputs": "str",
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getMethodTypes",
+            "version": "1.0",
+            "output": [
+              "string",
+              "string*",
+              "string*"
+            ]
+          },
+          "name": "getMethodTypes",
+          "service": "avContent",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "pausePlayingContent": {
+          "inputs": {
+            "output": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "pausePlayingContent",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "pausePlayingContent",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "startContentBrowsing": {
+          "inputs": {
+            "uri": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "startContentBrowsing",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "startContentBrowsing",
+          "service": "avContent",
+          "outputs": {
+            "status": "str",
+            "errorMessage": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getSupportedPlaybackFunction": {
+          "inputs": {
+            "uri": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getSupportedPlaybackFunction",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getSupportedPlaybackFunction",
+          "service": "avContent",
+          "outputs": {
+            "uri": "str",
+            "functions": "SupportedFunctionInfo[]"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "seekBroadcastStation": {
+          "inputs": {
+            "tuning": "str",
+            "direction": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "seekBroadcastStation",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "seekBroadcastStation",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getContentList": {
+          "inputs": {
+            "stIdx": "int",
+            "cnt": "int",
+            "view": "str",
+            "sort": "str",
+            "target": "str",
+            "uri": "str",
+            "type": "string*"
+          },
+          "version": "1.4",
+          "signature": {
+            "input": [],
+            "name": "getContentList",
+            "version": "1.4",
+            "output": []
+          },
+          "name": "getContentList",
+          "service": "avContent",
+          "outputs": {
+            "artist": "str",
+            "content": "ContentInfo",
+            "parentUri": "str",
+            "uri": "str",
+            "fileSizeByte": "int",
+            "playlistName": "str",
+            "genre": "string*",
+            "contentKind": "str",
+            "albumName": "str",
+            "fileNo": "str",
+            "isProtected": "str",
+            "channelSurfingVisibility": "str",
+            "startDateTime": "str",
+            "isPlayable": "str",
+            "broadcastFreqBand": "str",
+            "title": "str",
+            "remotePlayType": "string*",
+            "audioInfo": "AudioInfo[]",
+            "createdTime": "str",
+            "podcastName": "str",
+            "visibility": "str",
+            "parentalInfo": "ParentalInfo[]",
+            "epgVisibility": "str",
+            "isAlreadyPlayed": "str",
+            "contentType": "str",
+            "userContentFlag": "bool",
+            "dispNum": "str",
+            "tripletStr": "str",
+            "storageUri": "str",
+            "videoInfo": "VideoInfo",
+            "chapterCount": "int",
+            "productID": "str",
+            "subtitleInfo": "SubtitleInfo[]",
+            "broadcastFreq": "int",
+            "originalDispNum": "str",
+            "folderNo": "str",
+            "isBrowsable": "str",
+            "durationMsec": "int",
+            "channelName": "str",
+            "sizeMB": "int",
+            "programNum": "int",
+            "index": "int",
+            "directRemoteNum": "int",
+            "programMediaType": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getSchemeList": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getSchemeList",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getSchemeList",
+          "service": "avContent",
+          "outputs": {
+            "scheme": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "stopPlayingContent": {
+          "inputs": {
+            "keepLastFrame": "bool",
+            "output": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "stopPlayingContent",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "stopPlayingContent",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getCurrentExternalTerminalsStatus": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getCurrentExternalTerminalsStatus",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getCurrentExternalTerminalsStatus",
+          "service": "avContent",
+          "outputs": {
+            "active": "str",
+            "meta": "str",
+            "iconUrl": "str",
+            "connection": "str",
+            "outputs": "string*",
+            "uri": "str",
+            "title": "str",
+            "label": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getBluetoothSettings": {
+          "inputs": {
+            "target": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getBluetoothSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getBluetoothSettings",
+          "service": "avContent",
+          "outputs": {
+            "isAvailable": "bool",
+            "titleTextID": "str",
+            "deviceUIInfo": "str",
+            "candidate": "GeneralSettingsCandidate[]",
+            "currentValue": "str",
+            "target": "str",
+            "type": "str",
+            "title": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "setPlayPreviousContent": {
+          "inputs": {
+            "output": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setPlayPreviousContent",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setPlayPreviousContent",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "setBluetoothSettings": {
+          "inputs": {
+            "settings": "GeneralSettings[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setBluetoothSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setBluetoothSettings",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getAvailablePlaybackFunction": {
+          "inputs": {
+            "output": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getAvailablePlaybackFunction",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getAvailablePlaybackFunction",
+          "service": "avContent",
+          "outputs": {
+            "output": "str",
+            "uri": "str",
+            "functions": "FunctionInfo[]"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "scanPlayingContent": {
+          "inputs": {
+            "output": "str",
+            "direction": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "scanPlayingContent",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "scanPlayingContent",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "setPlayContent": {
+          "inputs": {
+            "output": "str",
+            "repeatType": "str",
+            "resume": "bool",
+            "requester": "str",
+            "keepLastFrame": "bool",
+            "positionSec": "double",
+            "uri": "str",
+            "positionMsec": "int"
+          },
+          "version": "1.2",
+          "signature": {
+            "input": [],
+            "name": "setPlayContent",
+            "version": "1.2",
+            "output": []
+          },
+          "name": "setPlayContent",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getPlayingContentInfo": {
+          "inputs": {
+            "output": "str"
+          },
+          "version": "1.2",
+          "signature": {
+            "input": [],
+            "name": "getPlayingContentInfo",
+            "version": "1.2",
+            "output": []
+          },
+          "name": "getPlayingContentInfo",
+          "service": "avContent",
+          "outputs": {
+            "artist": "str",
+            "sourceLabel": "str",
+            "uri": "str",
+            "positionMsec": "int",
+            "playSpeed": "str",
+            "parentUri": "str",
+            "playlistName": "str",
+            "genre": "string*",
+            "contentKind": "str",
+            "source": "str",
+            "albumName": "str",
+            "bivl_assetId": "str",
+            "fileNo": "str",
+            "startDateTime": "str",
+            "applicationName": "str",
+            "broadcastFreqBand": "str",
+            "totalCount": "int",
+            "chapterIndex": "int",
+            "repeatType": "str",
+            "originalDispNum": "str",
+            "audioInfo": "AudioInfo[]",
+            "playSpeedStep": "int",
+            "podcastName": "str",
+            "bivl_serviceId": "str",
+            "output": "str",
+            "dispNum": "str",
+            "tripletStr": "str",
+            "videoInfo": "VideoInfo",
+            "chapterCount": "int",
+            "positionSec": "double",
+            "broadcastFreq": "int",
+            "stateInfo": "StateInfo",
+            "programTitle": "str",
+            "durationMsec": "int",
+            "channelName": "str",
+            "title": "str",
+            "programNum": "int",
+            "durationSec": "double",
+            "dabInfo": "DabInfo",
+            "mediaType": "str",
+            "index": "int",
+            "bivl_provider": "str",
+            "service": "str",
+            "subtitleIndex": "int"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "setPlaybackModeSettings": {
+          "inputs": {
+            "settings": "GeneralSettings[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setPlaybackModeSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setPlaybackModeSettings",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getPlaybackModeSettings": {
+          "inputs": {
+            "target": "str",
+            "uri": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getPlaybackModeSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getPlaybackModeSettings",
+          "service": "avContent",
+          "outputs": {
+            "isAvailable": "bool",
+            "titleTextID": "str",
+            "deviceUIInfo": "str",
+            "candidate": "PlaybackModeSettingsCandidate[]",
+            "currentValue": "str",
+            "target": "str",
+            "uri": "str",
+            "title": "str",
+            "type": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "getContentCount": {
+          "inputs": {
+            "view": "str",
+            "target": "str",
+            "uri": "str",
+            "type": "string*"
+          },
+          "version": "1.3",
+          "signature": {
+            "input": [],
+            "name": "getContentCount",
+            "version": "1.3",
+            "output": []
+          },
+          "name": "getContentCount",
+          "service": "avContent",
+          "outputs": {
+            "count": "int",
+            "capability": "int"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "switchNotifications": {
+          "inputs": {
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "switchNotifications",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "switchNotifications",
+          "service": "avContent",
+          "outputs": {
+            "unsupported": "ApiIdentity[]",
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]",
+            "rejected": "ApiIdentity[]"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "presetBroadcastStation": {
+          "inputs": {
+            "frequency": "int",
+            "uri": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "presetBroadcastStation",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "presetBroadcastStation",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        },
+        "setPlayNextContent": {
+          "inputs": {
+            "output": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setPlayNextContent",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setPlayNextContent",
+          "service": "avContent",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/avContent"
+        }
+      },
+      "notifications": {
+        "notifyAvailablePlaybackFunction": {
+          "name": "notifyAvailablePlaybackFunction",
+          "version": "1.0"
+        },
+        "notifyPlayingContentInfo": {
+          "name": "notifyPlayingContentInfo",
+          "version": "1.0"
+        }
+      },
+      "protocols": [
+        "websocket:jsonizer",
+        "xhrpost:jsonizer"
+      ]
+    },
+    "audio": {
+      "methods": {
+        "setAudioMute": {
+          "inputs": {
+            "output": "str",
+            "mute": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "setAudioMute",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "setAudioMute",
+          "service": "audio",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "getVersions": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getVersions",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getVersions",
+          "service": "audio",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "getMethodTypes": {
+          "inputs": "str",
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getMethodTypes",
+            "version": "1.0",
+            "output": [
+              "string",
+              "string*",
+              "string*"
+            ]
+          },
+          "name": "getMethodTypes",
+          "service": "audio",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "getSoundSettings": {
+          "inputs": {
+            "target": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "getSoundSettings",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "getSoundSettings",
+          "service": "audio",
+          "outputs": {
+            "isAvailable": "bool",
+            "titleTextID": "str",
+            "deviceUIInfo": "str",
+            "candidate": "GeneralSettingsCandidate[]",
+            "currentValue": "str",
+            "target": "str",
+            "type": "str",
+            "title": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "setSoundSettings": {
+          "inputs": {
+            "settings": "GeneralSettings[]"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "setSoundSettings",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "setSoundSettings",
+          "service": "audio",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "getVolumeInformation": {
+          "inputs": {
+            "output": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "getVolumeInformation",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "getVolumeInformation",
+          "service": "audio",
+          "outputs": {
+            "volume": "int",
+            "step": "int",
+            "maxVolume": "int",
+            "output": "str",
+            "mute": "str",
+            "minVolume": "int"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "switchNotifications": {
+          "inputs": {
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "switchNotifications",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "switchNotifications",
+          "service": "audio",
+          "outputs": {
+            "unsupported": "ApiIdentity[]",
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]",
+            "rejected": "ApiIdentity[]"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "getCustomEqualizerSettings": {
+          "inputs": {
+            "target": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getCustomEqualizerSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getCustomEqualizerSettings",
+          "service": "audio",
+          "outputs": {
+            "isAvailable": "bool",
+            "titleTextID": "str",
+            "deviceUIInfo": "str",
+            "candidate": "GeneralSettingsCandidate[]",
+            "currentValue": "str",
+            "target": "str",
+            "type": "str",
+            "title": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "setAudioVolume": {
+          "inputs": {
+            "volume": "str",
+            "output": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "setAudioVolume",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "setAudioVolume",
+          "service": "audio",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "getWirelessSurroundInfo": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getWirelessSurroundInfo",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getWirelessSurroundInfo",
+          "service": "audio",
+          "outputs": {
+            "status": "str",
+            "mode": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        },
+        "setCustomEqualizerSettings": {
+          "inputs": {
+            "settings": "GeneralSettings[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setCustomEqualizerSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setCustomEqualizerSettings",
+          "service": "audio",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/audio"
+        }
+      },
+      "notifications": {
+        "notifyVolumeInformation": {
+          "name": "notifyVolumeInformation",
+          "version": "1.0"
+        },
+        "notifyWirelessSurroundInfo": {
+          "name": "notifyWirelessSurroundInfo",
+          "version": "1.0"
+        }
+      },
+      "protocols": [
+        "websocket:jsonizer",
+        "xhrpost:jsonizer"
+      ]
+    },
+    "guide": {
+      "methods": {
+        "getServiceProtocols": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getServiceProtocols",
+            "version": "1.0",
+            "output": [
+              "string"
+            ]
+          },
+          "name": "getServiceProtocols",
+          "service": "guide",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/guide"
+        },
+        "getSupportedApiInfo": {
+          "inputs": {
+            "services": "string*"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getSupportedApiInfo",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getSupportedApiInfo",
+          "service": "guide",
+          "outputs": {
+            "notifications": "NotificationInfo[]",
+            "apis": "ApiInfo[]",
+            "service": "str",
+            "protocols": "string*"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/guide"
+        },
+        "getMethodTypes": {
+          "inputs": "str",
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getMethodTypes",
+            "version": "1.0",
+            "output": [
+              "string",
+              "string*",
+              "string*"
+            ]
+          },
+          "name": "getMethodTypes",
+          "service": "guide",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/guide"
+        },
+        "getVersions": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getVersions",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getVersions",
+          "service": "guide",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/guide"
+        },
+        "switchNotifications": {
+          "inputs": {
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "switchNotifications",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "switchNotifications",
+          "service": "guide",
+          "outputs": {
+            "unsupported": "ApiIdentity[]",
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]",
+            "rejected": "ApiIdentity[]"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/guide"
+        }
+      },
+      "notifications": {},
+      "protocols": [
+        "xhrpost:jsonizer",
+        "websocket:jsonizer"
+      ]
+    },
+    "system": {
+      "methods": {
+        "getVersions": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getVersions",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getVersions",
+          "service": "system",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "connectBluetoothDevice": {
+          "inputs": {
+            "bdAddr": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "connectBluetoothDevice",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "connectBluetoothDevice",
+          "service": "system",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getBatteryInfo": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getBatteryInfo",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getBatteryInfo",
+          "service": "system",
+          "outputs": {
+            "status": "str",
+            "statusDisplay": "str",
+            "levelNumer": "int",
+            "batteryID": "str",
+            "levelDenom": "int"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "setPowerSettings": {
+          "inputs": {
+            "settings": "GeneralSettings[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setPowerSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setPowerSettings",
+          "service": "system",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "setClientInfo": {
+          "inputs": {
+            "target": "str",
+            "value": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setClientInfo",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setClientInfo",
+          "service": "system",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getStorageList": {
+          "inputs": {
+            "uri": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "getStorageList",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "getStorageList",
+          "service": "system",
+          "outputs": {
+            "freeCapacityMB": "int",
+            "formatting": "str",
+            "isAvailable": "str",
+            "volumeLabel": "str",
+            "formattable": "str",
+            "uri": "str",
+            "position": "str",
+            "systemAreaCapacityMB": "int",
+            "wholeCapacityMB": "int",
+            "permission": "str",
+            "mounted": "str",
+            "deviceName": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "setSleepTimerSettings": {
+          "inputs": {
+            "settings": "GeneralSettings[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setSleepTimerSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setSleepTimerSettings",
+          "service": "system",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getSystemInformation": {
+          "inputs": null,
+          "version": "1.4",
+          "signature": {
+            "input": [],
+            "name": "getSystemInformation",
+            "version": "1.4",
+            "output": []
+          },
+          "name": "getSystemInformation",
+          "service": "system",
+          "outputs": {
+            "deviceID": "str",
+            "wirelessMacAddr": "str",
+            "bleID": "str",
+            "name": "str",
+            "model": "str",
+            "bdAddr": "str",
+            "language": "str",
+            "generation": "str",
+            "helpUrl": "str",
+            "cid": "str",
+            "esn": "str",
+            "initialPowerOnTime": "str",
+            "version": "str",
+            "ssid": "str",
+            "iconUrl": "str",
+            "product": "str",
+            "duid": "str",
+            "macAddr": "str",
+            "region": "str",
+            "serial": "str",
+            "area": "str",
+            "lastPowerOnTime": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "setDeviceMiscSettings": {
+          "inputs": {
+            "settings": "GeneralSettings[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setDeviceMiscSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setDeviceMiscSettings",
+          "service": "system",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getSettingsTree": {
+          "inputs": {
+            "usage": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "getSettingsTree",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "getSettingsTree",
+          "service": "system",
+          "outputs": {
+            "settings": "SettingsTreeList[]"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getDeviceMiscSettings": {
+          "inputs": {
+            "target": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getDeviceMiscSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getDeviceMiscSettings",
+          "service": "system",
+          "outputs": {
+            "isAvailable": "bool",
+            "titleTextID": "str",
+            "deviceUIInfo": "str",
+            "candidate": "GeneralSettingsCandidate[]",
+            "currentValue": "str",
+            "target": "str",
+            "type": "str",
+            "title": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "setPowerStatus": {
+          "inputs": {
+            "status": "str",
+            "standbyDetail": "str"
+          },
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "setPowerStatus",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "setPowerStatus",
+          "service": "system",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getSWUpdateInfo": {
+          "inputs": {
+            "network": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getSWUpdateInfo",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getSWUpdateInfo",
+          "service": "system",
+          "outputs": {
+            "isUpdatable": "str",
+            "swInfo": "SWInfo[]"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getWuTangInfo": {
+          "inputs": {
+            "target": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getWuTangInfo",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getWuTangInfo",
+          "service": "system",
+          "outputs": {
+            "isAvailable": "bool",
+            "titleTextID": "str",
+            "deviceUIInfo": "str",
+            "candidate": "GeneralSettingsCandidate[]",
+            "currentValue": "str",
+            "target": "str",
+            "type": "str",
+            "title": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getPowerStatus": {
+          "inputs": null,
+          "version": "1.1",
+          "signature": {
+            "input": [],
+            "name": "getPowerStatus",
+            "version": "1.1",
+            "output": []
+          },
+          "name": "getPowerStatus",
+          "service": "system",
+          "outputs": {
+            "status": "str",
+            "standbyDetail": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "setWuTangInfo": {
+          "inputs": {
+            "settings": "GeneralSettings[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "setWuTangInfo",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "setWuTangInfo",
+          "service": "system",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getSystemSupportedFeature": {
+          "inputs": {
+            "name": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getSystemSupportedFeature",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getSystemSupportedFeature",
+          "service": "system",
+          "outputs": {
+            "name": "str",
+            "value": "str",
+            "supported": "bool"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getConciergeData": {
+          "inputs": {
+            "data": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getConciergeData",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getConciergeData",
+          "service": "system",
+          "outputs": {
+            "data": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getSleepTimerSettings": {
+          "inputs": {
+            "target": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getSleepTimerSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getSleepTimerSettings",
+          "service": "system",
+          "outputs": {
+            "isAvailable": "bool",
+            "titleTextID": "str",
+            "deviceUIInfo": "str",
+            "candidate": "GeneralSettingsCandidate[]",
+            "currentValue": "str",
+            "target": "str",
+            "type": "str",
+            "title": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "actSWUpdate": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "actSWUpdate",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "actSWUpdate",
+          "service": "system",
+          "outputs": null,
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "switchNotifications": {
+          "inputs": {
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "switchNotifications",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "switchNotifications",
+          "service": "system",
+          "outputs": {
+            "unsupported": "ApiIdentity[]",
+            "disabled": "ApiIdentity[]",
+            "enabled": "ApiIdentity[]",
+            "rejected": "ApiIdentity[]"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getPowerSettings": {
+          "inputs": {
+            "target": "str"
+          },
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getPowerSettings",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getPowerSettings",
+          "service": "system",
+          "outputs": {
+            "isAvailable": "bool",
+            "titleTextID": "str",
+            "deviceUIInfo": "str",
+            "candidate": "GeneralSettingsCandidate[]",
+            "currentValue": "str",
+            "target": "str",
+            "type": "str",
+            "title": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getMethodTypes": {
+          "inputs": "str",
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getMethodTypes",
+            "version": "1.0",
+            "output": [
+              "string",
+              "string*",
+              "string*"
+            ]
+          },
+          "name": "getMethodTypes",
+          "service": "system",
+          "outputs": "str",
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        },
+        "getInterfaceInformation": {
+          "inputs": null,
+          "version": "1.0",
+          "signature": {
+            "input": [],
+            "name": "getInterfaceInformation",
+            "version": "1.0",
+            "output": []
+          },
+          "name": "getInterfaceInformation",
+          "service": "system",
+          "outputs": {
+            "productName": "str",
+            "interfaceVersion": "str",
+            "modelName": "str",
+            "serverName": "str",
+            "productCategory": "str"
+          },
+          "endpoint": "http://192.168.x.x:54480/sony/system"
+        }
+      },
+      "notifications": {
+        "notifyPowerStatus": {
+          "name": "notifyPowerStatus",
+          "version": "1.0"
+        },
+        "notifySettingsUpdate": {
+          "name": "notifySettingsUpdate",
+          "version": "1.1"
+        },
+        "notifySWUpdateInfo": {
+          "name": "notifySWUpdateInfo",
+          "version": "1.0"
+        },
+        "notifyStorageStatus": {
+          "name": "notifyStorageStatus",
+          "version": "1.1"
+        }
+      },
+      "protocols": [
+        "websocket:jsonizer",
+        "xhrpost:jsonizer"
+      ]
+    }
+  },
+  "interface_info": {
+    "productName": "PersonalAudioSystem",
+    "interfaceVersion": "2.2.0",
+    "modelName": "SRS-ZR5",
+    "serverName": "",
+    "productCategory": "personalAudio"
+  }
+}
