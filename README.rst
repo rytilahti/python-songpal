@@ -25,6 +25,12 @@ The library has been tested for now with following devices:
 
 
 .. NOTE::
+  If no one has contributed a devinfo from your device (see devinfos/ directory),
+  please feel free to contribute one by typing `songpal dump_devinfo <filename>` 
+  and creating a pull request on this repository. 
+  This information can later be useful for extending the support for those devices.
+
+.. NOTE::
   Sony's `Supported devices page <http://vssupport.sony.net/en_ww/device.html>`_ lists devices,
   which will probably also work with this library.
 
