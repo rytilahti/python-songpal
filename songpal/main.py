@@ -571,9 +571,10 @@ async def command(dev, service, method, parameters):
 
 
 @cli.command()
+@click.argument('file', type=click.File('w'), required=False)
 @pass_dev
 @coro
-async def dump_devinfo(dev: Device):
+async def dump_devinfo(dev: Device, file):
     """Dumps information for developers."""
     import attr
     methods = await dev.get_supported_methods()
@@ -581,7 +582,12 @@ async def dump_devinfo(dev: Device):
            'settings': [attr.asdict(x) for x in await dev.get_settings()],
            'sysinfo': attr.asdict(await dev.get_system_info()),
            'interface_info': attr.asdict(await dev.get_interface_information())}
-    print(json.dumps(res))
+    if file:
+        click.echo("Saving to file: %s" % file.name)
+        json.dump(res, file, sort_keys=True, indent=4)
+    else:
+        click.echo(json.dumps(res, sort_keys=True, indent=4))
+
 
 if __name__ == "__main__":
     cli()
