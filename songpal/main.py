@@ -331,19 +331,22 @@ async def schemes(dev: Device):
 
 
 @cli.command()
-@click.option("--network", is_flag=True, default=False)
+@click.option("--internet", is_flag=True, default=True)
 @click.option("--update", is_flag=True, default=False)
 @pass_dev
 @coro
-async def check_update(dev: Device, network: bool, update: bool):
+async def check_update(dev: Device, internet: bool, update: bool):
     """Print out update information."""
-    click.echo("Checking updates from network: %s" % network)
-    update_info = await dev.get_update_info(from_network=network)
+    if internet:
+        print("Checking updates from network")
+    else:
+        print("Not checking updates from internet")
+    update_info = await dev.get_update_info(from_network=internet)
     if not update_info.isUpdatable:
         click.echo("No updates available.")
         return
     if not update:
-        click.echo("Update available: %s" % update_info.swInfo)
+        click.echo("Update available: %s" % update_info)
         click.echo("Use --update to activate update!")
     else:
         click.echo("Activating update, please be seated.")

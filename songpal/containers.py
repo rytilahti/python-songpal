@@ -192,6 +192,8 @@ def convert_bool(x):
 class SoftwareUpdateInfo:
     make = classmethod(make)
 
+    isUpdatable = attr.ib(convert=convert_bool)
+    swInfo = attr.ib()
     estimatedTimeSec = attr.ib()
     target = attr.ib()
     updatableVersion = attr.ib()
