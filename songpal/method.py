@@ -3,13 +3,13 @@ import json
 import logging
 from pprint import pformat as pf
 
-import attr
 import aiohttp
+import attr
 
-from .common import SongpalException, ProtocolType
-from .containers import (PowerChange, VolumeChange, SettingChange,
-                         SoftwareUpdateChange, ContentChange,
-                         NotificationChange)
+from .common import ProtocolType, SongpalException
+from .containers import (
+    ContentChange, NotificationChange, PowerChange, SettingChange,
+    SoftwareUpdateChange, VolumeChange)
 
 _LOGGER = logging.getLogger(__name__)
 

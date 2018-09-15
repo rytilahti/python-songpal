@@ -1,21 +1,22 @@
 import asyncio
+from collections import defaultdict
 import itertools
 import json
 import logging
-from pprint import pprint as pp, pformat as pf
-from typing import List, Dict
+from pprint import pformat as pf
+from pprint import pprint as pp
+from typing import Dict, List
 from urllib.parse import urlparse
-from collections import defaultdict
 
 import requests
 
-from songpal.containers import (
-    Power, PlayInfo, Setting, SettingsEntry, InterfaceInfo, Sysinfo,
-    Storage, SupportedFunctions, Input, Source, SoftwareUpdateInfo,
-    ContentInfo, Volume, Scheme, Content)
-from songpal.service import Service
-from songpal.notification import Notification
 from songpal.common import SongpalException
+from songpal.containers import (
+    Content, ContentInfo, Input, InterfaceInfo, PlayInfo, Power, Scheme,
+    Setting, SettingsEntry, SoftwareUpdateInfo, Source, Storage,
+    SupportedFunctions, Sysinfo, Volume)
+from songpal.notification import Notification
+from songpal.service import Service
 
 _LOGGER = logging.getLogger(__name__)
 

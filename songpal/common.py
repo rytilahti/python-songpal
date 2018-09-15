@@ -1,4 +1,6 @@
 from enum import Enum
+
+
 class SongpalException(Exception):
     """This exception class is used to wrap exceptions coming from this lib.
 

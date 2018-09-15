@@ -1,19 +1,19 @@
 import ast
 import asyncio
-import logging
+from functools import update_wrapper
 import json
-import sys
+import logging
 from pprint import pprint as pp
+import sys
 
 import click
+from lxml import etree, objectify
 import requests
-import upnpclient
-from functools import update_wrapper
-from lxml import objectify, etree
 
 from songpal import Device, SongpalException
-from songpal.containers import Setting
 from songpal.common import ProtocolType
+from songpal.containers import Setting
+import upnpclient
 
 
 def err(msg):

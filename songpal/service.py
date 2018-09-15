@@ -5,9 +5,9 @@ from typing import List
 
 import aiohttp
 
-from songpal.method import Signature, Method
+from songpal.common import ProtocolType, SongpalException
+from songpal.method import Method, Signature
 from songpal.notification import Notification
-from songpal.common import SongpalException, ProtocolType
 
 _LOGGER = logging.getLogger(__name__)
 

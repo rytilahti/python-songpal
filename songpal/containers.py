@@ -1,8 +1,8 @@
 from datetime import timedelta
 import logging
 from typing import List
-import attr
 
+import attr
 
 _LOGGER = logging.getLogger(__name__)
 
