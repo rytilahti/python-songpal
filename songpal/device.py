@@ -12,9 +12,22 @@ import requests
 
 from songpal.common import SongpalException
 from songpal.containers import (
-    Content, ContentInfo, Input, InterfaceInfo, PlayInfo, Power, Scheme,
-    Setting, SettingsEntry, SoftwareUpdateInfo, Source, Storage,
-    SupportedFunctions, Sysinfo, Volume)
+    Content,
+    ContentInfo,
+    Input,
+    InterfaceInfo,
+    PlayInfo,
+    Power,
+    Scheme,
+    Setting,
+    SettingsEntry,
+    SoftwareUpdateInfo,
+    Source,
+    Storage,
+    SupportedFunctions,
+    Sysinfo,
+    Volume,
+)
 from songpal.notification import Notification
 from songpal.service import Service
 
@@ -31,7 +44,7 @@ class Device:
         self.endpoint = endpoint.geturl()
         _LOGGER.debug("Endpoint: %s" % self.endpoint)
 
-        self.guide_endpoint = endpoint._replace(path='/sony/guide').geturl()
+        self.guide_endpoint = endpoint._replace(path="/sony/guide").geturl()
         _LOGGER.debug("Guide endpoint: %s" % self.guide_endpoint)
 
         if force_protocol:
@@ -48,12 +61,15 @@ class Device:
 
     async def create_post_request(self, method, params):
         headers = {"Content-Type": "application/json"}
-        payload = {"method": method,
-                   "params": [params],
-                   "id": next(self.idgen),
-                   "version": "1.0"}
-        req = requests.Request("POST", self.guide_endpoint,
-                               data=json.dumps(payload), headers=headers)
+        payload = {
+            "method": method,
+            "params": [params],
+            "id": next(self.idgen),
+            "version": "1.0",
+        }
+        req = requests.Request(
+            "POST", self.guide_endpoint, data=json.dumps(payload), headers=headers
+        )
         prepreq = req.prepare()
         s = requests.Session()
         try:
@@ -87,11 +103,9 @@ class Device:
             _LOGGER.debug("Got %s services!" % len(services))
 
             for x in services:
-                serv = await Service.from_payload(x,
-                                                  self.endpoint,
-                                                  self.idgen,
-                                                  self.debug,
-                                                  self.force_protocol)
+                serv = await Service.from_payload(
+                    x, self.endpoint, self.idgen, self.debug, self.force_protocol
+                )
                 if serv is not None:
                     self.services[x["service"]] = serv
                 else:
@@ -129,8 +143,9 @@ class Device:
 
     async def get_power_settings(self) -> List[Setting]:
         """Get power settings."""
-        return [Setting(**x)
-                for x in await self.services["system"]["getPowerSettings"]({})]
+        return [
+            Setting(**x) for x in await self.services["system"]["getPowerSettings"]({})
+        ]
 
     async def set_power_settings(self, target: str, value: str) -> None:
         """Set power settings."""
@@ -139,8 +154,9 @@ class Device:
 
     async def get_wutang(self) -> List[Setting]:
         """Get Googlecast settings."""
-        return [Setting(**x)
-                for x in await self.services["system"]["getWuTangInfo"]({})]
+        return [
+            Setting(**x) for x in await self.services["system"]["getWuTangInfo"]({})
+        ]
 
     async def set_wutang(self, target: str, value: str):
         """Set Googlecast settings."""
@@ -176,13 +192,17 @@ class Device:
 
     async def get_sleep_timer_settings(self) -> List[Setting]:
         """Get sleep timer settings."""
-        return [Setting.make(**x) for x
-                in await self.services["system"]["getSleepTimerSettings"]({})]
+        return [
+            Setting.make(**x)
+            for x in await self.services["system"]["getSleepTimerSettings"]({})
+        ]
 
     async def get_storage_list(self) -> List[Storage]:
         """Return information about connected storage devices."""
-        return [Storage.make(**x) for x
-                in await self.services["system"]["getStorageList"]({})]
+        return [
+            Storage.make(**x)
+            for x in await self.services["system"]["getStorageList"]({})
+        ]
 
     async def get_update_info(self, from_network=True) -> SoftwareUpdateInfo:
         """Get information about updates."""
@@ -190,7 +210,7 @@ class Device:
             from_network = "true"
         else:
             from_network = "false"
-        #from_network = ""
+        # from_network = ""
         info = await self.services["system"]["getSWUpdateInfo"](network=from_network)
         return SoftwareUpdateInfo.make(**info)
 
@@ -224,15 +244,23 @@ class Device:
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["audio"]["setCustomEqualizerSettings"](params)
 
-    async def get_supported_playback_functions(self, uri='') -> List[SupportedFunctions]:
+    async def get_supported_playback_functions(
+        self, uri=""
+    ) -> List[SupportedFunctions]:
         """Return list of inputs and their supported functions."""
-        return [SupportedFunctions.make(**x) for x in
-                await self.services["avContent"]["getSupportedPlaybackFunction"](uri=uri)]
+        return [
+            SupportedFunctions.make(**x)
+            for x in await self.services["avContent"]["getSupportedPlaybackFunction"](
+                uri=uri
+            )
+        ]
 
     async def get_playback_settings(self) -> List[Setting]:
         """Get playback settings such as shuffle and repeat."""
-        return [Setting.make(**x) for x
-                in await self.services["avContent"]["getPlaybackModeSettings"]({})]
+        return [
+            Setting.make(**x)
+            for x in await self.services["avContent"]["getPlaybackModeSettings"]({})
+        ]
 
     async def set_playback_settings(self, target, value) -> None:
         """Set playback settings such a shuffle and repeat."""
@@ -241,32 +269,32 @@ class Device:
 
     async def get_schemes(self) -> List[Scheme]:
         """Return supported uri schemes."""
-        return [Scheme.make(**x) for x
-                in await self.services["avContent"]["getSchemeList"]()]
+        return [
+            Scheme.make(**x)
+            for x in await self.services["avContent"]["getSchemeList"]()
+        ]
 
-    async def get_source_list(self, scheme: str = '') -> List[Source]:
+    async def get_source_list(self, scheme: str = "") -> List[Source]:
         """Return available sources for playback?"""
         res = await self.services["avContent"]["getSourceList"](scheme=scheme)
         return [Source.make(**x) for x in res]
 
     async def get_content_count(self, source: str):
         """Return file listing for source."""
-        params = {
-            'uri': source,
-            'type': None,
-            'target': 'all',
-            'view': 'flat'
-        }
+        params = {"uri": source, "type": None, "target": "all", "view": "flat"}
         return ContentInfo.make(
-            **await self.services["avContent"]["getContentCount"](params))
+            **await self.services["avContent"]["getContentCount"](params)
+        )
 
     async def get_contents(self, uri, depth=0):
-        contents = [Content.make(**x) for x
-                    in await self.services["avContent"]["getContentList"](uri=uri)]
+        contents = [
+            Content.make(**x)
+            for x in await self.services["avContent"]["getContentList"](uri=uri)
+        ]
         contentlist = []
 
         for content in contents:
-            if content.contentKind == 'directory' and content.index >= 0:
+            if content.contentKind == "directory" and content.index >= 0:
                 # print("got directory %s" % content.uri)
                 res = await self.get_contents(content.uri, depth + 4)
                 contentlist.extend(res)
@@ -285,7 +313,7 @@ class Device:
             logging.debug("The device seems to have more than one volume setting.")
         return volume_info
 
-    async def get_sound_settings(self, target='') -> List[Setting]:
+    async def get_sound_settings(self, target="") -> List[Setting]:
         """Get the current sound settings.
 
         :param str target: settings target, defaults to all.
@@ -300,7 +328,7 @@ class Device:
 
     async def set_soundfield(self, value):
         """Set soundfield."""
-        return await self.set_sound_settings('soundField', value)
+        return await self.set_sound_settings("soundField", value)
 
     async def set_sound_settings(self, target: str, value: str):
         """Change a sound setting."""
@@ -327,6 +355,7 @@ class Device:
 
     async def listen_notifications(self):
         tasks = []
+
         async def handle_notification(notification):
             if type(notification) not in self.callbacks:
                 _LOGGER.debug("No callbacks for %s", notification)
@@ -335,8 +364,11 @@ class Device:
                 await cb(notification)
 
         for serv in self.services.values():
-            tasks.append(asyncio.ensure_future(
-                serv.listen_all_notifications(handle_notification)))
+            tasks.append(
+                asyncio.ensure_future(
+                    serv.listen_all_notifications(handle_notification)
+                )
+            )
 
         await asyncio.wait(tasks)
 

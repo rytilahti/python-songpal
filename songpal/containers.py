@@ -13,12 +13,13 @@ def make(cls, **kwargs):
     Reports extra keys as well as missing ones.
     Thanks to habnabit for the idea!
     """
-    cls_attrs = {f.name:f for f in attr.fields(cls)}
+    cls_attrs = {f.name: f for f in attr.fields(cls)}
 
     unknown = {k: v for k, v in kwargs.items() if k not in cls_attrs}
     if len(unknown) > 0:
-        _LOGGER.warning("Got unknowns for %s: %s - please create an issue!",
-                      cls.__name__, unknown)
+        _LOGGER.warning(
+            "Got unknowns for %s: %s - please create an issue!", cls.__name__, unknown
+        )
 
     missing = [k for k in cls_attrs if k not in kwargs]
 
@@ -34,20 +35,21 @@ def make(cls, **kwargs):
             else:
                 raise NotImplementedError
         else:
-            _LOGGER.debug("Missing key %s with no default for %s",
-                          m, cls.__name__)
+            _LOGGER.debug("Missing key %s with no default for %s", m, cls.__name__)
             data[m] = None
 
     # initialize and store raw data for debug purposes
     inst = cls(**data)
-    setattr(inst, 'raw', kwargs)
+    setattr(inst, "raw", kwargs)
 
     return inst
 
 
 class ChangeNotification:
     """Dummy base-class for notifications."""
+
     pass
+
 
 @attr.s
 class Scheme:
@@ -116,6 +118,7 @@ class StateInfo:
 class PlayInfo:
     """This is only tested on music files,
     the outs for the method call is much, much larger"""
+
     make = classmethod(make)
 
     stateInfo = attr.ib(convert=lambda x: StateInfo.make(**x))
@@ -154,10 +157,12 @@ class PlayInfo:
             return timedelta(milliseconds=self.positionMsec)
 
     def __str__(self):
-        return "%s (%s/%s), state %s" % (self.title,
-                                         self.position,
-                                         self.duration,
-                                         self.state)
+        return "%s (%s/%s), state %s" % (
+            self.title,
+            self.position,
+            self.duration,
+            self.state,
+        )
 
 
 @attr.s
@@ -185,7 +190,7 @@ class Sysinfo:
 
 
 def convert_bool(x):
-    return x == 'true'
+    return x == "true"
 
 
 @attr.s
@@ -244,7 +249,7 @@ class Volume:
 
     @property
     def is_muted(self):
-        return self.mute == 'on'
+        return self.mute == "on"
 
     def __str__(self):
         s = "Volume: %s/%s" % (self.volume, self.maxVolume)
@@ -257,13 +262,19 @@ class Volume:
         if activate:
             enabled = "on"
 
-        return await self.services["audio"]["setAudioMute"](mute=enabled, output=self.output)
+        return await self.services["audio"]["setAudioMute"](
+            mute=enabled, output=self.output
+        )
 
     async def toggle_mute(self):
-        return await self.services["audio"]["setAudioMute"](mute="toggle", output=self.output)
+        return await self.services["audio"]["setAudioMute"](
+            mute="toggle", output=self.output
+        )
 
     async def set_volume(self, volume):
-        return await self.services["audio"]["setAudioVolume"](volume=str(volume), output=self.output)
+        return await self.services["audio"]["setAudioVolume"](
+            volume=str(volume), output=self.output
+        )
 
 
 @attr.s
@@ -306,7 +317,7 @@ class Input:
     uri = attr.ib()
 
     services = attr.ib(repr=False)
-    active = attr.ib(convert=lambda x: True if x == 'active' else False)
+    active = attr.ib(convert=lambda x: True if x == "active" else False)
     label = attr.ib()
     iconUrl = attr.ib()
     outputs = attr.ib(default=attr.Factory(list))
@@ -338,7 +349,7 @@ class Storage:
     formatting = attr.ib()
 
     isAvailable = attr.ib(convert=convert_bool)
-    mounted = attr.ib(convert=lambda x: True if x == 'mounted' else False)
+    mounted = attr.ib(convert=lambda x: True if x == "mounted" else False)
     permission = attr.ib()
     position = attr.ib()
 
@@ -347,11 +358,10 @@ class Storage:
             self.deviceName,
             self.uri,
             self.position,
-
             self.freeCapacityMB,
             self.wholeCapacityMB,
             self.isAvailable,
-            self.mounted
+            self.mounted,
         )
 
 
@@ -384,14 +394,16 @@ class SettingsEntry:
 
     async def get_value(self, dev):
         """Returns current value for this setting."""
-        res = await dev.get_setting(self.apiMapping.service,
-                                    self.apiMapping.getApi['name'],
-                                    self.apiMapping.target)
+        res = await dev.get_setting(
+            self.apiMapping.service,
+            self.apiMapping.getApi["name"],
+            self.apiMapping.target,
+        )
         return Setting.make(**res.pop())
 
     @property
     def is_directory(self):
-        return self.type == 'directory'
+        return self.type == "directory"
 
     apiMapping = attr.ib(convert=convert_if_available_mapping, repr=False)
     settings = attr.ib(convert=convert_if_available)
@@ -407,6 +419,7 @@ class SettingsEntry:
 @attr.s
 class SettingCandidate:
     """Representation of a setting candidate aka. option."""
+
     make = classmethod(make)
 
     title = attr.ib()
@@ -422,6 +435,7 @@ class SettingCandidate:
 class Setting:
     """Representation of a setting.
     Use candidate to access the potential values"""
+
     make = classmethod(make)
 
     def create_candidates(x):
@@ -460,13 +474,17 @@ class SettingChange(ChangeNotification):
         self.target = self.apiMappingUpdate["target"]
 
     def __str__(self):
-        return "<SettingChange %s (%s): %s>" % (self.title,
-                                                self.target,
-                                                self.currentValue)
+        return "<SettingChange %s (%s): %s>" % (
+            self.title,
+            self.target,
+            self.currentValue,
+        )
+
 
 @attr.s
 class ContentChange(ChangeNotification):
     """This gets sent as a notification when the source changes."""
+
     make = classmethod(make)
 
     contentKind = attr.ib()
@@ -477,12 +495,13 @@ class ContentChange(ChangeNotification):
 
     @property
     def is_input(self):
-        return self.contentKind == 'input'
+        return self.contentKind == "input"
 
 
 @attr.s
 class NotificationChange(ChangeNotification):
     """Container for storing information about state of Notifications."""
+
     make = classmethod(make)
 
     enabled = attr.ib(convert=lambda x: [x["name"] for x in x])
@@ -491,5 +510,5 @@ class NotificationChange(ChangeNotification):
     def __str__(self):
         return "<NotificationChange enabled: %s disabled: %s>" % (
             ",".join(self.enabled),
-            ",".join(self.disabled)
+            ",".join(self.disabled),
         )
