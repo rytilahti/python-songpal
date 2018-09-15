@@ -1,24 +1,26 @@
+"""Data containers for Songpal."""
 from datetime import timedelta
 import logging
-from typing import List
-import attr
+from typing import List  # noqa: F401
 
+import attr
 
 _LOGGER = logging.getLogger(__name__)
 
 
 def make(cls, **kwargs):
-    """A wrapper for constructing containers.
+    """Create a container.
 
     Reports extra keys as well as missing ones.
     Thanks to habnabit for the idea!
     """
-    cls_attrs = {f.name:f for f in attr.fields(cls)}
+    cls_attrs = {f.name: f for f in attr.fields(cls)}
 
     unknown = {k: v for k, v in kwargs.items() if k not in cls_attrs}
     if len(unknown) > 0:
-        _LOGGER.warning("Got unknowns for %s: %s - please create an issue!",
-                      cls.__name__, unknown)
+        _LOGGER.warning(
+            "Got unknowns for %s: %s - please create an issue!", cls.__name__, unknown
+        )
 
     missing = [k for k in cls_attrs if k not in kwargs]
 
@@ -34,23 +36,24 @@ def make(cls, **kwargs):
             else:
                 raise NotImplementedError
         else:
-            _LOGGER.debug("Missing key %s with no default for %s",
-                          m, cls.__name__)
+            _LOGGER.debug("Missing key %s with no default for %s", m, cls.__name__)
             data[m] = None
 
     # initialize and store raw data for debug purposes
     inst = cls(**data)
-    setattr(inst, 'raw', kwargs)
+    setattr(inst, "raw", kwargs)
 
     return inst
 
 
-class ChangeNotification:
-    """Dummy base-class for notifications."""
-    pass
+def convert_to_bool(x):
+    """Convert string 'true' to bool."""
+    return x == "true"
+
 
 @attr.s
 class Scheme:
+    """Input scheme container."""
     make = classmethod(make)
 
     scheme = attr.ib()
@@ -58,6 +61,7 @@ class Scheme:
 
 @attr.s
 class PlaybackFunction:
+    """Playback function."""
     make = classmethod(make)
 
     function = attr.ib()
@@ -65,14 +69,19 @@ class PlaybackFunction:
 
 @attr.s
 class SupportedFunctions:
+    """Container for supported playback functions."""
     make = classmethod(make)
 
+    def _convert_playback_functions(x):
+        return [PlaybackFunction.make(**y) for y in x]
+
     uri = attr.ib()
-    functions = attr.ib(convert=lambda x: [PlaybackFunction.make(y) for y in x])
+    functions = attr.ib(converter=_convert_playback_functions)
 
 
 @attr.s
 class ContentInfo:
+    """Information about available contents."""
     make = classmethod(make)
 
     capability = attr.ib()
@@ -81,6 +90,7 @@ class ContentInfo:
 
 @attr.s
 class Content:
+    """Content infrormation."""
     make = classmethod(make)
 
     isBrowsable = attr.ib()
@@ -106,6 +116,7 @@ class Content:
 
 @attr.s
 class StateInfo:
+    """Playback state."""
     make = classmethod(make)
 
     state = attr.ib()
@@ -114,11 +125,17 @@ class StateInfo:
 
 @attr.s
 class PlayInfo:
-    """This is only tested on music files,
-    the outs for the method call is much, much larger"""
+    """Information about played content.
+
+    This is only tested on music files,
+    the outs for the method call is much, much larger
+    """
     make = classmethod(make)
 
-    stateInfo = attr.ib(convert=lambda x: StateInfo.make(**x))
+    def _make(x):
+        return StateInfo.make(**x)
+
+    stateInfo = attr.ib(converter=_make)
     contentKind = attr.ib()
     uri = attr.ib()
     output = attr.ib()
@@ -137,31 +154,38 @@ class PlayInfo:
 
     @property
     def is_idle(self):
+        """Return if content is being played."""
         return self.title is None
 
     @property
     def state(self):
+        """Return playback state."""
         return self.stateInfo.state
 
     @property
     def duration(self):
+        """Return total media duration."""
         if self.durationMsec is not None:
             return timedelta(milliseconds=self.durationMsec)
 
     @property
     def position(self):
+        """Return current media position."""
         if self.positionMsec is not None:
             return timedelta(milliseconds=self.positionMsec)
 
     def __str__(self):
-        return "%s (%s/%s), state %s" % (self.title,
-                                         self.position,
-                                         self.duration,
-                                         self.state)
+        return "%s (%s/%s), state %s" % (
+            self.title,
+            self.position,
+            self.duration,
+            self.state,
+        )
 
 
 @attr.s
 class InterfaceInfo:
+    """Information about the product."""
     make = classmethod(make)
 
     productName = attr.ib()
@@ -173,6 +197,7 @@ class InterfaceInfo:
 
 @attr.s
 class Sysinfo:
+    """System information."""
     make = classmethod(make)
 
     bdAddr = attr.ib()
@@ -184,36 +209,22 @@ class Sysinfo:
     bleID = attr.ib()
 
 
-def convert_bool(x):
-    return x == 'true'
-
-
 @attr.s
 class SoftwareUpdateInfo:
+    """Software update information."""
     make = classmethod(make)
 
-    isUpdatable = attr.ib(convert=convert_bool)
+    isUpdatable = attr.ib(converter=convert_to_bool)
     swInfo = attr.ib()
     estimatedTimeSec = attr.ib()
     target = attr.ib()
     updatableVersion = attr.ib()
-    forcedUpdate = attr.ib(convert=convert_bool)
-
-
-@attr.s
-class SoftwareUpdateChange(ChangeNotification):
-    make = classmethod(make)
-
-    def convert_if_available(x):
-        if x is not None:
-            return SoftwareUpdateInfo.make(**x[0])
-
-    isUpdatable = attr.ib(convert=convert_bool)
-    swInfo = attr.ib(convert=convert_if_available)
+    forcedUpdate = attr.ib(converter=convert_to_bool)
 
 
 @attr.s
 class Source:
+    """Source information."""
     make = classmethod(make)
 
     title = attr.ib()
@@ -227,11 +238,15 @@ class Source:
     outputs = attr.ib()
 
     def __str__(self):
-        return "%s (%s)" % (self.title, self.source)
+        s = "%s (%s)" % (self.title, self.source)
+        if self.outputs is not None:
+            s += " - outs: %s" % self.outputs
+        return s
 
 
 @attr.s
 class Volume:
+    """Volume information."""
     make = classmethod(make)
 
     services = attr.ib(repr=False)
@@ -244,7 +259,8 @@ class Volume:
 
     @property
     def is_muted(self):
-        return self.mute == 'on'
+        """Return True if volume is muted."""
+        return self.mute == "on"
 
     def __str__(self):
         s = "Volume: %s/%s" % (self.volume, self.maxVolume)
@@ -252,33 +268,41 @@ class Volume:
             s += " (muted)"
         return s
 
-    async def set_mute(self, activate):
+    async def set_mute(self, activate: bool):
+        """Set mute on/off."""
         enabled = "off"
         if activate:
             enabled = "on"
 
-        return await self.services["audio"]["setAudioMute"](mute=enabled, output=self.output)
+        return await self.services["audio"]["setAudioMute"](
+            mute=enabled, output=self.output
+        )
 
     async def toggle_mute(self):
-        return await self.services["audio"]["setAudioMute"](mute="toggle", output=self.output)
+        """Toggle mute."""
+        return await self.services["audio"]["setAudioMute"](
+            mute="toggle", output=self.output
+        )
 
-    async def set_volume(self, volume):
-        return await self.services["audio"]["setAudioVolume"](volume=str(volume), output=self.output)
-
-
-@attr.s
-class VolumeChange(ChangeNotification):
-    make = classmethod(make)
-
-    mute = attr.ib(convert=lambda x: True if x == "on" else False)
-    volume = attr.ib()
+    async def set_volume(self, volume: int):
+        """Set volume level."""
+        return await self.services["audio"]["setAudioVolume"](
+            volume=str(volume), output=self.output
+        )
 
 
 @attr.s
 class Power:
+    """Information about power status.
+
+    This implements __bool__() for easy checking if the device is turned on or not.
+    """
     make = classmethod(make)
 
-    status = attr.ib(convert=lambda x: True if x == "active" else False)
+    def _make(x):
+        return True if x == "active" else False
+
+    status = attr.ib(converter=_make)
     standbyDetail = attr.ib()
 
     def __bool__(self):
@@ -292,13 +316,12 @@ class Power:
 
 
 @attr.s
-class PowerChange(ChangeNotification, Power):
-    pass
-
-
-@attr.s
 class Input:
+    """Input information."""
     make = classmethod(make)
+
+    def _convert_is_active(x):
+        return True if x == "active" else False
 
     meta = attr.ib()
     connection = attr.ib()
@@ -306,7 +329,7 @@ class Input:
     uri = attr.ib()
 
     services = attr.ib(repr=False)
-    active = attr.ib(convert=lambda x: True if x == 'active' else False)
+    active = attr.ib(converter=_convert_is_active)
     label = attr.ib()
     iconUrl = attr.ib()
     outputs = attr.ib(default=attr.Factory(list))
@@ -324,7 +347,11 @@ class Input:
 
 @attr.s
 class Storage:
+    """Storage information."""
     make = classmethod(make)
+
+    def _make(x):
+        return True if x == "mounted" else False
 
     deviceName = attr.ib()
     uri = attr.ib()
@@ -337,8 +364,8 @@ class Storage:
     formattable = attr.ib()
     formatting = attr.ib()
 
-    isAvailable = attr.ib(convert=convert_bool)
-    mounted = attr.ib(convert=lambda x: True if x == 'mounted' else False)
+    isAvailable = attr.ib(converter=convert_to_bool)
+    mounted = attr.ib(converter=_make)
     permission = attr.ib()
     position = attr.ib()
 
@@ -347,16 +374,16 @@ class Storage:
             self.deviceName,
             self.uri,
             self.position,
-
             self.freeCapacityMB,
             self.wholeCapacityMB,
             self.isAvailable,
-            self.mounted
+            self.mounted,
         )
 
 
 @attr.s
 class ApiMapping:
+    """API mapping for some setting setters/getters."""
     make = classmethod(make)
 
     service = attr.ib()
@@ -369,32 +396,36 @@ class ApiMapping:
 
 @attr.s
 class SettingsEntry:
+    """Presentation of a single setting."""
     make = classmethod(make)
 
     isAvailable = attr.ib()
     type = attr.ib()
 
-    def convert_if_available(x):
+    def _convert_if_available(x):
         if x is not None:
             return [SettingsEntry.make(**y) for y in x]
 
-    def convert_if_available_mapping(x):
+    def _convert_if_available_mapping(x):
         if x is not None:
             return ApiMapping.make(**x)
 
     async def get_value(self, dev):
-        """Returns current value for this setting."""
-        res = await dev.get_setting(self.apiMapping.service,
-                                    self.apiMapping.getApi['name'],
-                                    self.apiMapping.target)
+        """Return current value for this setting."""
+        res = await dev.get_setting(
+            self.apiMapping.service,
+            self.apiMapping.getApi["name"],
+            self.apiMapping.target,
+        )
         return Setting.make(**res.pop())
 
     @property
     def is_directory(self):
-        return self.type == 'directory'
+        """Return True if the setting is a directory."""
+        return self.type == "directory"
 
-    apiMapping = attr.ib(convert=convert_if_available_mapping, repr=False)
-    settings = attr.ib(convert=convert_if_available)
+    apiMapping = attr.ib(converter=_convert_if_available_mapping, repr=False)
+    settings = attr.ib(converter=_convert_if_available)
     title = attr.ib()
     titleTextID = attr.ib()
     usage = attr.ib()
@@ -421,10 +452,12 @@ class SettingCandidate:
 @attr.s
 class Setting:
     """Representation of a setting.
-    Use candidate to access the potential values"""
+
+    Use `candidate` to access the potential values.
+    """
     make = classmethod(make)
 
-    def create_candidates(x):
+    def _create_candidates(x):
         if x is not None:
             return [SettingCandidate.make(**y) for y in x]
 
@@ -433,63 +466,9 @@ class Setting:
     currentValue = attr.ib()
     target = attr.ib()
     type = attr.ib()
-    candidate = attr.ib(convert=create_candidates)  # type: List[SettingCandidate]
+    candidate = attr.ib(converter=_create_candidates)  # type: List[SettingCandidate]
     isAvailable = attr.ib()
     title = attr.ib()
     titleTextID = attr.ib()
     deviceUIInfo = attr.ib()
     uri = attr.ib()
-
-
-@attr.s
-class SettingChange(ChangeNotification):
-    make = classmethod(make)
-
-    titleTextID = attr.ib()
-    guideTextID = attr.ib()
-    isAvailable = attr.ib()
-    type = attr.ib()
-    title = attr.ib()
-    apiMappingUpdate = attr.ib()
-
-    target = attr.ib()
-    currentValue = attr.ib()
-
-    def __attrs_post_init__(self):
-        self.currentValue = self.apiMappingUpdate["currentValue"]
-        self.target = self.apiMappingUpdate["target"]
-
-    def __str__(self):
-        return "<SettingChange %s (%s): %s>" % (self.title,
-                                                self.target,
-                                                self.currentValue)
-
-@attr.s
-class ContentChange(ChangeNotification):
-    """This gets sent as a notification when the source changes."""
-    make = classmethod(make)
-
-    contentKind = attr.ib()
-    service = attr.ib()
-    source = attr.ib()
-    uri = attr.ib()
-    applicationName = attr.ib()
-
-    @property
-    def is_input(self):
-        return self.contentKind == 'input'
-
-
-@attr.s
-class NotificationChange(ChangeNotification):
-    """Container for storing information about state of Notifications."""
-    make = classmethod(make)
-
-    enabled = attr.ib(convert=lambda x: [x["name"] for x in x])
-    disabled = attr.ib(convert=lambda x: [x["name"] for x in x])
-
-    def __str__(self):
-        return "<NotificationChange enabled: %s disabled: %s>" % (
-            ",".join(self.enabled),
-            ",".join(self.disabled)
-        )

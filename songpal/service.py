@@ -1,22 +1,23 @@
-import asyncio
-import json
+"""Service presentation for a single endpoint (e.g. audio or avContent)."""
 import logging
 from typing import List
 
 import aiohttp
 
-from songpal.method import Signature, Method
+from songpal.common import ProtocolType, SongpalException
+from songpal.method import Method, Signature
 from songpal.notification import Notification
-from songpal.common import SongpalException, ProtocolType
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class Service:
     """Service presents an endpoint providing a set of methods."""
-    def __init__(self, service,
-                 methods, notifications, protocols,
-                 idgen, debug=0):
+    def __init__(self, service, methods, notifications, protocols, idgen, debug=0):
+        """Service constructor.
+
+        Do not call this directly, but use :func:from_payload:
+        """
         self.service = service
         self._methods = methods
         self.idgen = idgen
@@ -27,11 +28,14 @@ class Service:
 
     @staticmethod
     async def fetch_signatures(endpoint, version, protocol, idgen):
+        """Request available methods for the service."""
         async with aiohttp.ClientSession() as session:
-            req = {"method": "getMethodTypes",
-                   "params": [version],
-                   "version": "1.0",
-                   "id": next(idgen)}
+            req = {
+                "method": "getMethodTypes",
+                "params": [version],
+                "version": "1.0",
+                "id": next(idgen),
+            }
 
             if protocol == ProtocolType.WebSocket:
                 async with session.ws_connect(endpoint, timeout=2) as s:
@@ -46,115 +50,145 @@ class Service:
 
     @classmethod
     async def from_payload(cls, payload, endpoint, idgen, debug, force_protocol=None):
+        """Create Service object from a payload."""
         service = payload["service"]
         methods = {}
 
-        if 'protocols' not in payload:
-            raise SongpalException("Unable to find protocols from payload: %s" % payload)
+        if "protocols" not in payload:
+            raise SongpalException(
+                "Unable to find protocols from payload: %s" % payload
+            )
 
-        protocols = payload['protocols']
+        protocols = payload["protocols"]
         _LOGGER.debug("Available protocols for %s: %s", service, protocols)
         if force_protocol and force_protocol.value in protocols:
             protocol = force_protocol
-        elif 'websocket:jsonizer' in protocols:
+        elif "websocket:jsonizer" in protocols:
             protocol = ProtocolType.WebSocket
-        elif 'xhrpost:jsonizer' in protocols:
+        elif "xhrpost:jsonizer" in protocols:
             protocol = ProtocolType.XHRPost
         else:
-            raise SongpalException("No known protocols for %s, got: %s" % (
-                service, protocols))
+            raise SongpalException(
+                "No known protocols for %s, got: %s" % (service, protocols)
+            )
         _LOGGER.debug("Using protocol: %s" % protocol)
 
         versions = set()
-        for method in payload['apis']:
+        for method in payload["apis"]:
             # TODO we take only the first version here per method
             # should we prefer the newest version instead of that?
             if len(method["versions"]) == 0:
                 _LOGGER.warning("No versions found for %s", method)
             elif len(method["versions"]) > 1:
-                _LOGGER.warning("More than on version for %s, "
-                                "using the first one", method)
+                _LOGGER.warning(
+                    "More than on version for %s, " "using the first one", method
+                )
             versions.add(method["versions"][0]["version"])
 
         service_endpoint = "%s/%s" % (endpoint, service)
 
         signatures = {}
         for version in versions:
-            sigs = await cls.fetch_signatures(service_endpoint,
-                                              version,
-                                              protocol,
-                                              idgen)
+            sigs = await cls.fetch_signatures(
+                service_endpoint, version, protocol, idgen
+            )
 
             if debug > 1:
                 _LOGGER.debug("Signatures: %s", sigs)
-            if 'error' in sigs:
-                _LOGGER.error("Got error when fetching sigs: %s", sigs['error'])
+            if "error" in sigs:
+                _LOGGER.error("Got error when fetching sigs: %s", sigs["error"])
                 return None
 
             for sig in sigs["results"]:
                 signatures[sig[0]] = Signature(*sig)
 
-
         for method in payload["apis"]:
+            _LOGGER.info("method: %s" % method)
             name = method["name"]
             if name in methods:
-                raise SongpalException("Got duplicate %s for %s" % (name,
-                                                                    endpoint))
+                raise SongpalException("Got duplicate %s for %s" % (name, endpoint))
             if name not in signatures:
-                _LOGGER.debug("Got no signature for %s on %s" % (name,
-                                                                 endpoint))
+                _LOGGER.debug("Got no signature for %s on %s" % (name, endpoint))
                 continue
-            methods[name] = Method(service, service_endpoint,
-                                   method, signatures[name],
-                                   protocol,
-                                   idgen, debug)
+            methods[name] = Method(
+                service,
+                service_endpoint,
+                method,
+                signatures[name],
+                protocol,
+                idgen,
+                debug,
+            )
 
         notifications = []
         # TODO switchnotifications check is broken?
         if "notifications" in payload and "switchNotifications" in methods:
-            notifications = [Notification(service_endpoint,
-                                          methods["switchNotifications"],
-                                          notification)
-                             for notification in payload["notifications"]]
+            notifications = [
+                Notification(
+                    service_endpoint, methods["switchNotifications"], notification
+                )
+                for notification in payload["notifications"]
+            ]
 
         return cls(service, methods, notifications, protocols, idgen)
 
     def __getitem__(self, item) -> Method:
+        """Return a method for the given name.
+
+        Example:
+            if "setPowerStatus" in system_service:
+                system_service["setPowerStatus"](status="off")
+
+        Raises SongpalException if the method does not exist.
+
+        """
         if item not in self._methods:
-            raise SongpalException("%s does not contain method %s" % (self,
-                                                                      item))
+            raise SongpalException("%s does not contain method %s" % (self, item))
         return self._methods[item]
 
     @property
     def methods(self) -> List[Method]:
+        """List of methods implemented in this service."""
         return self._methods.values()
 
     @property
     def protocols(self):
+        """Protocols supported by this service."""
         return self._protocols
 
     @property
     def notifications(self) -> List[Notification]:
+        """List of notifications exposed by this service."""
         return self._notifications
 
     async def listen_all_notifications(self, callback):
-        """A helper to listen for all notifications by this service."""
+        """Enable all exposed notifications.
+
+        :param callback: Callback to call when a notification is received.
+        """
         everything = [noti.asdict() for noti in self.notifications]
         if len(everything) > 0:
-            await self._methods["switchNotifications"]({"enabled": everything},
-                                                       _consumer=callback)
+            await self._methods["switchNotifications"](
+                {"enabled": everything}, _consumer=callback
+            )
         else:
             _LOGGER.debug("No notifications available for %s", self.service)
 
     def asdict(self):
-        return {'methods': {m.name: m.asdict() for m in self.methods},
-                'protocols': self.protocols,
-                'notifications': {n.name: n.asdict()
-                                  for n in self.notifications}}
+        """Return dict presentation of this service.
+
+        Useful for dumping the device information into JSON.
+        """
+        return {
+            "methods": {m.name: m.asdict() for m in self.methods},
+            "protocols": self.protocols,
+            "notifications": {n.name: n.asdict() for n in self.notifications},
+        }
 
     def __repr__(self):
         return "<Service %s: %s methods, %s notifications, protocols: %s" % (
             self.service,
             len(self.methods),
             len(self.notifications),
-            self.protocols)
+            self.protocols,
+        )

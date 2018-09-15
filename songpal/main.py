@@ -1,26 +1,31 @@
+"""Click-based interface for Songpal."""
 import ast
 import asyncio
-import logging
+from functools import update_wrapper
 import json
+import logging
 import sys
-from pprint import pprint as pp
 
 import click
+from lxml import etree, objectify
 import requests
-import upnpclient
-from functools import update_wrapper
-from lxml import objectify, etree
 
 from songpal import Device, SongpalException
-from songpal.containers import Setting
 from songpal.common import ProtocolType
+from songpal.containers import Setting
+import upnpclient
 
 
 def err(msg):
+    """Pretty-print an error."""
     click.echo(click.style(msg, fg="red", bold=True))
 
+
 def coro(f):
-    """https://github.com/pallets/click/issues/85#issuecomment-43378930"""
+    """Run a coroutine and handle possible errors for the click cli.
+
+    Source https://github.com/pallets/click/issues/85#issuecomment-43378930
+    """
     f = asyncio.coroutine(f)
 
     def wrapper(*args, **kwargs):
@@ -35,12 +40,11 @@ def coro(f):
 
 
 async def traverse_settings(dev, module, settings, depth=0):
-    """Goes through all """
+    """Print all available settings."""
     for setting in settings:
         if setting.is_directory:
-            print("%s%s (%s)" % (depth * ' ', setting.title, module))
-            return await traverse_settings(dev, module,
-                                           setting.settings, depth + 2)
+            print("%s%s (%s)" % (depth * " ", setting.title, module))
+            return await traverse_settings(dev, module, setting.settings, depth + 2)
         else:
             print_settings([await setting.get_value(dev)], depth=depth)
 
@@ -52,21 +56,26 @@ def print_settings(settings, depth=0):
         settings = [settings]
     for setting in settings:
         cur = setting.currentValue
-        print("%s* %s (%s, value: %s, type: %s)" % (' ' * depth,
-                                                    setting.title,
-                                                    setting.target,
-                                                    click.style(cur,
-                                                                bold=True),
-                                                    setting.type))
+        print(
+            "%s* %s (%s, value: %s, type: %s)"
+            % (
+                " " * depth,
+                setting.title,
+                setting.target,
+                click.style(cur, bold=True),
+                setting.type,
+            )
+        )
         for opt in setting.candidate:
             if not opt.isAvailable:
                 logging.debug("Unavailable setting %s", opt)
                 continue
             click.echo(
-                click.style("%s  - %s (%s)" % (' ' * depth,
-                                               opt.title,
-                                               opt.value),
-                            bold=opt.value == cur))
+                click.style(
+                    "%s  - %s (%s)" % (" " * depth, opt.title, opt.value),
+                    bold=opt.value == cur,
+                )
+            )
 
 
 pass_dev = click.make_pass_decorator(Device)
@@ -74,13 +83,14 @@ pass_dev = click.make_pass_decorator(Device)
 
 @click.group(invoke_without_command=False)
 @click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=False)
-@click.option('-d', '--debug', default=False, count=True)
-@click.option('--post', is_flag=True, required=None)
-@click.option('--websocket', is_flag=True, required=None)
+@click.option("-d", "--debug", default=False, count=True)
+@click.option("--post", is_flag=True, required=False)
+@click.option("--websocket", is_flag=True, required=False)
 @click.pass_context
 @click.version_option()
 @coro
 async def cli(ctx, endpoint, debug, websocket, post):
+    """Click entrypoint."""
     lvl = logging.INFO
     if debug:
         lvl = logging.DEBUG
@@ -88,7 +98,7 @@ async def cli(ctx, endpoint, debug, websocket, post):
     logging.basicConfig(level=lvl)
 
     if ctx.invoked_subcommand == "discover":
-        ctx.obj = {'debug': debug}
+        ctx.obj = {"debug": debug}
         return
 
     if endpoint is None:
@@ -112,7 +122,6 @@ async def cli(ctx, endpoint, debug, websocket, post):
         err("Unable to get supported methods: %s" % ex)
         sys.exit(-1)
     ctx.obj = x
-
 
     # this causes RuntimeError: This event loop is already running
     # if ctx.invoked_subcommand is None:
@@ -157,7 +166,7 @@ async def discover(ctx):
     click.echo("Discovering for %s seconds" % TIMEOUT)
     devices = upnpclient.discover(TIMEOUT)
     for dev in devices:
-        if 'ScalarWebAPI' in dev.service_map:
+        if "ScalarWebAPI" in dev.service_map:
             if debug:
                 print(etree.tostring(dev._root_xml, pretty_print=True).decode())
             model = dev.model_name
@@ -201,6 +210,7 @@ async def power(dev: Device, cmd, target, value):
                 err("The device is already %s." % cmd)
             else:
                 raise ex
+
     if cmd == "on" or cmd == "off":
         click.echo(await try_turn(cmd))
     elif cmd == "settings":
@@ -258,7 +268,7 @@ async def source(dev: Device, scheme):
     """
     if scheme is None:
         schemes = await dev.get_schemes()
-        schemes = [scheme.scheme for scheme in schemes]
+        schemes = [scheme.scheme for scheme in schemes]  # noqa: T484
     else:
         schemes = [scheme]
 
@@ -270,15 +280,17 @@ async def source(dev: Device, scheme):
             continue
         for src in sources:
             click.echo(src)
-            try:
-                click.echo("  %s" % await dev.get_content_count(src.source))
-            except SongpalException as ex:
-                click.echo("  %s" % ex)
-            try:
-                for content in await dev.get_contents(src.source):
-                    click.echo("   %s\n\t%s" % (content.title, content.uri))
-            except SongpalException as ex:
-                click.echo("  %s" % ex)
+            if src.isBrowsable:
+                try:
+                    count = await dev.get_content_count(src.source)
+                    if count.count > 0:
+                        click.echo("  %s" % count)
+                        for content in await dev.get_contents(src.source):
+                            click.echo("   %s\n\t%s" % (content.title, content.uri))
+                    else:
+                        click.echo("  No content to list.")
+                except SongpalException as ex:
+                    click.echo("  %s" % ex)
 
 
 @cli.command()
@@ -418,6 +430,7 @@ async def sound(dev: Device, target, value):
 
     print_settings(await dev.get_sound_settings())
 
+
 @cli.command()
 @pass_dev
 @click.argument("soundfield", required=False)
@@ -426,9 +439,10 @@ async def soundfield(dev: Device, soundfield: str):
     """Get or set sound field."""
     if soundfield is not None:
         await dev.set_sound_settings("soundField", soundfield)
-    soundfields = await dev.get_sound_settings('soundField')
+    soundfields = await dev.get_sound_settings("soundField")
     print(await dev.get_soundfield())
     print_settings(soundfields)
+
 
 @cli.command()
 @pass_dev
@@ -450,7 +464,7 @@ async def playback(dev: Device, cmd, target, value):
         dev.set_playback_settings(target, value)
     if cmd == "support":
         click.echo("Supported playback functions:")
-        supported = await dev.get_supported_playback_functions('storage:usb1')
+        supported = await dev.get_supported_playback_functions("storage:usb1")
         for i in supported:
             print(i)
     elif cmd == "settings":
@@ -496,13 +510,18 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
 
     if listen_all:
         if notification is not None:
-            await dev.services[notification].listen_all_notifications(handle_notification)
+            await dev.services[notification].listen_all_notifications(
+                handle_notification
+            )
         else:
             click.echo("Listening to all possible notifications")
             tasks = []
             for serv in dev.services.values():
-                tasks.append(asyncio.ensure_future(
-                    serv.listen_all_notifications(handle_notification)))
+                tasks.append(
+                    asyncio.ensure_future(
+                        serv.listen_all_notifications(handle_notification)
+                    )
+                )
 
             await asyncio.wait(tasks)
     elif notification:
@@ -518,22 +537,27 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
         for notification in notifications:
             click.echo("* %s" % notification)
 
+
 @cli.command()
 @pass_dev
 @coro
 async def listen(dev: Device):
+    """Listen for volume, power and content notifications."""
     from .containers import VolumeChange, PowerChange, ContentChange
+
     async def volume_changed(x):
         print("volume: %s" % x.volume)
+
     async def power_changed(x):
         print("power: %s" % x)
+
     async def content_changed(x):
         print("content: %s" % x)
+
     dev.on_notification(VolumeChange, volume_changed)
     dev.on_notification(PowerChange, power_changed)
     dev.on_notification(ContentChange, content_changed)
     await dev.listen_notifications()
-
 
 
 @cli.command()
@@ -555,9 +579,9 @@ def list_all(dev: Device):
 
 
 @cli.command()
-@click.argument('service', required=True)
-@click.argument('method')
-@click.argument('parameters', required=False, default=None)
+@click.argument("service", required=True)
+@click.argument("method")
+@click.argument("parameters", required=False, default=None)
 @pass_dev
 @coro
 async def command(dev, service, method, parameters):
@@ -571,17 +595,23 @@ async def command(dev, service, method, parameters):
 
 
 @cli.command()
-@click.argument('file', type=click.File('w'), required=False)
+@click.argument("file", type=click.File("w"), required=False)
 @pass_dev
 @coro
 async def dump_devinfo(dev: Device, file):
-    """Dumps information for developers."""
+    """Dump developer information.
+
+    Pass `file` to write the results directly into a file.
+    """
     import attr
+
     methods = await dev.get_supported_methods()
-    res = {'supported_methods': {k: v.asdict() for k, v in methods.items()},
-           'settings': [attr.asdict(x) for x in await dev.get_settings()],
-           'sysinfo': attr.asdict(await dev.get_system_info()),
-           'interface_info': attr.asdict(await dev.get_interface_information())}
+    res = {
+        "supported_methods": {k: v.asdict() for k, v in methods.items()},
+        "settings": [attr.asdict(x) for x in await dev.get_settings()],
+        "sysinfo": attr.asdict(await dev.get_system_info()),
+        "interface_info": attr.asdict(await dev.get_interface_information()),
+    }
     if file:
         click.echo("Saving to file: %s" % file.name)
         json.dump(res, file, sort_keys=True, indent=4)

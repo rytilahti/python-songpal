@@ -1,21 +1,28 @@
-import asyncio
+"""Presentation of an API method."""
 import json
 import logging
 from pprint import pformat as pf
+from typing import Dict, Union
 
-import attr
 import aiohttp
+import attr
 
-from .common import SongpalException, ProtocolType
-from .containers import (PowerChange, VolumeChange, SettingChange,
-                         SoftwareUpdateChange, ContentChange,
-                         NotificationChange)
+from .common import ProtocolType, SongpalException
+from .notification import (
+    ContentChange,
+    NotificationChange,
+    PowerChange,
+    SettingChange,
+    SoftwareUpdateChange,
+    VolumeChange,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
 
 @attr.s
 class Signature:
+    """Method signature."""
     name = attr.ib()
     input = attr.ib()
     output = attr.ib()
@@ -23,13 +30,13 @@ class Signature:
 
 
 class Method:
-    """ A Method represents a single API method.
+    """A Method (int. API) represents a single API method.
 
-    Internally these are called APIs.
+    This class implements __call__() for calling the method, which can be used to
+    invoke the method.
     """
-    def __init__(self, service, endpoint,
-                 payload, signature, protocol,
-                 idgen, debug=0):
+    def __init__(self, service, endpoint, payload, signature, protocol, idgen, debug=0):
+        """Construct a method."""
         self.versions = payload["versions"]
         name = payload["name"]
 
@@ -47,16 +54,23 @@ class Method:
         self._outputs = self.parse_outputs(self.signature)
         self.version = self.signature.version
 
-    def asdict(self):
-        return {'name': self.name,
-                'service': self.service,
-                'endpoint': self.endpoint,
-                'signature': attr.asdict(self.signature),
-                'inputs': self.serialize_types(self.inputs),
-                'outputs': self.serialize_types(self.outputs),
-                'version': self.version}
+    def asdict(self) -> Dict[str, Union[Dict, Union[str, Dict]]]:
+        """Return a dictionary describing the method.
+
+        This can be used to dump the information into a JSON file.
+        """
+        return {
+            "name": self.name,
+            "service": self.service,
+            "endpoint": self.endpoint,
+            "signature": attr.asdict(self.signature),
+            "inputs": self.serialize_types(self.inputs),
+            "outputs": self.serialize_types(self.outputs),
+            "version": self.version,
+        }
 
     def wrap_notification(self, data):
+        """Convert notification JSON to a notification class."""
         if "method" in data:
             method = data["method"]
             params = data["params"]
@@ -81,49 +95,59 @@ class Method:
             _LOGGER.warning("Unknown notification, returning raw: %s", data)
             return data
 
-    async def request(self, *args, **kwargs):
-        _LOGGER.debug("%s got called with args (%s) kwargs (%s)" % (
-            self.name, args, kwargs))
+    async def _request(self, *args, **kwargs):
+        """Call a method (internal).
+
+        This is an internal implementation, which formats the parameters if necessary
+         and chooses the preferred transport protocol.
+         The return values are JSON objects.
+        Use :func:__call__: provides external API leveraging this.
+        """
+        _LOGGER.debug(
+            "%s got called with args (%s) kwargs (%s)" % (self.name, args, kwargs)
+        )
 
         # Used for allowing keeping reading from the socket
         _consumer = None
-        if '_consumer' in kwargs:
+        if "_consumer" in kwargs:
             if self.protocol != ProtocolType.WebSocket:
-                raise SongpalException("Notifications are only supported over websockets")
-            _consumer = kwargs['_consumer']
-            del kwargs['_consumer']
+                raise SongpalException(
+                    "Notifications are only supported over websockets"
+                )
+            _consumer = kwargs["_consumer"]
+            del kwargs["_consumer"]
 
         if len(kwargs) == 0 and len(args) == 0:
             params = []  # params need to be empty array, if none is given
         elif len(kwargs) > 0:
             params = [kwargs]
-        elif len(args) == 1 \
-                and args[0] is not None:
+        elif len(args) == 1 and args[0] is not None:
             params = [args[0]]
         else:
             params = []
 
         # TODO check for type correctness
         # TODO note parameters are not always necessary, see getPlaybackModeSettings
-        # which signatures to need 'target' and 'uri' but works just fine without anything
-        #if len(params) != len(self._inputs):
+        # which has 'target' and 'uri' but works just fine without anything (wildcard)
+        # if len(params) != len(self._inputs):
         #    _LOGGER.error("args: %s signature: %s" % (args,
         #                                              self.signature.input))
         #    raise Exception("Invalid number of inputs, wanted %s got %s / %s" % (
         #        len(self.signature.input), len(args), len(kwargs)))
 
         async with aiohttp.ClientSession() as session:
-            req = {"method": self.name,
-                   "params": params,
-                   "version": self.version,
-                   "id": next(self.idgen)}
+            req = {
+                "method": self.name,
+                "params": params,
+                "version": self.version,
+                "id": next(self.idgen),
+            }
             if self.debug > 1:
-                _LOGGER.debug("sending request: %s (proto: %s)",
-                              req, self.protocol)
+                _LOGGER.debug("sending request: %s (proto: %s)", req, self.protocol)
             if self.protocol == ProtocolType.WebSocket:
-                async with session.ws_connect(self.endpoint,
-                                              timeout=self.timeout,
-                                              heartbeat=self.timeout * 5) as s:
+                async with session.ws_connect(
+                    self.endpoint, timeout=self.timeout, heartbeat=self.timeout * 5
+                ) as s:
                     await s.send_json(req)
                     # If we have a consumer, we are going to loop forever while
                     # emiting the incoming payloads to e.g. notification handler.
@@ -144,8 +168,14 @@ class Method:
                 return await res.json()
 
     async def __call__(self, *args, **kwargs):
+        """Call the method with given parameters.
+
+        On error this call will raise a :class:SongpalException:. If the error is
+        reported by the device (e.g. not a problem doing the request), the exception
+        will contain `error` attribute containing the device-reported error message.
+        """
         try:
-            res = await self.request(*args, **kwargs)
+            res = await self._request(*args, **kwargs)
         except Exception as ex:
             raise SongpalException("Unable to make a request: %s" % ex) from ex
 
@@ -154,14 +184,15 @@ class Method:
 
         if "error" in res:
             _LOGGER.debug(self)
-            raise SongpalException("Got an error for %s: %s" % (self.name,
-                                                                res["error"]),
-                                   error=res["error"])
+            raise SongpalException(
+                "Got an error for %s: %s" % (self.name, res["error"]),
+                error=res["error"],
+            )
 
         if self.debug > 0:
             _LOGGER.debug("got res: %s" % pf(res))
 
-        if 'result' not in res:
+        if "result" not in res:
             _LOGGER.error("No result in response, how to handle? %s" % res)
             return
 
@@ -175,7 +206,8 @@ class Method:
 
         return res[0]
 
-    def parse_inputs(self, sig):
+    def parse_inputs(self, sig: Signature):
+        """Parse input parameters."""
         if len(sig.input) == 0:
             return None
         # _LOGGER.debug("%s: parsing inputs: %s" % (self.name, sig.input))
@@ -184,10 +216,12 @@ class Method:
         return ins
 
     @property
-    def inputs(self):
+    def inputs(self) -> Dict[str, type]:
+        """Input parameters for this method."""
         return self._inputs
 
-    def return_type(self, x):
+    def return_type(self, x: str) -> Union[type, str]:
+        """Return a python type for a string presentation if possible."""
         if x == "string":
             return str
         if x == "Boolean":
@@ -198,6 +232,7 @@ class Method:
         return x
 
     def serialize_types(self, x):
+        """Convert type to string."""
         if x is None:
             return x
 
@@ -211,7 +246,8 @@ class Method:
             return serialized_dict
         return serialize(x)
 
-    def parse_json_sig(self, x):
+    def parse_json_sig(self, x) -> Union[type, str, Dict[str, type]]:
+        """Parse JSON signature. Used to parse input and output parameters."""
         try:
             # _LOGGER.debug("trying to parse %s, len: %s" % (x, len(x)))
             if x.endswith("*"):  # TODO handle arrays properly
@@ -228,7 +264,8 @@ class Method:
 
         return obj
 
-    def parse_outputs(self, sig):
+    def parse_outputs(self, sig: Signature):
+        """Parse output parameters."""
         if len(sig.output) == 0:
             return None
         # _LOGGER.debug("%s parsing outs: %s" % (self.name, sig.output))
@@ -237,11 +274,14 @@ class Method:
         return outs
 
     @property
-    def outputs(self):
+    def outputs(self) -> Dict[str, type]:
+        """Output parameters for this method."""
         return self._outputs
 
     def __repr__(self):
-        return "<Method %s.%s(%s) -> %s>" % (self.service,
-                                             self.name,
-                                             pf(self.inputs),
-                                             pf(self.outputs))
+        return "<Method %s.%s(%s) -> %s>" % (
+            self.service,
+            self.name,
+            pf(self.inputs),
+            pf(self.outputs),
+        )
