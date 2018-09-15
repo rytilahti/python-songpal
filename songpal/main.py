@@ -1,9 +1,9 @@
+"""Click-based interface for Songpal."""
 import ast
 import asyncio
 from functools import update_wrapper
 import json
 import logging
-from pprint import pprint as pp
 import sys
 
 import click
@@ -17,11 +17,15 @@ import upnpclient
 
 
 def err(msg):
+    """Pretty-print an error."""
     click.echo(click.style(msg, fg="red", bold=True))
 
 
 def coro(f):
-    """https://github.com/pallets/click/issues/85#issuecomment-43378930"""
+    """Run a coroutine and handle possible errors for the click cli.
+
+    Source https://github.com/pallets/click/issues/85#issuecomment-43378930
+    """
     f = asyncio.coroutine(f)
 
     def wrapper(*args, **kwargs):
@@ -36,7 +40,7 @@ def coro(f):
 
 
 async def traverse_settings(dev, module, settings, depth=0):
-    """Goes through all """
+    """Print all available settings."""
     for setting in settings:
         if setting.is_directory:
             print("%s%s (%s)" % (depth * " ", setting.title, module))
@@ -80,12 +84,13 @@ pass_dev = click.make_pass_decorator(Device)
 @click.group(invoke_without_command=False)
 @click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=False)
 @click.option("-d", "--debug", default=False, count=True)
-@click.option("--post", is_flag=True, required=None)
-@click.option("--websocket", is_flag=True, required=None)
+@click.option("--post", is_flag=True, required=False)
+@click.option("--websocket", is_flag=True, required=False)
 @click.pass_context
 @click.version_option()
 @coro
 async def cli(ctx, endpoint, debug, websocket, post):
+    """Click entrypoint."""
     lvl = logging.INFO
     if debug:
         lvl = logging.DEBUG
@@ -196,7 +201,6 @@ async def power(dev: Device, cmd, target, value):
 
     Accepts commands 'on', 'off', and 'settings'.
     """
-
     async def try_turn(cmd):
         state = True if cmd == "on" else False
         try:
@@ -264,7 +268,7 @@ async def source(dev: Device, scheme):
     """
     if scheme is None:
         schemes = await dev.get_schemes()
-        schemes = [scheme.scheme for scheme in schemes]
+        schemes = [scheme.scheme for scheme in schemes]  # noqa: T484
     else:
         schemes = [scheme]
 
@@ -276,15 +280,17 @@ async def source(dev: Device, scheme):
             continue
         for src in sources:
             click.echo(src)
-            try:
-                click.echo("  %s" % await dev.get_content_count(src.source))
-            except SongpalException as ex:
-                click.echo("  %s" % ex)
-            try:
-                for content in await dev.get_contents(src.source):
-                    click.echo("   %s\n\t%s" % (content.title, content.uri))
-            except SongpalException as ex:
-                click.echo("  %s" % ex)
+            if src.isBrowsable:
+                try:
+                    count = await dev.get_content_count(src.source)
+                    if count.count > 0:
+                        click.echo("  %s" % count)
+                        for content in await dev.get_contents(src.source):
+                            click.echo("   %s\n\t%s" % (content.title, content.uri))
+                    else:
+                        click.echo("  No content to list.")
+                except SongpalException as ex:
+                    click.echo("  %s" % ex)
 
 
 @cli.command()
@@ -536,6 +542,7 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
 @pass_dev
 @coro
 async def listen(dev: Device):
+    """Listen for volume, power and content notifications."""
     from .containers import VolumeChange, PowerChange, ContentChange
 
     async def volume_changed(x):
@@ -592,7 +599,10 @@ async def command(dev, service, method, parameters):
 @pass_dev
 @coro
 async def dump_devinfo(dev: Device, file):
-    """Dumps information for developers."""
+    """Dump developer information.
+
+    Pass `file` to write the results directly into a file.
+    """
     import attr
 
     methods = await dev.get_supported_methods()

@@ -1,5 +1,4 @@
-import asyncio
-import json
+"""Service presentation for a single endpoint (e.g. audio or avContent)."""
 import logging
 from typing import List
 
@@ -14,8 +13,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class Service:
     """Service presents an endpoint providing a set of methods."""
-
     def __init__(self, service, methods, notifications, protocols, idgen, debug=0):
+        """Service constructor.
+
+        Do not call this directly, but use :func:from_payload:
+        """
         self.service = service
         self._methods = methods
         self.idgen = idgen
@@ -26,6 +28,7 @@ class Service:
 
     @staticmethod
     async def fetch_signatures(endpoint, version, protocol, idgen):
+        """Request available methods for the service."""
         async with aiohttp.ClientSession() as session:
             req = {
                 "method": "getMethodTypes",
@@ -47,6 +50,7 @@ class Service:
 
     @classmethod
     async def from_payload(cls, payload, endpoint, idgen, debug, force_protocol=None):
+        """Create Service object from a payload."""
         service = payload["service"]
         methods = {}
 
@@ -99,6 +103,7 @@ class Service:
                 signatures[sig[0]] = Signature(*sig)
 
         for method in payload["apis"]:
+            _LOGGER.info("method: %s" % method)
             name = method["name"]
             if name in methods:
                 raise SongpalException("Got duplicate %s for %s" % (name, endpoint))
@@ -128,24 +133,39 @@ class Service:
         return cls(service, methods, notifications, protocols, idgen)
 
     def __getitem__(self, item) -> Method:
+        """Return a method for the given name.
+
+        Example:
+            if "setPowerStatus" in system_service:
+                system_service["setPowerStatus"](status="off")
+
+        Raises SongpalException if the method does not exist.
+
+        """
         if item not in self._methods:
             raise SongpalException("%s does not contain method %s" % (self, item))
         return self._methods[item]
 
     @property
     def methods(self) -> List[Method]:
+        """List of methods implemented in this service."""
         return self._methods.values()
 
     @property
     def protocols(self):
+        """Protocols supported by this service."""
         return self._protocols
 
     @property
     def notifications(self) -> List[Notification]:
+        """List of notifications exposed by this service."""
         return self._notifications
 
     async def listen_all_notifications(self, callback):
-        """A helper to listen for all notifications by this service."""
+        """Enable all exposed notifications.
+
+        :param callback: Callback to call when a notification is received.
+        """
         everything = [noti.asdict() for noti in self.notifications]
         if len(everything) > 0:
             await self._methods["switchNotifications"](
@@ -155,6 +175,10 @@ class Service:
             _LOGGER.debug("No notifications available for %s", self.service)
 
     def asdict(self):
+        """Return dict presentation of this service.
+
+        Useful for dumping the device information into JSON.
+        """
         return {
             "methods": {m.name: m.asdict() for m in self.methods},
             "protocols": self.protocols,
