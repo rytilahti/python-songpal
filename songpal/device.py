@@ -70,13 +70,15 @@ class Device:
         """Asynchronous context manager, initializes the list of available methods."""
         await self.get_supported_methods()
 
-    async def create_post_request(self, method: str, params: Dict):
+    async def create_post_request(self, method: str, params: Dict = None):
         """Call the given method over POST.
 
         :param method: Name of the method
         :param params: dict of parameters
         :return: JSON object
         """
+        if params is None:
+            params = {}
         headers = {"Content-Type": "application/json"}
         payload = {
             "method": method,
@@ -88,25 +90,36 @@ class Device:
             "POST", self.guide_endpoint, data=json.dumps(payload), headers=headers
         )
         prepreq = req.prepare()
+        if self.debug > 1:
+            _LOGGER.debug("Sending %s %s - headers: %s body: %s" % (prepreq.method, prepreq.url,
+                                                                    prepreq.headers, prepreq.body))
         s = requests.Session()
         try:
-            response = s.send(prepreq)
-            if response.status_code != 200:
-                _LOGGER.error("Got !200 response: %s" % response.text)
-                return None
+            res = s.send(prepreq)
+            if self.debug > 1:
+                _LOGGER.debug("Received %s: %s" % (res.status_code, res.text))
+            if res.status_code != 200:
+                raise SongpalException("Got a non-ok (status %s) response for %s" % (
+                    res.status_code, method), error=res.json()["error"])
 
-            response = response.json()
+            res = res.json()
         except requests.RequestException as ex:
             raise SongpalException("Unable to get APIs: %s" % ex) from ex
 
-        if self.debug > 1:
-            _LOGGER.debug("Got getSupportedApiInfo: %s", pf(response))
+        if "error" in res:
+            raise SongpalException(
+                "Got an error for %s" % method,
+                error=res["error"],
+            )
 
-        return response
+        if self.debug > 1:
+            _LOGGER.debug("Got %s: %s", method, pf(res))
+
+        return res
 
     async def request_supported_methods(self):
         """Return JSON formatted supported API."""
-        return await self.create_post_request("getSupportedApiInfo", {})
+        return await self.create_post_request("getSupportedApiInfo")
 
     async def get_supported_methods(self):
         """Get information about supported methods.

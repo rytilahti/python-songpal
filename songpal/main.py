@@ -90,7 +90,7 @@ pass_dev = click.make_pass_decorator(Device)
 @click.version_option()
 @coro
 async def cli(ctx, endpoint, debug, websocket, post):
-    """Click entrypoint."""
+    """Songpal CLI."""
     lvl = logging.INFO
     if debug:
         lvl = logging.DEBUG
@@ -118,7 +118,7 @@ async def cli(ctx, endpoint, debug, websocket, post):
     x = Device(endpoint, force_protocol=protocol, debug=debug)
     try:
         await x.get_supported_methods()
-    except requests.exceptions.ConnectionError as ex:
+    except (requests.exceptions.ConnectionError, SongpalException) as ex:
         err("Unable to get supported methods: %s" % ex)
         sys.exit(-1)
     ctx.obj = x
