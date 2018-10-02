@@ -277,7 +277,7 @@ class Device:
     async def get_bluetooth_settings(self) -> List[Setting]:
         """Get bluetooth settings."""
         bt = await self.services["avContent"]["getBluetoothSettings"]({})
-        return [Setting(**x) for x in bt]
+        return [Setting.make(**x) for x in bt]
 
     async def set_bluetooth_settings(self, target: str, value: str) -> None:
         """Set bluetooth settings."""

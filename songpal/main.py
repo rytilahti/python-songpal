@@ -13,6 +13,7 @@ import requests
 from songpal import Device, SongpalException
 from songpal.common import ProtocolType
 from songpal.containers import Setting
+from songpal.notification import VolumeChange, PowerChange, ContentChange
 import upnpclient
 
 
@@ -34,7 +35,9 @@ def coro(f):
             return loop.run_until_complete(f(*args, **kwargs))
         except SongpalException as ex:
             err("Error: %s" % ex)
-            raise ex
+            if len(args) > 0 and hasattr(args[0], "debug"):
+                if args[0].debug > 0:
+                    raise ex
 
     return update_wrapper(wrapper, f)
 
@@ -440,7 +443,6 @@ async def soundfield(dev: Device, soundfield: str):
     if soundfield is not None:
         await dev.set_sound_settings("soundField", soundfield)
     soundfields = await dev.get_sound_settings("soundField")
-    print(await dev.get_soundfield())
     print_settings(soundfields)
 
 
@@ -543,8 +545,6 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
 @coro
 async def listen(dev: Device):
     """Listen for volume, power and content notifications."""
-    from .containers import VolumeChange, PowerChange, ContentChange
-
     async def volume_changed(x):
         print("volume: %s" % x.volume)
 
