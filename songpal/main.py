@@ -169,6 +169,7 @@ async def status(dev: Device):
 @click.pass_context
 async def discover(ctx):
     """Discover supported devices."""
+<<<<<<< HEAD
     TIMEOUT = 5
 
     async def print_discovered(dev):
@@ -592,14 +593,16 @@ async def dump_devinfo(dev: Device, file):
 
 pass_groupctl = click.make_pass_decorator(GroupControl)
 
+
 @cli.group()
 @click.pass_context
+@click.option('--url', required=True)
 @coro
-async def group(ctx):
-    url = "http://192.168.250.241:52323/dmr.xml"
+async def group(ctx, url):
     gc = GroupControl(url)
     connect = await gc.connect()
     ctx.obj = gc
+
 
 @group.command()
 @pass_groupctl
@@ -607,6 +610,7 @@ async def group(ctx):
 async def info(gc: GroupControl):
     """Control information."""
     click.echo(await gc.info())
+
 
 @group.command()
 @pass_groupctl
@@ -617,6 +621,7 @@ async def state(gc: GroupControl):
     click.echo(state)
     click.echo("Full state info: %s" % repr(state))
 
+
 @group.command()
 @pass_groupctl
 @coro
@@ -624,6 +629,7 @@ async def abort(gc: GroupControl):
     """Abort existing group."""
     click.echo("Aborting current group..")
     click.echo(await gc.abort())
+
 
 @group.command()
 @click.argument('name')

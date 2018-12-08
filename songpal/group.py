@@ -97,7 +97,7 @@ class GroupControl:
 
         """
         Available actions
-        
+
         INFO:songpal.upnpctl:Action: <UpnpService.Action(X_GetDeviceInfo)> ([])
         INFO:songpal.upnpctl:Action: <UpnpService.Action(X_GetState)> ([])
         INFO:songpal.upnpctl:Action: <UpnpService.Action(X_GetStateM)> ([])
