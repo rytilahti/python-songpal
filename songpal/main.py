@@ -169,7 +169,6 @@ async def status(dev: Device):
 @click.pass_context
 async def discover(ctx):
     """Discover supported devices."""
-<<<<<<< HEAD
     TIMEOUT = 5
 
     async def print_discovered(dev):
