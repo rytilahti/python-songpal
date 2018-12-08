@@ -35,6 +35,7 @@ class Service:
         self._notifications = []
         self.debug = debug
         self.timeout = 2
+        self.listening = False
 
     @staticmethod
     async def fetch_signatures(endpoint, protocol, idgen):
@@ -179,7 +180,8 @@ class Service:
                     # If we have a consumer, we are going to loop forever while
                     # emiting the incoming payloads to e.g. notification handler.
                     if _consumer is not None:
-                        while True:
+                        self.listening = True
+                        while self.listening:
                             res_raw = await s.receive_json()
                             res = self.wrap_notification(res_raw)
                             _LOGGER.debug("Got notification: %s", res)
@@ -273,6 +275,10 @@ class Service:
             )
         else:
             _LOGGER.debug("No notifications available for %s", self.name)
+
+    async def stop_listen_notifications(self):
+        _LOGGER.debug("Stop listening on %s" % self.name)
+        self.listening = False
 
     def asdict(self):
         """Return dict presentation of this service.

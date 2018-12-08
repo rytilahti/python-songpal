@@ -418,7 +418,12 @@ class Device:
         """
         self.callbacks[type_].add(callback)
 
-    async def listen_notifications(self, any_callback=None):
+    def clear_notification_callbacks(self):
+        """Clear all notification callbacks."""
+        self.callbacks.clear()
+
+
+    async def listen_notifications(self, fallback_callback=None):
         """Listen for notifications from the device forever.
 
         Use :func:on_notification: to register what notifications to listen to.
@@ -426,10 +431,12 @@ class Device:
         tasks = []
 
         async def handle_notification(notification):
-            if any_callback:
-                await any_callback(notification)
             if type(notification) not in self.callbacks:
-                _LOGGER.debug("No callbacks for %s", notification)
+                if not fallback_callback:
+                    _LOGGER.debug("No callbacks for %s", notification)
+                    # _LOGGER.debug("Existing callbacks for: %s" % self.callbacks)
+                else:
+                    await fallback_callback(notification)
                 return
             for cb in self.callbacks[type(notification)]:
                 await cb(notification)
@@ -449,6 +456,14 @@ class Device:
             await handle_notification(ConnectChange(connected=False,
                                                     exception=ex))
             return
+
+    async def stop_listen_notifications(self):
+        """Stop listening on notifications."""
+        _LOGGER.debug("Stopping listening for notifications..")
+        for serv in self.services.values():
+            await serv.stop_listen_notifications()
+
+        return True
 
     async def get_notifications(self) -> List[Notification]:
         """Get available notifications, which can then be subscribed to.

@@ -33,6 +33,10 @@ def coro(f):
         loop = asyncio.get_event_loop()
         try:
             return loop.run_until_complete(f(*args, **kwargs))
+        except KeyboardInterrupt:
+            click.echo("Got CTRL+C, quitting..")
+            dev = args[0]
+            loop.run_until_complete(dev.stop_listen_notifications())
         except SongpalException as ex:
             err("Error: %s" % ex)
             if len(args) > 0 and hasattr(args[0], "debug"):
@@ -517,15 +521,8 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
             )
         else:
             click.echo("Listening to all possible notifications")
-            tasks = []
-            for serv in dev.services.values():
-                tasks.append(
-                    asyncio.ensure_future(
-                        serv.listen_all_notifications(handle_notification)
-                    )
-                )
+            await dev.listen_notifications(fallback_callback=handle_notification)
 
-            await asyncio.wait(tasks)
     elif notification:
         click.echo("Subscribing to notification %s" % notification)
         for notif in notifications:
@@ -538,26 +535,6 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
         click.echo(click.style("Available notifications", bold=True))
         for notification in notifications:
             click.echo("* %s" % notification)
-
-
-@cli.command()
-@pass_dev
-@coro
-async def listen(dev: Device):
-    """Listen for volume, power and content notifications."""
-    async def volume_changed(x):
-        print("volume: %s" % x.volume)
-
-    async def power_changed(x):
-        print("power: %s" % x)
-
-    async def content_changed(x):
-        print("content: %s" % x)
-
-    dev.on_notification(VolumeChange, volume_changed)
-    dev.on_notification(PowerChange, power_changed)
-    dev.on_notification(ContentChange, content_changed)
-    await dev.listen_notifications()
 
 
 @cli.command()
