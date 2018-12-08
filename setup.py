@@ -5,10 +5,13 @@ def readme():
     with open("README.rst") as f:
         return f.read()
 
+with open('songpal/version.py') as f:
+    exec(f.read())
+
 setup(
     name='python-songpal',
 
-    version='0.0.8',
+    version=__version__,
     description="Python library for interfacing with Sony's Songpal devices",
     long_description=readme(),
     url='https://github.com/rytilahti/python-songpal',

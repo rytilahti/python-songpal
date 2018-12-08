@@ -1,5 +1,27 @@
 # Change Log
 
+## [0.0.9](https://github.com/rytilahti/python-songpal/tree/0.0.9) (2018-12-08)
+
+This release improves the support for notifications and fixes some minor issues.
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.8...0.0.9)
+
+**Closed issues:**
+
+- Support for SRS-ZR5 [\#24](https://github.com/rytilahti/python-songpal/issues/24)
+- Home Assistant warnings with SRS-ZR7 [\#17](https://github.com/rytilahti/python-songpal/issues/17)
+
+**Merged pull requests:**
+
+- Added devinfo for HT-ZF9 [\#33](https://github.com/rytilahti/python-songpal/pull/33) 
+([danielpalstra](https://github.com/danielpalstra))
+- Added STR-DN1060 devinfo [\#30](https://github.com/rytilahti/python-songpal/pull/30) ([jwiese](https://github.com/jwiese))
+- Code formating fixes [\#28](https://github.com/rytilahti/python-songpal/pull/28) ([rytilahti](https://github.com/rytilahti))
+- Adding the output for dumpdevinfo of 2 models [\#27](https://github.com/rytilahti/python-songpal/pull/27) 
+([thomnico](https://github.com/thomnico))
+- Add SRS-ZR7 devinfo [\#26](https://github.com/rytilahti/python-songpal/pull/26) ([pschmitt](https://github.com/pschmitt))
+- Add files via upload [\#25](https://github.com/rytilahti/python-songpal/pull/25) ([little-boots](https://github.com/little-boots))
+
 ## [0.0.8](https://github.com/rytilahti/python-songpal/tree/0.0.8) (2018-08-30)
 
 Some very minor changes, importantly avoid spammimng the logger when several volume
