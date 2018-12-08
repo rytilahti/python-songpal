@@ -148,25 +148,64 @@ class GroupControl:
         res = await act.async_call()
         return GroupState.make(**res)
 
-    async def statem(self):
+    async def statem(self) -> GroupState:
         """Return the current group state (memory?)."""
         act = self.service.action("X_GetStateM")
         res = await act.async_call()
         return GroupState.make(**res)
 
-    async def get_group_memory(self, result):
+    async def get_group_memory(self):
         """Return group memory."""
         # Returns an XML with groupMemoryList
-        # X_DeleteGroupMemory)> (['MemoryID'])
-        # X_UpdateGroupMemory)> (['MemoryID', 'GroupMode', 'GroupName', 'SlaveList', 'CodecType', 'CodecBitrate'])
         act = self.service.action("X_GetAllGroupMemory")
         res = await act.async_call()
+        return res
+
+    async def update_group_memory(self, memory_id, mode, name, slaves, codectype=0x0040, bitrate=0x0003):
+        """Update existing memory? Can be used to create new ones, too?"""
+        act = self.service.action("X_UpdateGroupMemory")
+        res = await act.async_call(MemoryID=memory_id,
+                                   GroupMode=mode,
+                                   GroupName=name,
+                                   SlaveList=slaves,
+                                   CodecType=codectype,
+                                   CodecBitrate=bitrate)
+
+        return res
+
+    async def delete_group_memory(self, memory_id):
+        """Delete group memory."""
+        act = self.service.action("X_DeleteGroupMemory")
+        res = await act.async_call(MemoryID=memory_id)
+
+    async def get_codec(self):
+        """Get codec settings."""
+        act = self.service.action("X_GetCodec")
+        res = await act.async_call()
+        return res
+
+    async def set_codec(self, codectype=0x0040, bitrate=0x0003):
+        """Set codec settings."""
+        act = self.service.action("X_SetCodec")
+        res = await act.async_call(CodecType=codectype, CodecBitrate=bitrate)
         return res
 
     async def abort(self):
         """Abort current group session."""
         state = await self.state()
-        res = await self.call("X_Abort", MasterSessionID=state.SessionID)
+        res = await self.call("X_Abort", MasterSessionID=state.MasterSessionID)
+        return res
+
+    async def stop(self):
+        """Stop playback?"""
+        state = await self.state()
+        res = await self.call("X_Stop", MasterSessionID=state.MasterSessionID)
+        return res
+
+    async def play(self):
+        """Start playback?"""
+        state = await self.state()
+        res = await self.call("X_Play", MasterSessionID=state.MasterSessionID)
         return res
 
     async def create(self, name, slaves):
@@ -178,6 +217,19 @@ class GroupControl:
                               CodecType=0x0040,
                               CodecBitrate=0x0003)
         return res
+
+    async def add(self, slaves):
+        state = await self.state()
+        res = await self.call("X_Entry", MasterSessionID=state.MasterSessionID, SlaveList=slaves)
+        return res
+
+    async def remove(self, slaves):
+        state = await self.state()
+        res = await self.call("X_Leave", MasterSessionID=state.MasterSessionID, SlaveList=slaves)
+
+    # What does these do?
+    # INFO: songpal.upnpctl:Action: < UpnpService.Action(X_EntryM) > (['MasterSessionID', 'SlaveList'])
+    # INFO: songpal.upnpctl:Action: < UpnpService.Action(X_LeaveM) > (['MasterSessionID', 'SlaveList'])
 
     async def set_mute(self, activate):
         """Set group mute."""

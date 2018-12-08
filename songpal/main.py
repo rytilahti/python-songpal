@@ -624,10 +624,19 @@ async def state(gc: GroupControl):
 @group.command()
 @pass_groupctl
 @coro
-async def abort(gc: GroupControl):
-    """Abort existing group."""
-    click.echo("Aborting current group..")
-    click.echo(await gc.abort())
+async def codec(gc: GroupControl):
+    """Codec settings."""
+    codec = await gc.get_codec()
+    click.echo("Codec: %s" % codec)
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def memory(gc: GroupControl):
+    """Group memory."""
+    mem = await gc.get_group_memory()
+    click.echo("Memory: %s" % mem)
 
 
 @group.command()
@@ -639,6 +648,65 @@ async def create(gc: GroupControl, name, slaves):
     """Create new group"""
     click.echo("Creating group %s with slaves: %s" % (name, slaves))
     click.echo(await gc.create(name, slaves))
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def abort(gc: GroupControl):
+    """Abort existing group."""
+    click.echo("Aborting current group..")
+    click.echo(await gc.abort())
+
+@group.command()
+@pass_groupctl
+@click.argument('slaves', nargs=-1, required=True)
+@coro
+async def add(gc: GroupControl, slaves):
+    """Add speakers to group."""
+    click.echo("Adding to existing group: %s" % slaves)
+    click.echo(await gc.add(slaves))
+
+
+@group.command()
+@pass_groupctl
+@click.argument('slaves', nargs=-1, required=True)
+async def remove(gc: GroupControl, slaves):
+    """Remove speakers from group."""
+    click.echo("Removing from existing group: %s" % slaves)
+    click.echo(await gc.remove(slaves))
+
+
+@group.command()
+@pass_groupctl
+@click.argument('volume', type=int)
+async def volume(gc: GroupControl, volume):
+    """Adjust volume [-100, 100]"""
+    click.echo("Setting volume to %s" % volume)
+    click.echo(await gc.set_group_volume(volume))
+
+
+@group.command()
+@pass_groupctl
+@click.argument('mute', type=bool)
+async def mute(gc: GroupControl, mute):
+    """(Un)mute group."""
+    click.echo("Muting group: %s" % mute)
+    click.echo(await gc.set_mute(mute))
+
+
+@group.command()
+@pass_groupctl
+async def play(gc: GroupControl):
+    """Play?"""
+    click.echo("Sending play command: %s" % await gc.play())
+
+
+@group.command()
+@pass_groupctl
+async def stop(gc: GroupControl):
+    """Stop playing?"""
+    click.echo("Sending stop command: %s" % await gc.stop())
 
 
 if __name__ == "__main__":
