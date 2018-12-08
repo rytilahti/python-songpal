@@ -55,6 +55,11 @@ class ChangeNotification:
 
 
 @attr.s
+class ConnectChange(ChangeNotification):
+    connected = attr.ib()
+    exception = attr.ib(default=None)
+
+@attr.s
 class PowerChange(ChangeNotification, Power):
     """Notification for power status change."""
     pass

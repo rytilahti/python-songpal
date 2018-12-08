@@ -8,6 +8,7 @@ from songpal.common import ProtocolType, SongpalException
 from songpal.method import Method, MethodSignature
 from songpal.notification import (
     Notification,
+    ConnectChange,
     ContentChange,
     NotificationChange,
     PowerChange,

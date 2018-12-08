@@ -28,7 +28,7 @@ from songpal.containers import (
     Sysinfo,
     Volume,
 )
-from songpal.notification import Notification
+from songpal.notification import Notification, ConnectChange
 from songpal.service import Service
 
 _LOGGER = logging.getLogger(__name__)
@@ -418,7 +418,7 @@ class Device:
         """
         self.callbacks[type_].add(callback)
 
-    async def listen_notifications(self):
+    async def listen_notifications(self, any_callback=None):
         """Listen for notifications from the device forever.
 
         Use :func:on_notification: to register what notifications to listen to.
@@ -426,6 +426,8 @@ class Device:
         tasks = []
 
         async def handle_notification(notification):
+            if any_callback:
+                await any_callback(notification)
             if type(notification) not in self.callbacks:
                 _LOGGER.debug("No callbacks for %s", notification)
                 return
@@ -439,7 +441,14 @@ class Device:
                 )
             )
 
-        await asyncio.wait(tasks)
+        try:
+            print(await asyncio.gather(*tasks))
+        except Exception as ex:
+            # TODO: do a slightly restricted exception handling?
+            # Notify about disconnect
+            await handle_notification(ConnectChange(connected=False,
+                                                    exception=ex))
+            return
 
     async def get_notifications(self) -> List[Notification]:
         """Get available notifications, which can then be subscribed to.
