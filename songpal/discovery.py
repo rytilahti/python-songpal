@@ -34,7 +34,7 @@ class Discover:
             device = await factory.async_create_device(url)
 
             if debug > 0:
-                print(etree.ElementTree.tostring(device.xml))
+                print(etree.ElementTree.tostring(device.xml).decode())
 
             NS = {
                 # required for modelNumber ...
