@@ -53,7 +53,11 @@ async def traverse_settings(dev, module, settings, depth=0):
             print("%s%s (%s)" % (depth * " ", setting.title, module))
             return await traverse_settings(dev, module, setting.settings, depth + 2)
         else:
-            print_settings([await setting.get_value(dev)], depth=depth)
+            try:
+                print_settings([await setting.get_value(dev)], depth=depth)
+            except SongpalException as ex:
+                err("Unable to read setting %s: %s" % (setting, ex))
+                continue
 
 
 def print_settings(settings, depth=0):
