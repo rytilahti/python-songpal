@@ -7,14 +7,13 @@ import logging
 import sys
 
 import click
-from lxml import etree, objectify
 import requests
 
 from songpal import Device, SongpalException
 from songpal.common import ProtocolType
 from songpal.containers import Setting
+from songpal.discovery import Discover
 from songpal.notification import VolumeChange, PowerChange, ContentChange
-import upnpclient
 
 
 def err(msg):
@@ -170,35 +169,28 @@ async def status(dev: Device):
 @click.pass_context
 async def discover(ctx):
     """Discover supported devices."""
-    TIMEOUT = 3
-    debug = 0
-    if ctx.obj:
-        debug = ctx.obj["debug"] or 0
+    TIMEOUT = 5
+
+    async def print_discovered(dev):
+        pretty_name = "%s - %s" % (dev.name, dev.model_number)
+
+        click.echo(click.style("\nFound %s" % pretty_name, bold=True))
+        click.echo("* API version: %s" % dev.version)
+        click.echo("* Endpoint: %s" % dev.endpoint)
+        click.echo("  Services:")
+        for serv in dev.services:
+            click.echo("    - Service: %s" % serv)
+        click.echo("\n[UPnP]")
+        click.echo("* URL: %s" % dev.upnp_location)
+        click.echo("* UDN: %s" % dev.udn)
+        click.echo("  Services:")
+        for serv in dev.upnp_services:
+            click.echo("    - Service: %s" % serv)
+
     click.echo("Discovering for %s seconds" % TIMEOUT)
-    devices = upnpclient.discover(TIMEOUT)
-    for dev in devices:
-        if "ScalarWebAPI" in dev.service_map:
-            if debug:
-                print(etree.tostring(dev._root_xml, pretty_print=True).decode())
-            model = dev.model_name
-            model_number = dev.model_number
 
-            pretty_name = "%s - %s" % (model, model_number)
+    await Discover.discover(TIMEOUT, ctx.obj["debug"] or 0, callback=print_discovered)
 
-            root = objectify.fromstring(etree.tostring(dev._root_xml))
-            device = root["device"]
-            info = device["{urn:schemas-sony-com:av}X_ScalarWebAPI_DeviceInfo"]
-            endpoint = info["X_ScalarWebAPI_BaseURL"].text
-            version = info["X_ScalarWebAPI_Version"].text
-            services = info["X_ScalarWebAPI_ServiceList"].iterchildren()
-
-            click.echo(click.style("Found %s" % pretty_name, bold=True))
-            click.echo("* API version: %s" % version)
-            click.echo("* Endpoint: %s" % endpoint)
-
-            click.echo("* Services:")
-            for serv in services:
-                click.echo("  - Service: %s" % serv.text)
 
 
 @cli.command()
