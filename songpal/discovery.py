@@ -37,24 +37,20 @@ class Discover:
                 print(etree.ElementTree.tostring(device.xml).decode())
 
             NS = {
-                # required for modelNumber ...
-                'device': 'urn:schemas-upnp-org:device-1-0',
                 'av': 'urn:schemas-sony-com:av',
             }
 
-            model_number = device.xml.find(".//device:modelNumber", NS).text
             info = device.xml.find(".//av:X_ScalarWebAPI_DeviceInfo", NS)
             if not info:
                 _LOGGER.error("Unable to find X_ScalaerWebAPI_DeviceInfo")
                 return
-
 
             endpoint = info.find(".//av:X_ScalarWebAPI_BaseURL", NS).text
             version = info.find(".//av:X_ScalarWebAPI_Version", NS).text
             services = [x.text for x in info.findall(".//av:X_ScalarWebAPI_ServiceType", NS)]
 
             dev = DiscoveredDevice(name=device.name,
-                                   model_number=model_number,
+                                   model_number=device.model_number,
                                    udn=device.udn,
                                    endpoint=endpoint,
                                    version=version,
