@@ -1,5 +1,6 @@
 """Module presenting a single supported device."""
 import asyncio
+import aiohttp
 from collections import defaultdict
 import itertools
 import json
@@ -7,8 +8,6 @@ import logging
 from pprint import pformat as pf
 from typing import Any, Dict, List
 from urllib.parse import urlparse
-
-import requests
 
 from songpal.common import SongpalException
 from songpal.containers import (
@@ -39,6 +38,7 @@ class Device:
 
     In order to use this you need to obtain the URL for the API first.
     """
+
     WEBSOCKET_PROTOCOL = "v10.webapi.scalar.sony.com"
     WEBSOCKET_VERSION = 13
 
@@ -86,31 +86,27 @@ class Device:
             "id": next(self.idgen),
             "version": "1.0",
         }
-        req = requests.Request(
-            "POST", self.guide_endpoint, data=json.dumps(payload), headers=headers
-        )
-        prepreq = req.prepare()
+
         if self.debug > 1:
-            _LOGGER.debug("Sending %s %s - headers: %s body: %s" % (prepreq.method, prepreq.url,
-                                                                    prepreq.headers, prepreq.body))
-        s = requests.Session()
-        try:
-            res = s.send(prepreq)
+            _LOGGER.debug("> POST %s with body: %s", self.guide_endpoint, payload)
+
+        async with aiohttp.ClientSession(headers=headers) as session:
+            res = await session.post(self.guide_endpoint, json=payload, headers=headers)
             if self.debug > 1:
                 _LOGGER.debug("Received %s: %s" % (res.status_code, res.text))
-            if res.status_code != 200:
-                raise SongpalException("Got a non-ok (status %s) response for %s" % (
-                    res.status_code, method), error=res.json()["error"])
+            if res.status != 200:
+                raise SongpalException(
+                    "Got a non-ok (status %s) response for %s" % (res.status, method),
+                    error=await res.json()["error"],
+                )
 
-            res = res.json()
-        except requests.RequestException as ex:
-            raise SongpalException("Unable to get APIs: %s" % ex) from ex
+            res = await res.json()
+
+        # TODO handle exceptions from POST? This used to raise SongpalException
+        #      on requests.RequestException (Unable to get APIs).
 
         if "error" in res:
-            raise SongpalException(
-                "Got an error for %s" % method,
-                error=res["error"],
-            )
+            raise SongpalException("Got an error for %s" % method, error=res["error"])
 
         if self.debug > 1:
             _LOGGER.debug("Got %s: %s", method, pf(res))
@@ -422,7 +418,6 @@ class Device:
         """Clear all notification callbacks."""
         self.callbacks.clear()
 
-
     async def listen_notifications(self, fallback_callback=None):
         """Listen for notifications from the device forever.
 
@@ -453,8 +448,7 @@ class Device:
         except Exception as ex:
             # TODO: do a slightly restricted exception handling?
             # Notify about disconnect
-            await handle_notification(ConnectChange(connected=False,
-                                                    exception=ex))
+            await handle_notification(ConnectChange(connected=False, exception=ex))
             return
 
     async def stop_listen_notifications(self):
