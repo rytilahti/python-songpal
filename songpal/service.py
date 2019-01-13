@@ -104,8 +104,8 @@ class Service:
             name = sig[0]
             parsed_sig = MethodSignature.from_payload(*sig)
             if name in methods:
-                _LOGGER.warning("Got duplicate signature for %s, existing was %s. Keeping the existing one",
-                                parsed_sig, methods[name])
+                _LOGGER.debug("Got duplicate signature for %s, existing was %s. Keeping the existing one",
+                              parsed_sig, methods[name])
             else:
                 methods[name] = Method(service, parsed_sig, debug)
 
