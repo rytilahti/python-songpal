@@ -184,17 +184,17 @@ class Device:
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["system"]["setPowerSettings"](params)
 
-    async def get_wutang(self) -> List[Setting]:
+    async def get_googlecast_settings(self) -> List[Setting]:
         """Get Googlecast settings."""
         return [
             Setting.make(**x)
             for x in await self.services["system"]["getWuTangInfo"]({})
         ]
 
-    async def set_wutang(self, target: str, value: str):
+    async def set_googlecast_settings(self, target: str, value: str):
         """Set Googlecast settings."""
         params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["system"]["setWuTangSettings"](params)
+        return await self.services["system"]["setWuTangInfo"](params)
 
     async def request_settings_tree(self):
         """Get raw settings tree JSON.
