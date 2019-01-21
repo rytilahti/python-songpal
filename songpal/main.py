@@ -253,10 +253,15 @@ async def input(dev: Device, input):
 
 
 @cli.command()
+@click.argument("target", required=False)
+@click.argument("value", required=False)
 @pass_dev
 @coro
-async def googlecast(dev: Device):
+async def googlecast(dev: Device, target, value):
     """Return Googlecast settings."""
+    if target and value:
+        click.echo("Setting %s = %s" % (target, value))
+        await dev.set_wutang(target, value)
     print_settings(await dev.get_wutang())
 
 
