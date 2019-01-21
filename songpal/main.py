@@ -261,8 +261,8 @@ async def googlecast(dev: Device, target, value):
     """Return Googlecast settings."""
     if target and value:
         click.echo("Setting %s = %s" % (target, value))
-        await dev.set_wutang(target, value)
-    print_settings(await dev.get_wutang())
+        await dev.set_googlecast_settings(target, value)
+    print_settings(await dev.get_googlecast_settings())
 
 
 @cli.command()
