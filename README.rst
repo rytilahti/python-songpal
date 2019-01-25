@@ -21,7 +21,7 @@ The library has been tested for now with following devices:
 * HT-NT5
 * HT-MT500
 * HT-ZF9
-* SRS-X88
+* SRS-X77, SRS-X88
 * STR-DN1060, STR-DN1070, STR-DN1080 (no multizone support yet)
 
 
