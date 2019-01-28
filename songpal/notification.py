@@ -103,12 +103,21 @@ class SettingChange(ChangeNotification):
     currentValue = attr.ib()
 
     def __attrs_post_init__(self):
+        if self.type == 'directory':
+            _LOGGER.debug("Got SettingChange for directory %s (see #36), "
+                          "ignoring..", self.titleTextID)
+            return
+        if self.apiMappingUpdate is None:
+            _LOGGER.warning("Got SettingChange for %s without "
+                            "apiMappingUpdate, ignoring..", self.titleTextID)
+            return
         self.currentValue = self.apiMappingUpdate["currentValue"]
         self.target = self.apiMappingUpdate["target"]
 
     def __str__(self):
-        return "<SettingChange %s (%s): %s>" % (
+        return "<SettingChange %s %s (%s): %s>" % (
             self.title,
+            self.type,
             self.target,
             self.currentValue,
         )
