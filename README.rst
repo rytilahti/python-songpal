@@ -20,13 +20,14 @@ The library has been tested for now with following devices:
 * HT-XT3
 * HT-NT5
 * HT-MT500
-* SRS-X88
+* HT-ZF9
+* SRS-X77, SRS-X88
 * STR-DN1060, STR-DN1070, STR-DN1080 (no multizone support yet)
 
 
 .. NOTE::
   If no one has contributed a devinfo from your device (see devinfos/ directory),
-  please feel free to contribute one by typing `songpal dump_devinfo <filename>` 
+  please feel free to contribute one by typing `songpal dump-devinfo <filename>` 
   and creating a pull request on this repository. 
   This information can later be useful for extending the support for those devices.
 
@@ -223,7 +224,7 @@ Executing custom commands
 -------------------------
 
 For experimenting it can be useful to execute arbitrary commands against the endpoint.
-You can access the available methods by calling ``songpal list_all``.
+You can access the available methods by calling ``songpal list-all``.
 
 ``command`` can be used for that as follows:
 
@@ -253,7 +254,7 @@ Reporting bugs or supported devices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When reporting bugs or informing about supported device not listed above,
-please consider attaching the output of ``songpal dump_devinfo`` with your report.
+please consider attaching the output of ``songpal dump-devinfo`` with your report.
 
 
 API information

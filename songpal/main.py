@@ -7,13 +7,13 @@ import logging
 import sys
 
 import click
-from lxml import etree, objectify
 import requests
 
 from songpal import Device, SongpalException
 from songpal.common import ProtocolType
 from songpal.containers import Setting
-import upnpclient
+from songpal.discovery import Discover
+from songpal.notification import VolumeChange, PowerChange, ContentChange
 
 
 def err(msg):
@@ -32,9 +32,15 @@ def coro(f):
         loop = asyncio.get_event_loop()
         try:
             return loop.run_until_complete(f(*args, **kwargs))
+        except KeyboardInterrupt:
+            click.echo("Got CTRL+C, quitting..")
+            dev = args[0]
+            loop.run_until_complete(dev.stop_listen_notifications())
         except SongpalException as ex:
             err("Error: %s" % ex)
-            raise ex
+            if len(args) > 0 and hasattr(args[0], "debug"):
+                if args[0].debug > 0:
+                    raise ex
 
     return update_wrapper(wrapper, f)
 
@@ -46,7 +52,11 @@ async def traverse_settings(dev, module, settings, depth=0):
             print("%s%s (%s)" % (depth * " ", setting.title, module))
             return await traverse_settings(dev, module, setting.settings, depth + 2)
         else:
-            print_settings([await setting.get_value(dev)], depth=depth)
+            try:
+                print_settings([await setting.get_value(dev)], depth=depth)
+            except SongpalException as ex:
+                err("Unable to read setting %s: %s" % (setting, ex))
+                continue
 
 
 def print_settings(settings, depth=0):
@@ -159,35 +169,28 @@ async def status(dev: Device):
 @click.pass_context
 async def discover(ctx):
     """Discover supported devices."""
-    TIMEOUT = 3
-    debug = 0
-    if ctx.obj:
-        debug = ctx.obj["debug"] or 0
+    TIMEOUT = 5
+
+    async def print_discovered(dev):
+        pretty_name = "%s - %s" % (dev.name, dev.model_number)
+
+        click.echo(click.style("\nFound %s" % pretty_name, bold=True))
+        click.echo("* API version: %s" % dev.version)
+        click.echo("* Endpoint: %s" % dev.endpoint)
+        click.echo("  Services:")
+        for serv in dev.services:
+            click.echo("    - Service: %s" % serv)
+        click.echo("\n[UPnP]")
+        click.echo("* URL: %s" % dev.upnp_location)
+        click.echo("* UDN: %s" % dev.udn)
+        click.echo("  Services:")
+        for serv in dev.upnp_services:
+            click.echo("    - Service: %s" % serv)
+
     click.echo("Discovering for %s seconds" % TIMEOUT)
-    devices = upnpclient.discover(TIMEOUT)
-    for dev in devices:
-        if "ScalarWebAPI" in dev.service_map:
-            if debug:
-                print(etree.tostring(dev._root_xml, pretty_print=True).decode())
-            model = dev.model_name
-            model_number = dev.model_number
 
-            pretty_name = "%s - %s" % (model, model_number)
+    await Discover.discover(TIMEOUT, ctx.obj["debug"] or 0, callback=print_discovered)
 
-            root = objectify.fromstring(etree.tostring(dev._root_xml))
-            device = root["device"]
-            info = device["{urn:schemas-sony-com:av}X_ScalarWebAPI_DeviceInfo"]
-            endpoint = info["X_ScalarWebAPI_BaseURL"].text
-            version = info["X_ScalarWebAPI_Version"].text
-            services = info["X_ScalarWebAPI_ServiceList"].iterchildren()
-
-            click.echo(click.style("Found %s" % pretty_name, bold=True))
-            click.echo("* API version: %s" % version)
-            click.echo("* Endpoint: %s" % endpoint)
-
-            click.echo("* Services:")
-            for serv in services:
-                click.echo("  - Service: %s" % serv.text)
 
 
 @cli.command()
@@ -250,11 +253,16 @@ async def input(dev: Device, input):
 
 
 @cli.command()
+@click.argument("target", required=False)
+@click.argument("value", required=False)
 @pass_dev
 @coro
-async def googlecast(dev: Device):
+async def googlecast(dev: Device, target, value):
     """Return Googlecast settings."""
-    print_settings(await dev.get_wutang())
+    if target and value:
+        click.echo("Setting %s = %s" % (target, value))
+        await dev.set_googlecast_settings(target, value)
+    print_settings(await dev.get_googlecast_settings())
 
 
 @cli.command()
@@ -440,7 +448,6 @@ async def soundfield(dev: Device, soundfield: str):
     if soundfield is not None:
         await dev.set_sound_settings("soundField", soundfield)
     soundfields = await dev.get_sound_settings("soundField")
-    print(await dev.get_soundfield())
     print_settings(soundfields)
 
 
@@ -515,15 +522,8 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
             )
         else:
             click.echo("Listening to all possible notifications")
-            tasks = []
-            for serv in dev.services.values():
-                tasks.append(
-                    asyncio.ensure_future(
-                        serv.listen_all_notifications(handle_notification)
-                    )
-                )
+            await dev.listen_notifications(fallback_callback=handle_notification)
 
-            await asyncio.wait(tasks)
     elif notification:
         click.echo("Subscribing to notification %s" % notification)
         for notif in notifications:
@@ -536,28 +536,6 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
         click.echo(click.style("Available notifications", bold=True))
         for notification in notifications:
             click.echo("* %s" % notification)
-
-
-@cli.command()
-@pass_dev
-@coro
-async def listen(dev: Device):
-    """Listen for volume, power and content notifications."""
-    from .containers import VolumeChange, PowerChange, ContentChange
-
-    async def volume_changed(x):
-        print("volume: %s" % x.volume)
-
-    async def power_changed(x):
-        print("power: %s" % x)
-
-    async def content_changed(x):
-        print("content: %s" % x)
-
-    dev.on_notification(VolumeChange, volume_changed)
-    dev.on_notification(PowerChange, power_changed)
-    dev.on_notification(ContentChange, content_changed)
-    await dev.listen_notifications()
 
 
 @cli.command()

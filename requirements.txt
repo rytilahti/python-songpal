@@ -1,4 +1,4 @@
 aiohttp
 click
-upnpclient
+async_upnp_client
 attrs

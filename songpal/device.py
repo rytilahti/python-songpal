@@ -28,7 +28,7 @@ from songpal.containers import (
     Sysinfo,
     Volume,
 )
-from songpal.notification import Notification
+from songpal.notification import Notification, ConnectChange
 from songpal.service import Service
 
 _LOGGER = logging.getLogger(__name__)
@@ -184,17 +184,17 @@ class Device:
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["system"]["setPowerSettings"](params)
 
-    async def get_wutang(self) -> List[Setting]:
+    async def get_googlecast_settings(self) -> List[Setting]:
         """Get Googlecast settings."""
         return [
             Setting.make(**x)
             for x in await self.services["system"]["getWuTangInfo"]({})
         ]
 
-    async def set_wutang(self, target: str, value: str):
+    async def set_googlecast_settings(self, target: str, value: str):
         """Set Googlecast settings."""
         params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["system"]["setWuTangSettings"](params)
+        return await self.services["system"]["setWuTangInfo"](params)
 
     async def request_settings_tree(self):
         """Get raw settings tree JSON.
@@ -277,7 +277,7 @@ class Device:
     async def get_bluetooth_settings(self) -> List[Setting]:
         """Get bluetooth settings."""
         bt = await self.services["avContent"]["getBluetoothSettings"]({})
-        return [Setting(**x) for x in bt]
+        return [Setting.make(**x) for x in bt]
 
     async def set_bluetooth_settings(self, target: str, value: str) -> None:
         """Set bluetooth settings."""
@@ -418,7 +418,12 @@ class Device:
         """
         self.callbacks[type_].add(callback)
 
-    async def listen_notifications(self):
+    def clear_notification_callbacks(self):
+        """Clear all notification callbacks."""
+        self.callbacks.clear()
+
+
+    async def listen_notifications(self, fallback_callback=None):
         """Listen for notifications from the device forever.
 
         Use :func:on_notification: to register what notifications to listen to.
@@ -427,7 +432,11 @@ class Device:
 
         async def handle_notification(notification):
             if type(notification) not in self.callbacks:
-                _LOGGER.debug("No callbacks for %s", notification)
+                if not fallback_callback:
+                    _LOGGER.debug("No callbacks for %s", notification)
+                    # _LOGGER.debug("Existing callbacks for: %s" % self.callbacks)
+                else:
+                    await fallback_callback(notification)
                 return
             for cb in self.callbacks[type(notification)]:
                 await cb(notification)
@@ -439,7 +448,22 @@ class Device:
                 )
             )
 
-        await asyncio.wait(tasks)
+        try:
+            print(await asyncio.gather(*tasks))
+        except Exception as ex:
+            # TODO: do a slightly restricted exception handling?
+            # Notify about disconnect
+            await handle_notification(ConnectChange(connected=False,
+                                                    exception=ex))
+            return
+
+    async def stop_listen_notifications(self):
+        """Stop listening on notifications."""
+        _LOGGER.debug("Stopping listening for notifications..")
+        for serv in self.services.values():
+            await serv.stop_listen_notifications()
+
+        return True
 
     async def get_notifications(self) -> List[Notification]:
         """Get available notifications, which can then be subscribed to.
