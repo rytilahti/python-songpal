@@ -1,5 +1,5 @@
 import logging
-from async_upnp_client.discovery import async_discover
+from async_upnp_client.search import async_search
 from xml import etree
 import attr
 
@@ -63,6 +63,6 @@ class Discover:
             if callback is not None:
                 await callback(dev)
 
-        await async_discover(timeout=timeout,
+        await async_search(timeout=timeout,
                              service_type=ST,
                              async_callback=parse_device)
