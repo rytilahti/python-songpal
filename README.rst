@@ -224,7 +224,7 @@ Executing custom commands
 -------------------------
 
 For experimenting it can be useful to execute arbitrary commands against the endpoint.
-You can access the available methods by calling ``songpal list-all``.
+You can access the available methods by calling ``songpal list_all``.
 
 ``command`` can be used for that as follows:
 

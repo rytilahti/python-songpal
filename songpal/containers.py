@@ -344,6 +344,33 @@ class Input:
         """Activate this input."""
         return await self.services["avContent"]["setPlayContent"](uri=self.uri)
 
+@attr.s
+class Zone:
+    """Zone information."""
+    make = classmethod(make)
+
+    def _convert_is_active(x):
+        return True if x == "active" else False
+
+    meta = attr.ib()
+    connection = attr.ib()
+    title = attr.ib()
+    uri = attr.ib()
+
+    active = attr.ib(converter=_convert_is_active)
+    label = attr.ib()
+    iconUrl = attr.ib()
+
+    def __str__(self):
+        s = "%s (uri: %s)" % (self.title, self.uri)
+        if self.active:
+            s += " (active)"
+        return s
+
+    async def activate(self):
+        """Activate this zone."""
+        return await self.services["avContent"]["setActiveTerminal"](uri=self.uri)
+
 
 @attr.s
 class Storage:
