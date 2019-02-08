@@ -15,6 +15,7 @@ from songpal.containers import (
     Content,
     ContentInfo,
     Input,
+    Zone,
     InterfaceInfo,
     PlayInfo,
     Power,

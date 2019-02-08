@@ -320,12 +320,15 @@ class Input:
     """Input information."""
     make = classmethod(make)
 
+    def _convert_title(x):
+        return x.strip()
+
     def _convert_is_active(x):
         return True if x == "active" else False
 
     meta = attr.ib()
     connection = attr.ib()
-    title = attr.ib()
+    title = attr.ib(converter=_convert_title)
     uri = attr.ib()
 
     services = attr.ib(repr=False)
