@@ -14,6 +14,7 @@ from songpal.common import ProtocolType
 from songpal.containers import Setting
 from songpal.discovery import Discover
 from songpal.notification import VolumeChange, PowerChange, ContentChange
+from songpal.group import GroupControl
 
 
 def err(msg):
@@ -89,7 +90,6 @@ def print_settings(settings, depth=0):
 
 
 pass_dev = click.make_pass_decorator(Device)
-
 
 @click.group(invoke_without_command=False)
 @click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=False)
@@ -188,9 +188,7 @@ async def discover(ctx):
             click.echo("    - Service: %s" % serv)
 
     click.echo("Discovering for %s seconds" % TIMEOUT)
-
     await Discover.discover(TIMEOUT, ctx.obj["debug"] or 0, callback=print_discovered)
-
 
 
 @cli.command()
@@ -595,6 +593,125 @@ async def dump_devinfo(dev: Device, file):
         json.dump(res, file, sort_keys=True, indent=4)
     else:
         click.echo(json.dumps(res, sort_keys=True, indent=4))
+
+
+pass_groupctl = click.make_pass_decorator(GroupControl)
+
+
+@cli.group()
+@click.pass_context
+@click.option('--url', required=True)
+@coro
+async def group(ctx, url):
+    gc = GroupControl(url)
+    connect = await gc.connect()
+    ctx.obj = gc
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def info(gc: GroupControl):
+    """Control information."""
+    click.echo(await gc.info())
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def state(gc: GroupControl):
+    """Current group state."""
+    state = await gc.state()
+    click.echo(state)
+    click.echo("Full state info: %s" % repr(state))
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def codec(gc: GroupControl):
+    """Codec settings."""
+    codec = await gc.get_codec()
+    click.echo("Codec: %s" % codec)
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def memory(gc: GroupControl):
+    """Group memory."""
+    mem = await gc.get_group_memory()
+    click.echo("Memory: %s" % mem)
+
+
+@group.command()
+@click.argument('name')
+@click.argument('slaves', nargs=-1, required=True)
+@pass_groupctl
+@coro
+async def create(gc: GroupControl, name, slaves):
+    """Create new group"""
+    click.echo("Creating group %s with slaves: %s" % (name, slaves))
+    click.echo(await gc.create(name, slaves))
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def abort(gc: GroupControl):
+    """Abort existing group."""
+    click.echo("Aborting current group..")
+    click.echo(await gc.abort())
+
+@group.command()
+@pass_groupctl
+@click.argument('slaves', nargs=-1, required=True)
+@coro
+async def add(gc: GroupControl, slaves):
+    """Add speakers to group."""
+    click.echo("Adding to existing group: %s" % slaves)
+    click.echo(await gc.add(slaves))
+
+
+@group.command()
+@pass_groupctl
+@click.argument('slaves', nargs=-1, required=True)
+async def remove(gc: GroupControl, slaves):
+    """Remove speakers from group."""
+    click.echo("Removing from existing group: %s" % slaves)
+    click.echo(await gc.remove(slaves))
+
+
+@group.command()
+@pass_groupctl
+@click.argument('volume', type=int)
+async def volume(gc: GroupControl, volume):
+    """Adjust volume [-100, 100]"""
+    click.echo("Setting volume to %s" % volume)
+    click.echo(await gc.set_group_volume(volume))
+
+
+@group.command()
+@pass_groupctl
+@click.argument('mute', type=bool)
+async def mute(gc: GroupControl, mute):
+    """(Un)mute group."""
+    click.echo("Muting group: %s" % mute)
+    click.echo(await gc.set_mute(mute))
+
+
+@group.command()
+@pass_groupctl
+async def play(gc: GroupControl):
+    """Play?"""
+    click.echo("Sending play command: %s" % await gc.play())
+
+
+@group.command()
+@pass_groupctl
+async def stop(gc: GroupControl):
+    """Stop playing?"""
+    click.echo("Sending stop command: %s" % await gc.stop())
 
 
 if __name__ == "__main__":
