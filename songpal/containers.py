@@ -354,7 +354,7 @@ class Zone:
 
     def _convert_title(x):
         return x.strip()
-        
+
     def _convert_is_active(x):
         return True if x == "active" else False
 
@@ -363,6 +363,7 @@ class Zone:
     title = attr.ib(converter=_convert_title)
     uri = attr.ib()
 
+    services = attr.ib(repr=False)
     active = attr.ib(converter=_convert_is_active)
     label = attr.ib()
     iconUrl = attr.ib()
@@ -373,9 +374,9 @@ class Zone:
             s += " (active)"
         return s
 
-    async def activate(self):
+    async def activate(self, activate):
         """Activate this zone."""
-        return await self.services["avContent"]["setActiveTerminal"](uri=self.uri)
+        return await self.services["avContent"]["setActiveTerminal"](active=activate, uri=self.uri)
 
 
 @attr.s

@@ -263,7 +263,12 @@ class Device:
     async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
         res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        return [Input.make(services=self.services, **x) for x in res]
+        return [Input.make(services=self.services, **x) for x in res if 'meta:zone:output' not in x['meta']]
+
+    async def get_zones(self) -> List[Zone]:
+        """Return list of available zones."""
+        res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
+        return [Zone.make(services=self.services, **x) for x in res if 'meta:zone:output' in x['meta']]
 
     async def get_setting(self, service: str, method: str, target: str):
         """Get a single setting for service.
