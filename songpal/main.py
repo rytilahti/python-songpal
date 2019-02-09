@@ -273,7 +273,7 @@ async def zone(dev: Device, zone, activate):
     zones = await dev.get_zones()
     if zone:
         click.echo("Activating %s" % zone)
-
+        
         try:
             zone = next((x for x in zones if x.title == zone))
             
