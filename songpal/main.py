@@ -259,11 +259,13 @@ async def zone(dev: Device, zone, activate):
     """Get and change outputs."""
     zones = await dev.get_zones()
     if zone:
-        click.echo("Activating %s" % zone)
         try:
             zone = next((x for x in zones if x.title == zone))
             
             power = 'inactive' if activate == "off" else 'active'
+            action = "Deactivating" if activate == "off" else "Activating"
+
+            click.echo("%s %s" % (action, zone)) 
                 
             await zone.activate(power)
         except StopIteration:
@@ -342,12 +344,13 @@ async def volume(dev: Device, volume, output):
     vol_controls = await dev.get_volume_information()
     if output is not None:
         click.echo("Using output: %s" % output)
+        output_uri = next ((x.uri for x in await dev.get_zones() if x.title == output))
         for v in vol_controls:
-            if v.output == output:
+            if v.output == output_uri:
                 vol = v
                 break
     else:
-        vol = vol_controls.pop()
+        vol = vol_controls[0]
 
     if vol is None:
         err("Unable to find volume controller: %s" % output)
@@ -363,7 +366,10 @@ async def volume(dev: Device, volume, output):
         click.echo("Setting volume to %s" % volume)
         await vol.set_volume(volume)
 
-    click.echo(vol)
+    if output is not None:
+        click.echo(vol)
+    else:
+        [click.echo(x) for x in vol_controls]
 
 
 @cli.command()

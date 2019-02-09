@@ -263,7 +263,7 @@ class Volume:
         return self.mute == "on"
 
     def __str__(self):
-        s = "Volume: %s/%s" % (self.volume, self.maxVolume)
+        s = "Zone %s Volume: %s/%s" % (self.output[self.output.rfind("=")+1:], self.volume, self.maxVolume)
         if self.is_muted:
             s += " (muted)"
         return s
