@@ -131,6 +131,7 @@ class ContentChange(ChangeNotification):
     contentKind = attr.ib()
     service = attr.ib()
     source = attr.ib()
+    output = attr.ib()
     uri = attr.ib()
     applicationName = attr.ib()
 

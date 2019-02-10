@@ -225,20 +225,33 @@ async def power(dev: Device, cmd, target, value):
 
 
 @cli.command()
+@click.option("--output", type=str, required=False)
 @click.argument("input", required=False)
 @pass_dev
 @coro
-async def input(dev: Device, input):
+async def input(dev: Device, input, output):
     """Get and change outputs."""
     inputs = await dev.get_inputs()
     if input:
         click.echo("Activating %s" % input)
         try:
             input = next((x for x in inputs if x.title == input))
-            await input.activate()
         except StopIteration:
             click.echo("Unable to find input %s" % input)
             return
+        zone = None
+        if output:
+            zones = await dev.get_zones()
+            try:
+                zone = next((x for x in zones if x.title == output))
+            except StopIteration:
+                click.echo("Unable to find zone %s" % output)
+                return
+            if zone.uri not in input.outputs:
+                click.echo("Input %s not valid for zone %s" % (input.title, output))
+                return
+
+        await input.activate(zone)
     else:
         click.echo("Inputs:")
         for input in inputs:

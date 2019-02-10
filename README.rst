@@ -253,6 +253,8 @@ Input Control
 
     $ songpal input 'VIDEO 1'
 
+    $ songpal input 'SOURCE' --output 'Zone 2'
+
 
 Device Settings
 ---------------
