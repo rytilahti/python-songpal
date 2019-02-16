@@ -263,7 +263,7 @@ class Volume:
         return self.mute == "on"
 
     def __str__(self):
-        if self.output:
+        if self.output and self.output.rfind("=") > 0:
             s = "Zone %s Volume: %s/%s" % (self.output[self.output.rfind("=")+1:], self.volume, self.maxVolume)
         else:
             s = "Volume: %s/%s" % (self.volume, self.maxVolume)
