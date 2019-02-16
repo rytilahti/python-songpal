@@ -377,7 +377,7 @@ class Input:
             s += " (active)"
         return s
 
-    async def activate(self, output: Zone = None):
+    async def activate(self, output: Zone=None):
         """Activate this input."""
         return await self.services["avContent"]["setPlayContent"](uri=self.uri, output=output.uri)
 
