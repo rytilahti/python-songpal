@@ -22,7 +22,7 @@ The library has been tested for now with following devices:
 * HT-MT500
 * HT-ZF9
 * SRS-X77, SRS-X88
-* STR-DN1060, STR-DN1070, STR-DN1080 (no multizone support yet)
+* STR-DN1060, STR-DN1070, STR-DN1080
 
 
 .. NOTE::
@@ -282,7 +282,7 @@ Executing custom commands
 -------------------------
 
 For experimenting it can be useful to execute arbitrary commands against the endpoint.
-You can access the available methods by calling ``songpal list_all``.
+You can access the available methods by calling ``songpal list-all``.
 
 ``command`` can be used for that as follows:
 
