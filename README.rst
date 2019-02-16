@@ -158,13 +158,18 @@ Volume Control
 
 .. code-block::
 
-    $ songpal volume [<value>|mute|unmute]
+    $ songpal volume [-- output 'output title'] [<value>|mute|unmute]
 
     $ songpal volume 20
 
     $ songpal volume +5
 
     $ songpal volume -10
+
+    $ songpal volume --output 'Zone 2'
+
+
+    $ songpal volume --output 'Main Zone' 15
 
 Sound Settings
 --------------
@@ -180,22 +185,75 @@ such as night mode or adjusting the subwoofer volume.
 
     $ songpal sound subwooferLevel 4
 
-Output Control
+
+Zone Control
 --------------
 
 .. code-block::
 
-    $ songpal output
+    $ songpal zone 
 
-    Outputs:
+    Zones:
+      * Main Zone (uri: extOutput:zone?zone=1) (active)
+      * Zone 2 (uri: extOutput:zone?zone=2) (active)
+      * Zone 3 (uri: extOutput:zone?zone=3)
+      * HDMI Zone (uri: extOutput:zone?zone=4)
+
+    $ songpal zone 'Main Zone'
+
+    Activating Main Zone (uri: extOutput:zone?zone=1) (active)
+
+    $ songpal zone 'Zone 2' on
+    
+    Activating Zone 2 (uri: extOutput:zone?zone=2) (active)
+
+    $ songpal zone 'Zone 2' off
+    
+    Deactivating Zone 2 (uri: extOutput:zone?zone=2) (active)
+
+Input Control
+--------------
+
+.. code-block::
+
+    $ songpal input
+
+    Inputs:
+      * SOURCE (uri: extInput:source)
+        - extOutput:zone?zone=2
+        - extOutput:zone?zone=3
+        - extOutput:zone?zone=4
+      * GAME (uri: extInput:game) (active)
+        - extOutput:zone?zone=1
+        - extOutput:zone?zone=4
+      * SAT/CATV (uri: extInput:sat-catv)
+        - extOutput:zone?zone=1
+        - extOutput:zone?zone=2
+        - extOutput:zone?zone=3
+        - extOutput:zone?zone=4
+      * VIDEO 1 (uri: extInput:video?port=1)
+        - extOutput:zone?zone=1
+        - extOutput:zone?zone=2
+        - extOutput:zone?zone=3
+        - extOutput:zone?zone=4
+      * VIDEO 2 (uri: extInput:video?port=2)
+        - extOutput:zone?zone=1
+        - extOutput:zone?zone=4
       * TV (uri: extInput:tv)
-      * HDMI1 (uri: extInput:hdmi?port=1)
-      * HDMI2 (uri: extInput:hdmi?port=2) (active)
-      * HDMI3 (uri: extInput:hdmi?port=3)
+        - extOutput:zone?zone=1
+      * SA-CD/CD (uri: extInput:sacd-cd)
+        - extOutput:zone?zone=1
+        - extOutput:zone?zone=2
+        - extOutput:zone?zone=3
+        - extOutput:zone?zone=4
       * Bluetooth Audio (uri: extInput:btAudio)
-      * Analog (uri: extInput:line)
+        - extOutput:zone?zone=1
+        - extOutput:zone?zone=2
+        - extOutput:zone?zone=3
 
-    $ songpal output HDMI1
+    $ songpal input 'VIDEO 1'
+
+    $ songpal input 'SOURCE' --output 'Zone 2'
 
 
 Device Settings
@@ -224,7 +282,7 @@ Executing custom commands
 -------------------------
 
 For experimenting it can be useful to execute arbitrary commands against the endpoint.
-You can access the available methods by calling ``songpal list-all``.
+You can access the available methods by calling ``songpal list_all``.
 
 ``command`` can be used for that as follows:
 

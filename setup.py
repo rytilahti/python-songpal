@@ -32,7 +32,7 @@ setup(
 
     packages=['songpal'],
 
-    install_requires=['click', 'aiohttp', 'attrs', 'async_upnp_client'],
+    install_requires=['click>=7.0', 'aiohttp', 'attrs', 'async_upnp_client'],
     python_requires='>=3.5',
     entry_points={
         'console_scripts': [

@@ -14,6 +14,7 @@ from songpal.common import ProtocolType
 from songpal.containers import Setting
 from songpal.discovery import Discover
 from songpal.notification import VolumeChange, PowerChange, ContentChange
+from songpal.group import GroupControl
 
 
 def err(msg):
@@ -89,7 +90,6 @@ def print_settings(settings, depth=0):
 
 
 pass_dev = click.make_pass_decorator(Device)
-
 
 @click.group(invoke_without_command=False)
 @click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=False)
@@ -188,9 +188,7 @@ async def discover(ctx):
             click.echo("    - Service: %s" % serv)
 
     click.echo("Discovering for %s seconds" % TIMEOUT)
-
     await Discover.discover(TIMEOUT, ctx.obj["debug"] or 0, callback=print_discovered)
-
 
 
 @cli.command()
@@ -227,20 +225,33 @@ async def power(dev: Device, cmd, target, value):
 
 
 @cli.command()
+@click.option("--output", type=str, required=False)
 @click.argument("input", required=False)
 @pass_dev
 @coro
-async def input(dev: Device, input):
+async def input(dev: Device, input, output):
     """Get and change outputs."""
     inputs = await dev.get_inputs()
     if input:
         click.echo("Activating %s" % input)
         try:
             input = next((x for x in inputs if x.title == input))
-            await input.activate()
         except StopIteration:
             click.echo("Unable to find input %s" % input)
             return
+        zone = None
+        if output:
+            zones = await dev.get_zones()
+            try:
+                zone = next((x for x in zones if x.title == output))
+            except StopIteration:
+                click.echo("Unable to find zone %s" % output)
+                return
+            if zone.uri not in input.outputs:
+                click.echo("Input %s not valid for zone %s" % (input.title, output))
+                return
+
+        await input.activate(zone)
     else:
         click.echo("Inputs:")
         for input in inputs:
@@ -250,6 +261,38 @@ async def input(dev: Device, input):
             click.echo("  * " + click.style(str(input), bold=act))
             for out in input.outputs:
                 click.echo("    - %s" % out)
+
+
+@cli.command()
+@click.argument("zone", required=False)
+@click.argument("activate", required=False)
+@pass_dev
+@coro
+async def zone(dev: Device, zone, activate):
+    """Get and change outputs."""
+    zones = await dev.get_zones()
+    if zone:
+        click.echo("Activating %s" % zone)
+        
+        try:
+            zone = next((x for x in zones if x.title == zone))
+            
+            power = 'inactive' if activate == "off" else 'active'
+            action = "Deactivating" if activate == "off" else "Activating"
+
+            click.echo("%s %s" % (action, zone)) 
+                
+            await zone.activate(power)
+        except StopIteration:
+            click.echo("Unable to find zone %s" % zone)
+            return
+    else:
+        click.echo("Zones:")
+        for zone in zones:
+            act = False
+            if zone.active:
+                act = True
+            click.echo("  * " + click.style(str(zone), bold=act))
 
 
 @cli.command()
@@ -316,12 +359,13 @@ async def volume(dev: Device, volume, output):
     vol_controls = await dev.get_volume_information()
     if output is not None:
         click.echo("Using output: %s" % output)
+        output_uri = next ((x.uri for x in await dev.get_zones() if x.title == output))
         for v in vol_controls:
-            if v.output == output:
+            if v.output == output_uri:
                 vol = v
                 break
     else:
-        vol = vol_controls.pop()
+        vol = vol_controls[0]
 
     if vol is None:
         err("Unable to find volume controller: %s" % output)
@@ -337,7 +381,10 @@ async def volume(dev: Device, volume, output):
         click.echo("Setting volume to %s" % volume)
         await vol.set_volume(volume)
 
-    click.echo(vol)
+    if output is not None:
+        click.echo(vol)
+    else:
+        [click.echo(x) for x in vol_controls]
 
 
 @cli.command()
@@ -595,6 +642,125 @@ async def dump_devinfo(dev: Device, file):
         json.dump(res, file, sort_keys=True, indent=4)
     else:
         click.echo(json.dumps(res, sort_keys=True, indent=4))
+
+
+pass_groupctl = click.make_pass_decorator(GroupControl)
+
+
+@cli.group()
+@click.pass_context
+@click.option('--url', required=True)
+@coro
+async def group(ctx, url):
+    gc = GroupControl(url)
+    connect = await gc.connect()
+    ctx.obj = gc
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def info(gc: GroupControl):
+    """Control information."""
+    click.echo(await gc.info())
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def state(gc: GroupControl):
+    """Current group state."""
+    state = await gc.state()
+    click.echo(state)
+    click.echo("Full state info: %s" % repr(state))
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def codec(gc: GroupControl):
+    """Codec settings."""
+    codec = await gc.get_codec()
+    click.echo("Codec: %s" % codec)
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def memory(gc: GroupControl):
+    """Group memory."""
+    mem = await gc.get_group_memory()
+    click.echo("Memory: %s" % mem)
+
+
+@group.command()
+@click.argument('name')
+@click.argument('slaves', nargs=-1, required=True)
+@pass_groupctl
+@coro
+async def create(gc: GroupControl, name, slaves):
+    """Create new group"""
+    click.echo("Creating group %s with slaves: %s" % (name, slaves))
+    click.echo(await gc.create(name, slaves))
+
+
+@group.command()
+@pass_groupctl
+@coro
+async def abort(gc: GroupControl):
+    """Abort existing group."""
+    click.echo("Aborting current group..")
+    click.echo(await gc.abort())
+
+@group.command()
+@pass_groupctl
+@click.argument('slaves', nargs=-1, required=True)
+@coro
+async def add(gc: GroupControl, slaves):
+    """Add speakers to group."""
+    click.echo("Adding to existing group: %s" % slaves)
+    click.echo(await gc.add(slaves))
+
+
+@group.command()
+@pass_groupctl
+@click.argument('slaves', nargs=-1, required=True)
+async def remove(gc: GroupControl, slaves):
+    """Remove speakers from group."""
+    click.echo("Removing from existing group: %s" % slaves)
+    click.echo(await gc.remove(slaves))
+
+
+@group.command()
+@pass_groupctl
+@click.argument('volume', type=int)
+async def volume(gc: GroupControl, volume):
+    """Adjust volume [-100, 100]"""
+    click.echo("Setting volume to %s" % volume)
+    click.echo(await gc.set_group_volume(volume))
+
+
+@group.command()
+@pass_groupctl
+@click.argument('mute', type=bool)
+async def mute(gc: GroupControl, mute):
+    """(Un)mute group."""
+    click.echo("Muting group: %s" % mute)
+    click.echo(await gc.set_mute(mute))
+
+
+@group.command()
+@pass_groupctl
+async def play(gc: GroupControl):
+    """Play?"""
+    click.echo("Sending play command: %s" % await gc.play())
+
+
+@group.command()
+@pass_groupctl
+async def stop(gc: GroupControl):
+    """Stop playing?"""
+    click.echo("Sending stop command: %s" % await gc.stop())
 
 
 if __name__ == "__main__":
