@@ -319,7 +319,10 @@ class Power:
 
 @attr.s
 class Zone:
-    """Zone information."""
+    """Zone information.
+
+    This implements __bool__() for easy checking if the device is turned on or not.
+    """
     make = classmethod(make)
 
     def _convert_title(x):
@@ -344,9 +347,13 @@ class Zone:
             s += " (active)"
         return s
 
+
+    def __bool__(self):
+        return self.status
+
     async def activate(self, activate):
         """Activate this zone."""
-        return await self.services["avContent"]["setActiveTerminal"](active=activate, uri=self.uri)
+        return await self.services["avContent"]["setActiveTerminal"](active='active' if activate else 'inactive', uri=self.uri)
 
 
 @attr.s
@@ -380,38 +387,6 @@ class Input:
     async def activate(self, output: Zone=None):
         """Activate this input."""
         return await self.services["avContent"]["setPlayContent"](uri=self.uri, output=output.uri)
-
-
-@attr.s
-class Zone:
-    """Zone information."""
-    make = classmethod(make)
-
-    def _convert_title(x):
-        return x.strip()
-
-    def _convert_is_active(x):
-        return True if x == "active" else False
-
-    meta = attr.ib()
-    connection = attr.ib()
-    title = attr.ib(converter=_convert_title)
-    uri = attr.ib()
-
-    services = attr.ib(repr=False)
-    active = attr.ib(converter=_convert_is_active)
-    label = attr.ib()
-    iconUrl = attr.ib()
-
-    def __str__(self):
-        s = "%s (uri: %s)" % (self.title, self.uri)
-        if self.active:
-            s += " (active)"
-        return s
-
-    async def activate(self, activate):
-        """Activate this zone."""
-        return await self.services["avContent"]["setActiveTerminal"](active=activate, uri=self.uri)
 
 
 @attr.s

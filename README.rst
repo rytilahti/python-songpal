@@ -203,11 +203,11 @@ Zone Control
 
     Activating Main Zone (uri: extOutput:zone?zone=1) (active)
 
-    $ songpal zone 'Zone 2' on
+    $ songpal zone 'Zone 2' true
     
     Activating Zone 2 (uri: extOutput:zone?zone=2) (active)
 
-    $ songpal zone 'Zone 2' off
+    $ songpal zone 'Zone 2' false
     
     Deactivating Zone 2 (uri: extOutput:zone?zone=2) (active)
 

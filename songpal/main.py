@@ -265,24 +265,21 @@ async def input(dev: Device, input, output):
 
 @cli.command()
 @click.argument("zone", required=False)
-@click.argument("activate", required=False)
+@click.argument("activate", required=False, type=click.BOOL)
 @pass_dev
 @coro
 async def zone(dev: Device, zone, activate):
     """Get and change outputs."""
     zones = await dev.get_zones()
     if zone:
-        click.echo("Activating %s" % zone)
-        
         try:
             zone = next((x for x in zones if x.title == zone))
             
-            power = 'inactive' if activate == "off" else 'active'
-            action = "Deactivating" if activate == "off" else "Activating"
+            action = "Activating" if activate else "Deactivating"
 
             click.echo("%s %s" % (action, zone)) 
                 
-            await zone.activate(power)
+            await zone.activate(activate)
         except StopIteration:
             click.echo("Unable to find zone %s" % zone)
             return
