@@ -17,6 +17,19 @@ from songpal.notification import VolumeChange, PowerChange, ContentChange
 from songpal.group import GroupControl
 
 
+class OnOffBoolParamType(click.ParamType):
+    name = 'boolean'
+
+    def convert(self, value, param, ctx):
+        if value == 'on':
+            return True
+        elif value == 'off':
+            return False
+        else: 
+            return click.BOOL.convert(value, param, ctx)
+
+ONOFF_BOOL = OnOffBoolParamType()
+
 def err(msg):
     """Pretty-print an error."""
     click.echo(click.style(msg, fg="red", bold=True))
@@ -225,20 +238,28 @@ async def power(dev: Device, cmd, target, value):
 
 
 @cli.command()
+@click.option("--output", type=str, required=False)
 @click.argument("input", required=False)
 @pass_dev
 @coro
-async def input(dev: Device, input):
+async def input(dev: Device, input, output):
     """Get and change outputs."""
     inputs = await dev.get_inputs()
     if input:
         click.echo("Activating %s" % input)
         try:
             input = next((x for x in inputs if x.title == input))
-            await input.activate()
         except StopIteration:
             click.echo("Unable to find input %s" % input)
             return
+        zone = None
+        if output:
+            zone = await dev.get_zone(output)
+            if zone.uri not in input.outputs:
+                click.echo("Input %s not valid for zone %s" % (input.title, output))
+                return
+
+        await input.activate(zone)
     else:
         click.echo("Inputs:")
         for input in inputs:
@@ -248,6 +269,26 @@ async def input(dev: Device, input):
             click.echo("  * " + click.style(str(input), bold=act))
             for out in input.outputs:
                 click.echo("    - %s" % out)
+
+
+@cli.command()
+@click.argument("zone", required=False)
+@click.argument("activate", required=False, type=ONOFF_BOOL)
+@pass_dev
+@coro
+async def zone(dev: Device, zone, activate):
+    """Get and change outputs."""
+    if zone:
+        zone = await dev.get_zone(zone)
+        click.echo("%s %s" % ("Activating" if activate else "Deactivating", zone)) 
+        await zone.activate(activate)
+    else:
+        click.echo("Zones:")
+        for zone in await dev.get_zones():
+            act = False
+            if zone.active:
+                act = True
+            click.echo("  * " + click.style(str(zone), bold=act))
 
 
 @cli.command()
@@ -314,12 +355,13 @@ async def volume(dev: Device, volume, output):
     vol_controls = await dev.get_volume_information()
     if output is not None:
         click.echo("Using output: %s" % output)
+        output_uri = (await dev.get_zone(output)).uri
         for v in vol_controls:
-            if v.output == output:
+            if v.output == output_uri:
                 vol = v
                 break
     else:
-        vol = vol_controls.pop()
+        vol = vol_controls[0]
 
     if vol is None:
         err("Unable to find volume controller: %s" % output)
@@ -335,7 +377,10 @@ async def volume(dev: Device, volume, output):
         click.echo("Setting volume to %s" % volume)
         await vol.set_volume(volume)
 
-    click.echo(vol)
+    if output is not None:
+        click.echo(vol)
+    else:
+        [click.echo(x) for x in vol_controls]
 
 
 @cli.command()

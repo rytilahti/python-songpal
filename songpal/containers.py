@@ -51,6 +51,16 @@ def convert_to_bool(x):
     return x == "true"
 
 
+def convert_is_active(x):
+    """Convert string 'active' to bool."""
+    return True if x == "active" else False
+
+
+def convert_title(x):
+    """Trim trailing characters on the title"""
+    return x.strip()
+
+
 @attr.s
 class Scheme:
     """Input scheme container."""
@@ -263,7 +273,10 @@ class Volume:
         return self.mute == "on"
 
     def __str__(self):
-        s = "Volume: %s/%s" % (self.volume, self.maxVolume)
+        if self.output and self.output.rfind("=") > 0:
+            s = "Zone %s Volume: %s/%s" % (self.output[self.output.rfind("=")+1:], self.volume, self.maxVolume)
+        else:
+            s = "Volume: %s/%s" % (self.volume, self.maxVolume)
         if self.is_muted:
             s += " (muted)"
         return s
@@ -314,22 +327,45 @@ class Power:
         else:
             return "Power off"
 
+@attr.s
+class Zone:
+    """Zone information.
+    """
+    make = classmethod(make)
+
+    meta = attr.ib()
+    connection = attr.ib()
+    title = attr.ib(converter=convert_title)
+    uri = attr.ib()
+
+    services = attr.ib(repr=False)
+    active = attr.ib(converter=convert_is_active)
+    label = attr.ib()
+    iconUrl = attr.ib()
+
+    def __str__(self):
+        s = "%s (uri: %s)" % (self.title, self.uri)
+        if self.active:
+            s += " (active)"
+        return s
+
+    async def activate(self, activate):
+        """Activate this zone."""
+        return await self.services["avContent"]["setActiveTerminal"](active='active' if activate else 'inactive', uri=self.uri)
+
 
 @attr.s
 class Input:
     """Input information."""
     make = classmethod(make)
 
-    def _convert_is_active(x):
-        return True if x == "active" else False
-
     meta = attr.ib()
     connection = attr.ib()
-    title = attr.ib()
+    title = attr.ib(converter=convert_title)
     uri = attr.ib()
 
     services = attr.ib(repr=False)
-    active = attr.ib(converter=_convert_is_active)
+    active = attr.ib(converter=convert_is_active)
     label = attr.ib()
     iconUrl = attr.ib()
     outputs = attr.ib(default=attr.Factory(list))
@@ -340,9 +376,10 @@ class Input:
             s += " (active)"
         return s
 
-    async def activate(self):
+    async def activate(self, output: Zone=None):
         """Activate this input."""
-        return await self.services["avContent"]["setPlayContent"](uri=self.uri)
+        output_uri = output.uri if output else ""
+        return await self.services["avContent"]["setPlayContent"](uri=self.uri, output=output_uri)
 
 
 @attr.s
