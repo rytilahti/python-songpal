@@ -51,6 +51,16 @@ def convert_to_bool(x):
     return x == "true"
 
 
+def convert_is_active(x):
+    """Convert string 'active' to bool."""
+    return True if x == "active" else False
+
+
+def convert_title(x):
+    """Trim trailing characters on the title"""
+    return x.strip()
+
+
 @attr.s
 class Scheme:
     """Input scheme container."""
@@ -323,19 +333,13 @@ class Zone:
     """
     make = classmethod(make)
 
-    def _convert_title(x):
-        return x.strip()
-
-    def _convert_is_active(x):
-        return True if x == "active" else False
-
     meta = attr.ib()
     connection = attr.ib()
-    title = attr.ib(converter=_convert_title)
+    title = attr.ib(converter=convert_title)
     uri = attr.ib()
 
     services = attr.ib(repr=False)
-    active = attr.ib(converter=_convert_is_active)
+    active = attr.ib(converter=convert_is_active)
     label = attr.ib()
     iconUrl = attr.ib()
 
@@ -355,19 +359,13 @@ class Input:
     """Input information."""
     make = classmethod(make)
 
-    def _convert_title(x):
-        return x.strip()
-
-    def _convert_is_active(x):
-        return True if x == "active" else False
-
     meta = attr.ib()
     connection = attr.ib()
-    title = attr.ib(converter=_convert_title)
+    title = attr.ib(converter=convert_title)
     uri = attr.ib()
 
     services = attr.ib(repr=False)
-    active = attr.ib(converter=_convert_is_active)
+    active = attr.ib(converter=convert_is_active)
     label = attr.ib()
     iconUrl = attr.ib()
     outputs = attr.ib(default=attr.Factory(list))
