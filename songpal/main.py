@@ -241,12 +241,7 @@ async def input(dev: Device, input, output):
             return
         zone = None
         if output:
-            zones = await dev.get_zones()
-            try:
-                zone = next((x for x in zones if x.title == output))
-            except StopIteration:
-                click.echo("Unable to find zone %s" % output)
-                return
+            zone = await dev.get_zone(output)
             if zone.uri not in input.outputs:
                 click.echo("Input %s not valid for zone %s" % (input.title, output))
                 return
@@ -347,7 +342,7 @@ async def volume(dev: Device, volume, output):
     vol_controls = await dev.get_volume_information()
     if output is not None:
         click.echo("Using output: %s" % output)
-        output_uri = next ((x.uri for x in await dev.get_zones() if x.title == output))
+        output_uri = (await dev.get_zone(output)).uri
         for v in vol_controls:
             if v.output == output_uri:
                 vol = v

@@ -276,7 +276,7 @@ class Device:
             zone = next((x for x in zones if x.title == name))
             return zone
         except StopIteration:
-            raise SongpalException("Unable to find zone %s" % zone)
+            raise SongpalException("Unable to find zone %s" % name)
 
     async def get_setting(self, service: str, method: str, target: str):
         """Get a single setting for service.

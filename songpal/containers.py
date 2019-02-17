@@ -320,8 +320,6 @@ class Power:
 @attr.s
 class Zone:
     """Zone information.
-
-    This implements __bool__() for easy checking if the device is turned on or not.
     """
     make = classmethod(make)
 
@@ -346,10 +344,6 @@ class Zone:
         if self.active:
             s += " (active)"
         return s
-
-
-    def __bool__(self):
-        return self.status
 
     async def activate(self, activate):
         """Activate this zone."""
