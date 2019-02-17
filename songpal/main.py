@@ -17,6 +17,19 @@ from songpal.notification import VolumeChange, PowerChange, ContentChange
 from songpal.group import GroupControl
 
 
+class OnOffBoolParamType(click.ParamType):
+    name = 'boolean'
+
+    def convert(self, value, param, ctx):
+        if value == 'on':
+            return True
+        elif value == 'off':
+            return False
+        else: 
+            return click.BOOL.convert(value, param, ctx)
+
+ONOFF_BOOL = OnOffBoolParamType()
+
 def err(msg):
     """Pretty-print an error."""
     click.echo(click.style(msg, fg="red", bold=True))
@@ -260,7 +273,7 @@ async def input(dev: Device, input, output):
 
 @cli.command()
 @click.argument("zone", required=False)
-@click.argument("activate", required=False, type=click.BOOL)
+@click.argument("activate", required=False, type=ONOFF_BOOL)
 @pass_dev
 @coro
 async def zone(dev: Device, zone, activate):
