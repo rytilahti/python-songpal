@@ -1,5 +1,30 @@
 # Change Log
 
+## [0.10](https://github.com/rytilahti/python-songpal/tree/0.10) (2019-02-17)
+
+This release adds preliminary support for controlling devices with multiple zones (@jwiese)
+and grouping of devices (@rytilahti). Two fixes for compatibility breaking changes in 
+async_upnp_client and click were also fixed.
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.9...0.10)
+
+**Implemented enhancements:**
+
+- Add multi-zone support [\#13](https://github.com/rytilahti/python-songpal/issues/13)
+- \[Feature/Discussion\] Grouping / Ungrouping Devices  [\#12](https://github.com/rytilahti/python-songpal/issues/12)
+
+**Merged pull requests:**
+
+- Initial support for zone control [\#42](https://github.com/rytilahti/python-songpal/pull/42) ([jwiese](https://github.com/jwiese))
+- Update because async\_upnp\_client changed "discover" to "search" [\#41](https://github.com/rytilahti/python-songpal/pull/41) ([jwiese](https://github.com/jwiese))
+- Avoid crashing on setting changes we don't know how to handle [\#40](https://github.com/rytilahti/python-songpal/pull/40) ([rytilahti](https://github.com/rytilahti))
+- Added SRS-X77 devinfo [\#39](https://github.com/rytilahti/python-songpal/pull/39) ([tobyh](https://github.com/tobyh))
+- Add ability to change googlecast settings [\#38](https://github.com/rytilahti/python-songpal/pull/38) ([rytilahti](https://github.com/rytilahti))
+- multi-word arguments should use dashes [\#37](https://github.com/rytilahti/python-songpal/pull/37) ([flyingclimber](https://github.com/flyingclimber))
+- convert discovery to use async\_upnp\_client [\#35](https://github.com/rytilahti/python-songpal/pull/35) ([rytilahti](https://github.com/rytilahti))
+- Initial support for controlling device groups [\#34](https://github.com/rytilahti/python-songpal/pull/34) ([rytilahti](https://github.com/rytilahti))
+
+
 ## [0.0.9](https://github.com/rytilahti/python-songpal/tree/0.0.9) (2018-12-08)
 
 This release improves the support for notifications and fixes some minor issues.
