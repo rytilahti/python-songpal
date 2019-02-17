@@ -214,8 +214,19 @@ Zone Control
 Input Control
 --------------
 
+without zones:
 .. code-block::
 
+    $ songpal input
+          * HDMI1 (uri: extInput:hdmi?port=1)
+          * HDMI2 (uri: extInput:hdmi?port=2) (active)
+          * HDMI3 (uri: extInput:hdmi?port=3)
+
+    $ songpal input HDMI1
+
+
+with zones:
+.. code-block::
     $ songpal input
 
     Inputs:
