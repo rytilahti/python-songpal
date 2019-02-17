@@ -386,7 +386,8 @@ class Input:
 
     async def activate(self, output: Zone=None):
         """Activate this input."""
-        return await self.services["avContent"]["setPlayContent"](uri=self.uri, output=output.uri)
+        output_uri = output.uri if output else ""
+        return await self.services["avContent"]["setPlayContent"](uri=self.uri, output=output_uri)
 
 
 @attr.s

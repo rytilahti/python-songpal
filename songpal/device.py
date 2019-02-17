@@ -270,6 +270,14 @@ class Device:
         res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
         return [Zone.make(services=self.services, **x) for x in res if 'meta:zone:output' in x['meta']]
 
+    async def get_zone(self, name) -> Zone:
+        zones = await self.get_zones()
+        try:
+            zone = next((x for x in zones if x.title == name))
+            return zone
+        except StopIteration:
+            raise SongpalException("Unable to find zone %s" % zone)
+
     async def get_setting(self, service: str, method: str, target: str):
         """Get a single setting for service.
 

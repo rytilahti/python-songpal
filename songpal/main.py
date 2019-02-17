@@ -270,22 +270,13 @@ async def input(dev: Device, input, output):
 @coro
 async def zone(dev: Device, zone, activate):
     """Get and change outputs."""
-    zones = await dev.get_zones()
     if zone:
-        try:
-            zone = next((x for x in zones if x.title == zone))
-            
-            action = "Activating" if activate else "Deactivating"
-
-            click.echo("%s %s" % (action, zone)) 
-                
-            await zone.activate(activate)
-        except StopIteration:
-            click.echo("Unable to find zone %s" % zone)
-            return
+        zone = await dev.get_zone(zone)
+        click.echo("%s %s" % ("Activating" if activate else "Deactivating", zone)) 
+        await zone.activate(activate)
     else:
         click.echo("Zones:")
-        for zone in zones:
+        for zone in await dev.get_zones():
             act = False
             if zone.active:
                 act = True
