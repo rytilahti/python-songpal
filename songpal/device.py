@@ -268,7 +268,10 @@ class Device:
     async def get_zones(self) -> List[Zone]:
         """Return list of available zones."""
         res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        return [Zone.make(services=self.services, **x) for x in res if 'meta:zone:output' in x['meta']]
+        zones = [Zone.make(services=self.services, **x) for x in res if 'meta:zone:output' in x['meta']]
+        if not zones:
+            raise SongpalException("Device has no zones")
+        return zones
 
     async def get_zone(self, name) -> Zone:
         zones = await self.get_zones()
