@@ -213,7 +213,7 @@ class Service:
             elif method == "notifySWUpdateInfo":
                 return SoftwareUpdateChange.make(**change)
             else:
-                _LOGGER.warning("Got unknown notification type: %s", method)
+                _LOGGER.warning("Got unknown notification type: %s - params: %s", method, params)
         elif "result" in data:
             result = data["result"][0]
             if "enabled" in result and "enabled" in result:

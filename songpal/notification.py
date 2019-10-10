@@ -85,6 +85,7 @@ class VolumeChange(ChangeNotification):
 
     mute = attr.ib(convert=lambda x: True if x == "on" else False)
     volume = attr.ib()
+    output = attr.ib()
 
 
 @attr.s
@@ -134,6 +135,11 @@ class ContentChange(ChangeNotification):
     output = attr.ib()
     uri = attr.ib()
     applicationName = attr.ib()
+    
+    kind = attr.ib()
+    mediaType = attr.ib()
+    parentUri = attr.ib()
+    stateInfo = attr.ib()
 
     @property
     def is_input(self):

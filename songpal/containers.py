@@ -18,7 +18,7 @@ def make(cls, **kwargs):
 
     unknown = {k: v for k, v in kwargs.items() if k not in cls_attrs}
     if len(unknown) > 0:
-        _LOGGER.warning(
+        _LOGGER.debug(
             "Got unknowns for %s: %s - please create an issue!", cls.__name__, unknown
         )
 
