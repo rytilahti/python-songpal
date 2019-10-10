@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.11.1](https://github.com/rytilahti/python-songpal/tree/0.11.1) (2019-10-10)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.11...0.11.1)
+
+**Closed issues:**
+
+- TypeError: attrib\(\) got an unexpected keyword argument 'convert' [\#54](https://github.com/rytilahti/python-songpal/issues/54)
+- Home Assistant lots of Songpal errors [\#52](https://github.com/rytilahti/python-songpal/issues/52)
+
+**Merged pull requests:**
+
+- use converter instead of convert for attrib [\#57](https://github.com/rytilahti/python-songpal/pull/57) ([rytilahti](https://github.com/rytilahti))
+
 ## [0.11](https://github.com/rytilahti/python-songpal/tree/0.11) (2019-10-10)
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.10...0.11)
@@ -12,6 +25,7 @@
 
 **Merged pull requests:**
 
+- Prepare 0.11 release [\#56](https://github.com/rytilahti/python-songpal/pull/56) ([rytilahti](https://github.com/rytilahti))
 - Report unknown notification variables using debug logger [\#55](https://github.com/rytilahti/python-songpal/pull/55) ([rytilahti](https://github.com/rytilahti))
 - songpal dump-devinfo \<BDV-N9200W - BDV-2014\> [\#53](https://github.com/rytilahti/python-songpal/pull/53) ([anhtuanng98](https://github.com/anhtuanng98))
 - Added devinfo file for Sony CMT-SX7B [\#50](https://github.com/rytilahti/python-songpal/pull/50) ([birt](https://github.com/birt))
