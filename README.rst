@@ -227,6 +227,7 @@ without zones:
 
 with zones:
 .. code-block::
+
     $ songpal input
 
     Inputs:
