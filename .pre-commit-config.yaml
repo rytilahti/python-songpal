@@ -4,4 +4,21 @@ repos:
   hooks:
   - id: black
     language_version: python3
-
+- repo: https://github.com/pre-commit/mirrors-isort
+  rev: v4.3.4
+  hooks:
+  - id: isort
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  hooks:
+  - id: flake8
+  - id: check-merge-conflict
+  - id: check-symlinks
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+  - id: requirements-txt-fixer
+- repo: https://github.com/luismayta/pre-commit-mypy
+  rev: 0.1.1  
+  hooks:
+  - id: mypy
+    args:
+    - --ignore-missing-imports

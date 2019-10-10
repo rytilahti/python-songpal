@@ -2,3 +2,4 @@ aiohttp
 click
 async_upnp_client
 attrs
+pre-commit
