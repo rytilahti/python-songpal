@@ -78,8 +78,8 @@ class SoftwareUpdateChange(ChangeNotification):
         if x is not None:
             return SoftwareUpdateInfo.make(**x[0])
 
-    isUpdatable = attr.ib(convert=convert_to_bool)
-    swInfo = attr.ib(convert=_convert_if_available)
+    isUpdatable = attr.ib(converter=convert_to_bool)
+    swInfo = attr.ib(converter=_convert_if_available)
 
 
 @attr.s
@@ -88,7 +88,7 @@ class VolumeChange(ChangeNotification):
 
     make = classmethod(make)
 
-    mute = attr.ib(convert=lambda x: True if x == "on" else False)
+    mute = attr.ib(converter=lambda x: True if x == "on" else False)
     volume = attr.ib()
     output = attr.ib()
 
@@ -164,8 +164,8 @@ class NotificationChange(ChangeNotification):
 
     make = classmethod(make)
 
-    enabled = attr.ib(convert=lambda x: [x["name"] for x in x])
-    disabled = attr.ib(convert=lambda x: [x["name"] for x in x])
+    enabled = attr.ib(converter=lambda x: [x["name"] for x in x])
+    disabled = attr.ib(converter=lambda x: [x["name"] for x in x])
 
     def __str__(self):
         return "<NotificationChange enabled: %s disabled: %s>" % (
