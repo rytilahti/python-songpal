@@ -8,11 +8,11 @@ import logging
 from pprint import pformat as pf
 from typing import Any, Dict, List
 from urllib.parse import urlparse
+from songpal.services import Guide, System, Audio, AVContent
 
-from songpal.common import SongpalException
+from songpal.common import SongpalException, ProtocolType
 from songpal.containers import (
     Content,
-    ContentInfo,
     Input,
     Zone,
     InterfaceInfo,
@@ -28,8 +28,8 @@ from songpal.containers import (
     Sysinfo,
     Volume,
 )
-from songpal.notification import Notification, ConnectChange
-from songpal.service import Service
+from .notification import Notification, ConnectChange
+from .services.service import Service
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,56 +67,13 @@ class Device:
 
         self.callbacks = defaultdict(set)
 
+        self.system = None  # type: System
+        self.audio = None  # type: Audio
+        self.avcontent = None  # type: AVContent
+
     async def __aenter__(self):
         """Asynchronous context manager, initializes the list of available methods."""
         await self.get_supported_methods()
-
-    async def create_post_request(self, method: str, params: Dict = None):
-        """Call the given method over POST.
-
-        :param method: Name of the method
-        :param params: dict of parameters
-        :return: JSON object
-        """
-        if params is None:
-            params = {}
-        headers = {"Content-Type": "application/json"}
-        payload = {
-            "method": method,
-            "params": [params],
-            "id": next(self.idgen),
-            "version": "1.0",
-        }
-
-        if self.debug > 1:
-            _LOGGER.debug("> POST %s with body: %s", self.guide_endpoint, payload)
-
-        async with aiohttp.ClientSession(headers=headers) as session:
-            res = await session.post(self.guide_endpoint, json=payload, headers=headers)
-            if self.debug > 1:
-                _LOGGER.debug("Received %s: %s" % (res.status_code, res.text))
-            if res.status != 200:
-                raise SongpalException(
-                    "Got a non-ok (status %s) response for %s" % (res.status, method),
-                    error=await res.json()["error"],
-                )
-
-            res = await res.json()
-
-        # TODO handle exceptions from POST? This used to raise SongpalException
-        #      on requests.RequestException (Unable to get APIs).
-
-        if "error" in res:
-            raise SongpalException("Got an error for %s" % method, error=res["error"])
-
-        if self.debug > 1:
-            _LOGGER.debug("Got %s: %s", method, pf(res))
-
-        return res
-
-    async def request_supported_methods(self):
-        """Return JSON formatted supported API."""
-        return await self.create_post_request("getSupportedApiInfo")
 
     async def get_supported_methods(self):
         """Get information about supported methods.
@@ -124,82 +81,46 @@ class Device:
         Calling this as the first thing before doing anything else is
         necessary to fill the available services table.
         """
-        response = await self.request_supported_methods()
-
-        if "result" in response:
-            services = response["result"][0]
-            _LOGGER.debug("Got %s services!" % len(services))
-
-            for x in services:
-                serv = await Service.from_payload(
-                    x, self.endpoint, self.idgen, self.debug, self.force_protocol
-                )
-                if serv is not None:
-                    self.services[x["service"]] = serv
-                else:
-                    _LOGGER.warning("Unable to create service %s", x["service"])
-
-            for service in self.services.values():
-                if self.debug > 1:
-                    _LOGGER.debug("Service %s", service)
-                for api in service.methods:
-                    # self.logger.debug("%s > %s" % (service, api))
-                    if self.debug > 1:
-                        _LOGGER.debug("> %s" % api)
-            return self.services
-
-        return None
+        guide = Guide("guide", endpoint=self.guide_endpoint, protocol=ProtocolType.XHRPost, idgen=self.idgen, debug=self.debug)
+        self.services = await guide.get_supported_apis(self.endpoint, self.force_protocol)
+        print(self.services.keys())
+        if "system" in self.services:
+            self.system = self.services["system"]
+        if "audio" in self.services:
+            self.audio = self.services["audio"]
+        if "avContent" in self.services:
+            self.avcontent = self.services["avContent"]
 
     async def get_power(self) -> Power:
         """Get the device state."""
-        res = await self.services["system"]["getPowerStatus"]()
-        return Power.make(**res)
+        return await self.system.get_power()
 
     async def set_power(self, value: bool):
         """Toggle the device on and off."""
-        if value:
-            status = "active"
-        else:
-            status = "off"
-        # TODO WoL works when quickboot is not enabled
-        return await self.services["system"]["setPowerStatus"](status=status)
-
-    async def get_play_info(self) -> PlayInfo:
-        """Return  of the device."""
-        info = await self.services["avContent"]["getPlayingContentInfo"]({})
-        return PlayInfo.make(**info.pop())
+        return await self.system.set_power(value)
 
     async def get_power_settings(self) -> List[Setting]:
         """Get power settings."""
-        return [
-            Setting.make(**x)
-            for x in await self.services["system"]["getPowerSettings"]({})
-        ]
+        return await self.system.get_power_settings()
 
     async def set_power_settings(self, target: str, value: str) -> None:
         """Set power settings."""
-        params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["system"]["setPowerSettings"](params)
+        await self.system.set_power_settings(target, value)
 
     async def get_googlecast_settings(self) -> List[Setting]:
         """Get Googlecast settings."""
-        return [
-            Setting.make(**x)
-            for x in await self.services["system"]["getWuTangInfo"]({})
-        ]
+        return await self.system.get_googlecast_settings()
 
     async def set_googlecast_settings(self, target: str, value: str):
         """Set Googlecast settings."""
-        params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["system"]["setWuTangInfo"](params)
+        return await self.system.set_googlecast_settings(target, value)
 
     async def request_settings_tree(self):
         """Get raw settings tree JSON.
 
         Prefer :func:get_settings: for containerized settings.
         """
-        settings = await self.services["system"]["getSettingsTree"](usage="")
-        return settings
+        return await self.system.request_settings_tree()
 
     async def get_settings(self) -> List[SettingsEntry]:
         """Get a list of available settings.
@@ -211,63 +132,47 @@ class Device:
 
     async def get_misc_settings(self) -> List[Setting]:
         """Return miscellaneous settings such as name and timezone."""
-        misc = await self.services["system"]["getDeviceMiscSettings"](target="")
-        return [Setting.make(**x) for x in misc]
+        raise Exception("moved")
 
     async def set_misc_settings(self, target: str, value: str):
         """Change miscellaneous settings."""
-        params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["system"]["setDeviceMiscSettings"](params)
+        return await self.system.set_misc_setting(target, value)
 
     async def get_interface_information(self) -> InterfaceInfo:
         """Return generic product information."""
-        iface = await self.services["system"]["getInterfaceInformation"]()
-        return InterfaceInfo.make(**iface)
+        return await self.system.get_interface_information()
 
     async def get_system_info(self) -> Sysinfo:
         """Return system information including mac addresses and current version."""
-        return Sysinfo.make(**await self.services["system"]["getSystemInformation"]())
+        return await self.system.get_system_info()
 
     async def get_sleep_timer_settings(self) -> List[Setting]:
         """Get sleep timer settings."""
-        return [
-            Setting.make(**x)
-            for x in await self.services["system"]["getSleepTimerSettings"]({})
-        ]
+        return await self.system.get_sleep_timer_settings()
 
     async def get_storage_list(self) -> List[Storage]:
         """Return information about connected storage devices."""
-        return [
-            Storage.make(**x)
-            for x in await self.services["system"]["getStorageList"]({})
-        ]
+        return await self.system.get_storage_list()
 
     async def get_update_info(self, from_network=True) -> SoftwareUpdateInfo:
         """Get information about updates."""
-        if from_network:
-            from_network = "true"
-        else:
-            from_network = "false"
-        # from_network = ""
-        info = await self.services["system"]["getSWUpdateInfo"](network=from_network)
-        return SoftwareUpdateInfo.make(**info)
+        return await self.system.get_update_info(from_network=from_network)
 
     async def activate_system_update(self) -> None:
         """Start a system update if available."""
-        return await self.services["system"]["actSWUpdate"]()
+        return await self.system.activate_system_update()
+
+    async def get_play_info(self) -> PlayInfo:
+        """Return  of the device."""
+        raise Exception("moved to avcontent")
 
     async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
-        res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        return [Input.make(services=self.services, **x) for x in res if 'meta:zone:output' not in x['meta']]
+        return await self.avcontent.get_inputs()
 
     async def get_zones(self) -> List[Zone]:
         """Return list of available zones."""
-        res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        zones = [Zone.make(services=self.services, **x) for x in res if 'meta:zone:output' in x['meta']]
-        if not zones:
-            raise SongpalException("Device has no zones")
-        return zones
+        return await self.avcontent.get_zones()
 
     async def get_zone(self, name) -> Zone:
         zones = await self.get_zones()
@@ -289,64 +194,45 @@ class Device:
 
     async def get_bluetooth_settings(self) -> List[Setting]:
         """Get bluetooth settings."""
-        bt = await self.services["avContent"]["getBluetoothSettings"]({})
-        return [Setting.make(**x) for x in bt]
+        return await self.avcontent.get_bluetooth_settings()
 
     async def set_bluetooth_settings(self, target: str, value: str) -> None:
         """Set bluetooth settings."""
-        params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["avContent"]["setBluetoothSettings"](params)
+        return await self.avcontent.set_bluetooth_setting(target, value)
 
     async def get_custom_eq(self):
         """Get custom EQ settings."""
-        return await self.services["audio"]["getCustomEqualizerSettings"]({})
+        return await self.audio.get_custom_eq()
 
     async def set_custom_eq(self, target: str, value: str) -> None:
         """Set custom EQ settings."""
-        params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["audio"]["setCustomEqualizerSettings"](params)
+        return await self.audio.set_custom_eq(target, value)
 
     async def get_supported_playback_functions(
         self, uri=""
     ) -> List[SupportedFunctions]:
         """Return list of inputs and their supported functions."""
-        return [
-            SupportedFunctions.make(**x)
-            for x in await self.services["avContent"]["getSupportedPlaybackFunction"](
-                uri=uri
-            )
-        ]
+        return await self.avcontent.get_supported_playback_functions(uri=uri)
 
     async def get_playback_settings(self) -> List[Setting]:
         """Get playback settings such as shuffle and repeat."""
-        return [
-            Setting.make(**x)
-            for x in await self.services["avContent"]["getPlaybackModeSettings"]({})
-        ]
+        return await self.avcontent.get_playback_settings()
 
     async def set_playback_settings(self, target, value) -> None:
         """Set playback settings such a shuffle and repeat."""
-        params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["avContent"]["setPlaybackModeSettings"](params)
+        return await self.avcontent.set_playback_settings(target, value)
 
     async def get_schemes(self) -> List[Scheme]:
         """Return supported uri schemes."""
-        return [
-            Scheme.make(**x)
-            for x in await self.services["avContent"]["getSchemeList"]()
-        ]
+        return await self.avcontent.get_schemes()
 
     async def get_source_list(self, scheme: str = "") -> List[Source]:
         """Return available sources for playback."""
-        res = await self.services["avContent"]["getSourceList"](scheme=scheme)
-        return [Source.make(**x) for x in res]
+        return await self.avcontent.get_source_list(scheme=scheme)
 
     async def get_content_count(self, source: str):
         """Return file listing for source."""
-        params = {"uri": source, "type": None, "target": "all", "view": "flat"}
-        return ContentInfo.make(
-            **await self.services["avContent"]["getContentCount"](params)
-        )
+        return await self.avcontent.get_content_count(source)
 
     async def get_contents(self, uri) -> List[Content]:
         """Request content listing recursively for the given URI.
@@ -354,70 +240,43 @@ class Device:
         :param uri: URI for the source.
         :return: List of Content objects.
         """
-        contents = [
-            Content.make(**x)
-            for x in await self.services["avContent"]["getContentList"](uri=uri)
-        ]
-        contentlist = []
-
-        for content in contents:
-            if content.contentKind == "directory" and content.index >= 0:
-                # print("got directory %s" % content.uri)
-                res = await self.get_contents(content.uri)
-                contentlist.extend(res)
-            else:
-                contentlist.append(content)
-                # print("%s%s" % (' ' * depth, content))
-        return contentlist
-
-    async def get_volume_information(self) -> List[Volume]:
-        """Get the volume information."""
-        res = await self.services["audio"]["getVolumeInformation"]({})
-        volume_info = [Volume.make(services=self.services, **x) for x in res]
-        if len(volume_info) < 1:
-            logging.warning("Unable to get volume information")
-        elif len(volume_info) > 1:
-            logging.debug("The device seems to have more than one volume setting.")
-        return volume_info
-
-    async def get_sound_settings(self, target="") -> List[Setting]:
-        """Get the current sound settings.
-
-        :param str target: settings target, defaults to all.
-        """
-        res = await self.services["audio"]["getSoundSettings"]({"target": target})
-        return [Setting.make(**x) for x in res]
-
-    async def get_soundfield(self) -> List[Setting]:
-        """Get the current sound field settings."""
-        res = await self.services["audio"]["getSoundSettings"]({"target": "soundField"})
-        return Setting.make(**res[0])
-
-    async def set_soundfield(self, value):
-        """Set soundfield."""
-        return await self.set_sound_settings("soundField", value)
-
-    async def set_sound_settings(self, target: str, value: str):
-        """Change a sound setting."""
-        params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["audio"]["setSoundSettings"](params)
-
-    async def get_speaker_settings(self) -> List[Setting]:
-        """Return speaker settings."""
-        speaker_settings = await self.services["audio"]["getSpeakerSettings"]({})
-        return [Setting.make(**x) for x in speaker_settings]
-
-    async def set_speaker_settings(self, target: str, value: str):
-        """Set speaker settings."""
-        params = {"settings": [{"target": target, "value": value}]}
-        return await self.services["audio"]["setSpeakerSettings"](params)
+        raise Exception("moved to avcontent")
 
     async def get_available_playback_functions(self, output=""):
         """Return available playback functions.
 
         If no output is given the current is assumed.
         """
-        await self.services["avContent"]["getAvailablePlaybackFunction"](output=output)
+        return await self.avcontent.get_available_playback_functions(output=output)
+
+    async def get_volume(self) -> List[Volume]:
+        """Get the volume information."""
+        return await self.audio.get_volume_information()
+
+    async def get_sound_settings(self, target="") -> List[Setting]:
+        """Get the current sound settings.
+
+        :param str target: settings target, defaults to all.
+        """
+        return await self.audio.get_sound_settings(target)
+
+    async def set_soundfield(self, value):
+        """Set soundfield."""
+        return await self.audio.set_sound_settings("soundField", value)
+        raise Exception("Removed, use set_sound_settings")
+
+    async def set_sound_settings(self, target: str, value: str):
+        """Change a sound setting."""
+        return await self.audio.set_sound_setting(target, value)
+
+    async def get_speaker_settings(self) -> List[Setting]:
+        """Return speaker settings."""
+        return await self.audio.get_speaker_settings()
+
+    async def set_speaker_settings(self, target: str, value: str):
+        """Set speaker settings."""
+        return await self.audio.set_speaker_setting(target, value)
+
 
     def on_notification(self, type_, callback):
         """Register a notification callback.
@@ -453,10 +312,10 @@ class Device:
             for cb in self.callbacks[type(notification)]:
                 await cb(notification)
 
-        for serv in self.services.values():
+        for service in self.services.values():
             tasks.append(
                 asyncio.ensure_future(
-                    serv.listen_all_notifications(handle_notification)
+                    service.listen_all_notifications(handle_notification)
                 )
             )
 
@@ -471,8 +330,8 @@ class Device:
     async def stop_listen_notifications(self):
         """Stop listening on notifications."""
         _LOGGER.debug("Stopping listening for notifications..")
-        for serv in self.services.values():
-            await serv.stop_listen_notifications()
+        for service in self.services.values():
+            await service.stop_listen_notifications()
 
         return True
 
@@ -485,8 +344,8 @@ class Device:
         :return: List of Notification objects
         """
         notifications = []
-        for serv in self.services:
-            for notification in self.services[serv].notifications:
+        for service in self.services:
+            for notification in self.services[service].notifications:
                 notifications.append(notification)
         return notifications
 

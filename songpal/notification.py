@@ -8,47 +8,6 @@ from songpal.containers import (Power, SoftwareUpdateInfo,
 
 _LOGGER = logging.getLogger(__name__)
 
-
-class Notification:
-    """Wrapper for notifications.
-
-    In order to listen for notifications, call `activate(callback)`
-    with a coroutine to be called when a notification is received.
-    """
-    def __init__(self, endpoint, switch_method, payload):
-        """Notification constructor.
-
-        :param endpoint: Endpoint.
-        :param switch_method: `Method` for switching this notification.
-        :param payload: JSON data containing name and available versions.
-        """
-        self.endpoint = endpoint
-        self.switch_method = switch_method
-        self.versions = payload["versions"]
-        self.name = payload["name"]
-        self.version = max(x["version"] for x in self.versions if "version" in x)
-
-        _LOGGER.debug("notification payload: %s", pf(payload))
-
-    def asdict(self):
-        """Return a dict containing the notification information."""
-        return {"name": self.name, "version": self.version}
-
-    async def activate(self, callback):
-        """Start listening for this notification.
-
-        Emits received notifications by calling the passed `callback`.
-        """
-        await self.switch_method({"enabled": [self.asdict()]}, _consumer=callback)
-
-    def __repr__(self):
-        return "<Notification %s, versions=%s, endpoint=%s>" % (
-            self.name,
-            self.versions,
-            self.endpoint,
-        )
-
-
 class ChangeNotification:
     """Dummy base-class for notifications."""
     pass
@@ -74,8 +33,8 @@ class SoftwareUpdateChange(ChangeNotification):
         if x is not None:
             return SoftwareUpdateInfo.make(**x[0])
 
-    isUpdatable = attr.ib(convert=convert_to_bool)
-    swInfo = attr.ib(convert=_convert_if_available)
+    isUpdatable = attr.ib(converter=convert_to_bool)
+    swInfo = attr.ib(converter=_convert_if_available)
 
 
 @attr.s
@@ -83,7 +42,7 @@ class VolumeChange(ChangeNotification):
     """Notification for volume changes."""
     make = classmethod(make)
 
-    mute = attr.ib(convert=lambda x: True if x == "on" else False)
+    mute = attr.ib(converter=lambda x: True if x == "on" else False)
     volume = attr.ib()
 
 
@@ -146,11 +105,77 @@ class NotificationChange(ChangeNotification):
     """Container for storing information about state of Notifications."""
     make = classmethod(make)
 
-    enabled = attr.ib(convert=lambda x: [x["name"] for x in x])
-    disabled = attr.ib(convert=lambda x: [x["name"] for x in x])
+    enabled = attr.ib(converter=lambda x: [x["name"] for x in x])
+    disabled = attr.ib(converter=lambda x: [x["name"] for x in x])
 
     def __str__(self):
         return "<NotificationChange enabled: %s disabled: %s>" % (
             ",".join(self.enabled),
             ",".join(self.disabled),
+        )
+
+
+class Notification:
+    """Wrapper for notifications.
+
+    In order to listen for notifications, call `activate(callback)`
+    with a coroutine to be called when a notification is received.
+    """
+    SUPPORTED = {
+        "notifyPowerStatus": PowerChange,
+        "notifyVolumeInformation": VolumeChange,
+        "notifyPlayingContentInfo": ContentChange,
+        "notifySettingsUpdate": SettingChange,
+        "notifySWUpdateInfo": SoftwareUpdateChange,
+    }
+
+    def __init__(self, endpoint, switch_method, payload):
+        """Notification constructor.
+
+        :param endpoint: Endpoint.
+        :param switch_method: `Method` for switching this notification.
+        :param payload: JSON data containing name and available versions.
+        """
+        self.endpoint = endpoint
+        self.switch_method = switch_method
+        self.versions = payload["versions"]
+        self.name = payload["name"]
+        self.version = max(x["version"] for x in self.versions if "version" in x)
+
+        _LOGGER.debug("notification payload: %s", pf(payload))
+
+    def asdict(self):
+        """Return a dict containing the notification information."""
+        return {"name": self.name, "version": self.version}
+
+    def wrap_notification(self, data):
+        """Convert notification JSON to a notification class."""
+        if "method" in data:
+            method = data["method"]
+            params = data["params"]
+            change = params[0]
+            if method in Notification.SUPPORTED:
+                return Notification.SUPPORTED[method]
+            else:
+                _LOGGER.warning("Got unknown notification type: %s", method)
+        elif "result" in data:
+            result = data["result"][0]
+            if "enabled" in result and "enabled" in result:
+                return NotificationChange(**result)
+        else:
+            _LOGGER.warning("Unknown notification, returning raw: %s", data)
+            return data
+
+    async def activate(self, callback):
+        """Start listening for this notification.
+
+        Emits received notifications by calling the passed `callback`.
+        """
+        await self.switch_method({"enabled": [self.asdict()]}, _consumer=callback)
+
+    def __repr__(self):
+        return "<Notification %s, versions=%s, endpoint=%s>" % (
+            self.name,
+            self.versions,
+            self.endpoint,
         )

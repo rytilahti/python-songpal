@@ -104,6 +104,7 @@ def print_settings(settings, depth=0):
 
 pass_dev = click.make_pass_decorator(Device)
 
+
 @click.group(invoke_without_command=False)
 @click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=False)
 @click.option("-d", "--debug", default=False, count=True)
@@ -159,7 +160,7 @@ async def status(dev: Device):
     power = await dev.get_power()
     click.echo(click.style("%s" % power, bold=power))
 
-    vol = await dev.get_volume_information()
+    vol = await dev.get_volume()
     click.echo(vol.pop())
 
     play_info = await dev.get_play_info()
@@ -205,18 +206,15 @@ async def discover(ctx):
 
 
 @cli.command()
-@click.argument("cmd", required=False)
-@click.argument("target", required=False)
-@click.argument("value", required=False)
+@click.argument("cmd", required=False, type=ONOFF_BOOL)
 @pass_dev
 @coro
-async def power(dev: Device, cmd, target, value):
+async def power(dev: Device, cmd):
     """Turn on and off, control power settings.
 
     Accepts commands 'on', 'off', and 'settings'.
     """
     async def try_turn(cmd):
-        state = True if cmd == "on" else False
         try:
             return await dev.set_power(state)
         except SongpalException as ex:
@@ -225,13 +223,8 @@ async def power(dev: Device, cmd, target, value):
             else:
                 raise ex
 
-    if cmd == "on" or cmd == "off":
+    if cmd is not None:
         click.echo(await try_turn(cmd))
-    elif cmd == "settings":
-        settings = await dev.get_power_settings()
-        print_settings(settings)
-    elif cmd == "set" and target and value:
-        click.echo(await dev.set_power_settings(target, value))
     else:
         power = await dev.get_power()
         click.echo(click.style(str(power), bold=power))
@@ -352,7 +345,7 @@ async def volume(dev: Device, volume, output):
     'unmute' removes it.
     """
     vol = None
-    vol_controls = await dev.get_volume_information()
+    vol_controls = await dev.get_volume()
     if output is not None:
         click.echo("Using output: %s" % output)
         output_uri = (await dev.get_zone(output)).uri
@@ -447,12 +440,25 @@ async def misc(dev: Device):
     print_settings(await dev.get_misc_settings())
 
 
-@cli.command()
+@cli.group()
 @pass_dev
 @coro
 async def settings(dev: Device):
     """Print out all possible settings."""
     settings_tree = await dev.get_settings()
+
+    """
+    elif cmd == "settings":
+        settings = await dev.get_power_settings()
+        print_settings(settings)
+    elif cmd == "set" and target and value:
+        click.echo(await dev.set_power_settings(target, value))
+    """
+
+    from pprint import pprint as pp
+    pp(settings_tree)
+
+    return
 
     for module in settings_tree:
         await traverse_settings(dev, module.usage, module.settings)
@@ -468,7 +474,7 @@ async def storage(dev: Device):
         click.echo(storage)
 
 
-@cli.command()
+@settings.command()
 @click.argument("target", required=False)
 @click.argument("value", required=False)
 @pass_dev
@@ -488,6 +494,7 @@ async def sound(dev: Device, target, value):
 @coro
 async def soundfield(dev: Device, soundfield: str):
     """Get or set sound field."""
+    raise Exception("use settings sound soundField")
     if soundfield is not None:
         await dev.set_sound_settings("soundField", soundfield)
     soundfields = await dev.get_sound_settings("soundField")
@@ -502,7 +509,7 @@ async def eq(dev: Device):
     click.echo(await dev.get_custom_eq())
 
 
-@cli.command()
+@settings.command()
 @click.argument("cmd", required=False)
 @click.argument("target", required=False)
 @click.argument("value", required=False)
@@ -511,7 +518,7 @@ async def eq(dev: Device):
 async def playback(dev: Device, cmd, target, value):
     """Get and set playback settings, e.g. repeat and shuffle.."""
     if target and value:
-        dev.set_playback_settings(target, value)
+        await dev.set_playback_settings(target, value)
     if cmd == "support":
         click.echo("Supported playback functions:")
         supported = await dev.get_supported_playback_functions("storage:usb1")
@@ -519,14 +526,11 @@ async def playback(dev: Device, cmd, target, value):
             print(i)
     elif cmd == "settings":
         print_settings(await dev.get_playback_settings())
-        # click.echo("Playback functions:")
-        # funcs = await dev.get_available_playback_functions()
-        # print(funcs)
     else:
         click.echo("Currently playing: %s" % await dev.get_play_info())
 
 
-@cli.command()
+@settings.command()
 @click.argument("target", required=False)
 @click.argument("value", required=False)
 @pass_dev
@@ -581,7 +585,7 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
             click.echo("* %s" % notification)
 
 
-@cli.command()
+@settings.command()
 @pass_dev
 @coro
 async def sleep(dev: Device):
@@ -628,6 +632,7 @@ async def dump_devinfo(dev: Device, file):
 
     methods = await dev.get_supported_methods()
     res = {
+        "supported_methods_response": await dev.request_supported_methods(),
         "supported_methods": {k: v.asdict() for k, v in methods.items()},
         "settings": [attr.asdict(x) for x in await dev.get_settings()],
         "sysinfo": attr.asdict(await dev.get_system_info()),

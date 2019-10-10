@@ -67,7 +67,10 @@ class Scheme:
     make = classmethod(make)
 
     scheme = attr.ib()
+    sources_getter = attr.ib()
 
+    async def get_sources(self):
+        return [Source.make(**x) for x in self.sources_getter(scheme=self.scheme)]
 
 @attr.s
 class PlaybackFunction:
@@ -230,6 +233,11 @@ class SoftwareUpdateInfo:
     target = attr.ib()
     updatableVersion = attr.ib()
     forcedUpdate = attr.ib(converter=convert_to_bool)
+    service = attr.ib()
+
+    async def update(self):
+        return await self.service["actSWUpdate"]()
+
 
 
 @attr.s
@@ -259,7 +267,7 @@ class Volume:
     """Volume information."""
     make = classmethod(make)
 
-    services = attr.ib(repr=False)
+    service = attr.ib(repr=False)
     maxVolume = attr.ib()
     minVolume = attr.ib()
     mute = attr.ib()
@@ -287,19 +295,19 @@ class Volume:
         if activate:
             enabled = "on"
 
-        return await self.services["audio"]["setAudioMute"](
+        return await self.service["setAudioMute"](
             mute=enabled, output=self.output
         )
 
     async def toggle_mute(self):
         """Toggle mute."""
-        return await self.services["audio"]["setAudioMute"](
+        return await self.service["setAudioMute"](
             mute="toggle", output=self.output
         )
 
     async def set_volume(self, volume: int):
         """Set volume level."""
-        return await self.services["audio"]["setAudioVolume"](
+        return await self.service["setAudioVolume"](
             volume=str(volume), output=self.output
         )
 
@@ -338,7 +346,7 @@ class Zone:
     title = attr.ib(converter=convert_title)
     uri = attr.ib()
 
-    services = attr.ib(repr=False)
+    service = attr.ib(repr=False)
     active = attr.ib(converter=convert_is_active)
     label = attr.ib()
     iconUrl = attr.ib()
@@ -351,7 +359,7 @@ class Zone:
 
     async def activate(self, activate):
         """Activate this zone."""
-        return await self.services["avContent"]["setActiveTerminal"](active='active' if activate else 'inactive', uri=self.uri)
+        return await self["setActiveTerminal"](active='active' if activate else 'inactive', uri=self.uri)
 
 
 @attr.s
@@ -364,7 +372,7 @@ class Input:
     title = attr.ib(converter=convert_title)
     uri = attr.ib()
 
-    services = attr.ib(repr=False)
+    service = attr.ib(repr=False)
     active = attr.ib(converter=convert_is_active)
     label = attr.ib()
     iconUrl = attr.ib()
@@ -379,7 +387,7 @@ class Input:
     async def activate(self, output: Zone=None):
         """Activate this input."""
         output_uri = output.uri if output else ""
-        return await self.services["avContent"]["setPlayContent"](uri=self.uri, output=output_uri)
+        return await self["setPlayContent"](uri=self.uri, output=output_uri)
 
 
 @attr.s
@@ -509,3 +517,5 @@ class Setting:
     titleTextID = attr.ib()
     deviceUIInfo = attr.ib()
     uri = attr.ib()
+    setter = attr.ib()
+    value = attr.ib()

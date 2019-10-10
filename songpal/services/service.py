@@ -1,27 +1,50 @@
 """Service presentation for a single endpoint (e.g. audio or avContent)."""
 import logging
 from typing import List
+from functools import wraps
 
 import aiohttp
 
-from songpal.common import ProtocolType, SongpalException
-from songpal.method import Method, MethodSignature
-from songpal.notification import (
-    Notification,
-    ConnectChange,
-    ContentChange,
-    NotificationChange,
-    PowerChange,
-    SettingChange,
-    SoftwareUpdateChange,
-    VolumeChange,
-)
+from ..common import ProtocolType, SongpalException
+from ..method import Method, MethodSignature
+from ..containers import Setting
+from ..notification import Notification
 
 _LOGGER = logging.getLogger(__name__)
 
+def command(impls):
+    def wrapper(func):
+        func.implements = impls
+        @wraps(func)
+        async def wrapped(*args, **kwargs):
+            return await func(*args, **kwargs)
 
-class Service:
+        return wrapped
+
+    return wrapper
+
+
+class ServiceImplementation(type):
+    """Metaclass to collect information about implemented interfaces."""
+    def __init__(cls, name, bases, attrs):
+        cls._implemented_commands = set()
+        for name, method in attrs.items():
+            if hasattr(method, 'implements'):
+                impls = getattr(method, 'implements')
+                if isinstance(impls, list):
+                    cls._implemented_commands.update(impls)
+                else:
+                    cls._implemented_commands.add(impls)
+
+        #print("impl: %s" % cls._implemented_commands)
+        #_LOGGER.info("implemented commands: %s" % cls._implemented_commands)
+
+
+class Service(metaclass=ServiceImplementation):
     """Service presents an endpoint providing a set of methods."""
+    WEBSOCKET_PROTOCOL = "websocket:jsonizer"
+    XHRPOST_PROTOCOL = "xhrpost:jsonizer"
+
     def __init__(self, name, endpoint, protocol, idgen, debug=0):
         """Service constructor.
 
@@ -33,31 +56,75 @@ class Service:
         self.idgen = idgen
         self._protocols = []
         self._notifications = []
+        self._methods = {}
         self.debug = debug
         self.timeout = 2
         self.listening = False
 
-    @staticmethod
-    async def fetch_signatures(endpoint, protocol, idgen):
+    @command("getMethodTypes")
+    async def get_method_types(self):
+        return await self.call_method_raw("getMethodTypes", [''])
+
+    async def call_method_raw(self, method, params=None):
         """Request available methods for the service."""
         async with aiohttp.ClientSession() as session:
             req = {
-                "method": "getMethodTypes",
-                "params": [''],
+                "method": method,
+                "params": params,
                 "version": "1.0",
-                "id": next(idgen),
+                "id": next(self.idgen),
             }
+            _LOGGER.info("Going to call %s on %s", req, self.endpoint)
 
-            if protocol == ProtocolType.WebSocket:
-                async with session.ws_connect(endpoint, timeout=2) as s:
-                    await s.send_json(req)
-                    res = await s.receive_json()
-                    return res
+            try:
+                if self.active_protocol == ProtocolType.WebSocket:
+                    async with session.ws_connect(self.endpoint, timeout=2) as s:
+                        await s.send_json(req)
+                        res = await s.receive_json()
+                        return res
+                else:
+                    res = await session.post(self.endpoint, json=req)
+                    json = await res.json()
+
+                    return json
+            except aiohttp.ClientError as ex:
+                raise SongpalException("Unable to request %s" % method) from ex
+
+    @command("getVersions")
+    async def get_versions(self):
+        return await self.call_method_raw('getVersions', [])
+
+    async def initialize_methods(self):
+        sigs = await self.get_method_types()
+
+        if self.debug > 1:
+            _LOGGER.debug("Signatures: %s", sigs)
+        if "error" in sigs:
+            _LOGGER.error("Got error when fetching sigs: %s", sigs["error"])
+            return None
+
+        methods = {}
+
+        if "results" not in sigs:
+            _LOGGER.error("Unable to get method signatures for %s" % self.name)
+            raise SongpalException("Got no method signature results? response: %s" % sigs)
+
+        for sig in sigs["results"]:
+            name = sig[0]
+            parsed_sig = MethodSignature.from_payload(*sig)
+            if name in methods:
+                _LOGGER.debug("Got duplicate signature for %s, existing was %s. Keeping the existing one",
+                              parsed_sig, methods[name])
             else:
-                res = await session.post(endpoint, json=req)
-                json = await res.json()
+                methods[name] = Method(self, parsed_sig, self.debug)
+                if name not in self._implemented_commands:
+                    _LOGGER.warning("Method %s of %s not implemented, please report the issue.", methods[name], self.name)
 
-                return json
+        self.methods = methods
+        _LOGGER.info("Initialized %s with %s methods", self.name, len(self.methods))
+        if self.debug > 1:
+            for method in self.methods:
+                _LOGGER.debug("  - %s" % method)
 
     @classmethod
     async def from_payload(cls, payload, endpoint, idgen, debug, force_protocol=None):
@@ -73,9 +140,9 @@ class Service:
         _LOGGER.debug("Available protocols for %s: %s", service_name, protocols)
         if force_protocol and force_protocol.value in protocols:
             protocol = force_protocol
-        elif "websocket:jsonizer" in protocols:
+        elif Service.WEBSOCKET_PROTOCOL in protocols:
             protocol = ProtocolType.WebSocket
-        elif "xhrpost:jsonizer" in protocols:
+        elif Service.XHRPOST_PROTOCOL in protocols:
             protocol = ProtocolType.XHRPost
         else:
             raise SongpalException(
@@ -88,33 +155,13 @@ class Service:
         # creation here we want to pass the created service class to methods.
         service = cls(service_name, service_endpoint, protocol, idgen, debug)
 
-        sigs = await cls.fetch_signatures(
-            service_endpoint, protocol, idgen
-        )
+        await service.initialize_methods()
+        #await service.initialize_notifications()
 
-        if debug > 1:
-            _LOGGER.debug("Signatures: %s", sigs)
-        if "error" in sigs:
-            _LOGGER.error("Got error when fetching sigs: %s", sigs["error"])
-            return None
-
-        methods = {}
-
-        for sig in sigs["results"]:
-            name = sig[0]
-            parsed_sig = MethodSignature.from_payload(*sig)
-            if name in methods:
-                _LOGGER.debug("Got duplicate signature for %s, existing was %s. Keeping the existing one",
-                              parsed_sig, methods[name])
-            else:
-                methods[name] = Method(service, parsed_sig, debug)
-
-        service.methods = methods
-
-        if "notifications" in payload and "switchNotifications" in methods:
+        if "notifications" in payload and "switchNotifications" in service._methods:
             notifications = [
                 Notification(
-                    service_endpoint, methods["switchNotifications"], notification
+                    service_endpoint, service.activate_notification, notification
                 )
                 for notification in payload["notifications"]
             ]
@@ -122,6 +169,10 @@ class Service:
             _LOGGER.debug("Got notifications: %s" % notifications)
 
         return service
+
+    @command("switchNotifications")
+    async def activate_notification(self, *args, **kwargs):
+        return await self["switchNotifications"](*args, **kwargs)
 
     async def call_method(self, method, *args, **kwargs):
         """Call a method (internal).
@@ -183,7 +234,7 @@ class Service:
                         self.listening = True
                         while self.listening:
                             res_raw = await s.receive_json()
-                            res = self.wrap_notification(res_raw)
+                            res = Notification.wrap_notification(res_raw)
                             _LOGGER.debug("Got notification: %s", res)
                             if self.debug > 1:
                                 _LOGGER.debug("Got notification raw: %s", res_raw)
@@ -196,31 +247,24 @@ class Service:
                 res = await session.post(self.endpoint, json=req)
                 return await res.json()
 
-    def wrap_notification(self, data):
-        """Convert notification JSON to a notification class."""
-        if "method" in data:
-            method = data["method"]
-            params = data["params"]
-            change = params[0]
-            if method == "notifyPowerStatus":
-                return PowerChange.make(**change)
-            elif method == "notifyVolumeInformation":
-                return VolumeChange.make(**change)
-            elif method == "notifyPlayingContentInfo":
-                return ContentChange.make(**change)
-            elif method == "notifySettingsUpdate":
-                return SettingChange.make(**change)
-            elif method == "notifySWUpdateInfo":
-                return SoftwareUpdateChange.make(**change)
-            else:
-                _LOGGER.warning("Got unknown notification type: %s", method)
-        elif "result" in data:
-            result = data["result"][0]
-            if "enabled" in result and "enabled" in result:
-                return NotificationChange(**result)
-        else:
-            _LOGGER.warning("Unknown notification, returning raw: %s", data)
-            return data
+    async def get_settings(self, getter, setter, target=None):
+        if target is None:
+            target = {}
+        settings = await getter(target)
+        return [Setting.make(**x, setter=setter) for x in settings]
+
+    async def set_settings(self, setter, settings):
+        change_settings = []
+        for setting in settings:
+            change_settings.append({"target": setting.target, "value": setting.value})
+
+        params = {"settings": [x for x in change_settings]}
+        return await setter(params)
+
+    async def set_setting(self, setter, target: str, value: str):
+        """Set speaker settings."""
+        setting = Setting(target=target, value=value)
+        return await setter([setting])
 
     def __getitem__(self, item) -> Method:
         """Return a method for the given name.

@@ -55,7 +55,8 @@ class MethodSignature:
 
         return MethodSignature(name=name, input=ins, output=outs, version=version)
 
-    def _serialize_types(self, x):
+    @staticmethod
+    def _serialize_types(x):
         """Convert type to string."""
         if x is None:
             return x
@@ -83,8 +84,6 @@ class MethodSignature:
     input = attr.ib()
     output = attr.ib()
     version = attr.ib()
-
-
 
 
 class Method:
@@ -128,7 +127,7 @@ class Method:
             raise SongpalException("Unable to make a request: %s" % ex) from ex
 
         if self.debug > 1:
-            _LOGGER.debug("got payload: %s" % res)
+            _LOGGER.debug("got payload: %s" % pf(res))
 
         if "error" in res:
             _LOGGER.debug(self)
@@ -140,9 +139,13 @@ class Method:
         if self.debug > 0:
             _LOGGER.debug("got res: %s" % pf(res))
 
-        if "result" not in res:
+        if "result" not in res and "results" not in res:
             _LOGGER.error("No result in response, how to handle? %s" % res)
             return
+
+        if "results" in res:
+            _LOGGER.debug("Got results instead of result, returning the array")
+            return res["results"]
 
         res = res["result"]
         if len(res) > 1:
