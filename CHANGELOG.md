@@ -1,10 +1,23 @@
-# Change Log
+# Changelog
+
+## [0.11](https://github.com/rytilahti/python-songpal/tree/0.11) (2019-10-10)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.10...0.11)
+
+**Closed issues:**
+
+- Got unknowns for ContentChange [\#48](https://github.com/rytilahti/python-songpal/issues/48)
+- "no such option: --endpoint" error [\#47](https://github.com/rytilahti/python-songpal/issues/47)
+- HT-NT5. Warnings / errors in HA log [\#36](https://github.com/rytilahti/python-songpal/issues/36)
+
+**Merged pull requests:**
+
+- Report unknown notification variables using debug logger [\#55](https://github.com/rytilahti/python-songpal/pull/55) ([rytilahti](https://github.com/rytilahti))
+- songpal dump-devinfo \<BDV-N9200W - BDV-2014\> [\#53](https://github.com/rytilahti/python-songpal/pull/53) ([anhtuanng98](https://github.com/anhtuanng98))
+- Added devinfo file for Sony CMT-SX7B [\#50](https://github.com/rytilahti/python-songpal/pull/50) ([birt](https://github.com/birt))
+- Remove leftover usage of request lib [\#45](https://github.com/rytilahti/python-songpal/pull/45) ([rytilahti](https://github.com/rytilahti))
 
 ## [0.10](https://github.com/rytilahti/python-songpal/tree/0.10) (2019-02-17)
-
-This release adds preliminary support for controlling devices with multiple zones (@jwiese)
-and grouping of devices (@rytilahti). Two fixes for compatibility breaking changes in 
-async_upnp_client and click were also fixed.
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.9...0.10)
 
@@ -15,6 +28,7 @@ async_upnp_client and click were also fixed.
 
 **Merged pull requests:**
 
+- Update changelog and bump version to 0.10 [\#44](https://github.com/rytilahti/python-songpal/pull/44) ([rytilahti](https://github.com/rytilahti))
 - Initial support for zone control [\#42](https://github.com/rytilahti/python-songpal/pull/42) ([jwiese](https://github.com/jwiese))
 - Update because async\_upnp\_client changed "discover" to "search" [\#41](https://github.com/rytilahti/python-songpal/pull/41) ([jwiese](https://github.com/jwiese))
 - Avoid crashing on setting changes we don't know how to handle [\#40](https://github.com/rytilahti/python-songpal/pull/40) ([rytilahti](https://github.com/rytilahti))
@@ -24,10 +38,7 @@ async_upnp_client and click were also fixed.
 - convert discovery to use async\_upnp\_client [\#35](https://github.com/rytilahti/python-songpal/pull/35) ([rytilahti](https://github.com/rytilahti))
 - Initial support for controlling device groups [\#34](https://github.com/rytilahti/python-songpal/pull/34) ([rytilahti](https://github.com/rytilahti))
 
-
 ## [0.0.9](https://github.com/rytilahti/python-songpal/tree/0.0.9) (2018-12-08)
-
-This release improves the support for notifications and fixes some minor issues.
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.8...0.0.9)
 
@@ -38,19 +49,14 @@ This release improves the support for notifications and fixes some minor issues.
 
 **Merged pull requests:**
 
-- Added devinfo for HT-ZF9 [\#33](https://github.com/rytilahti/python-songpal/pull/33) 
-([danielpalstra](https://github.com/danielpalstra))
+- Added devinfo for HT-ZF9 [\#33](https://github.com/rytilahti/python-songpal/pull/33) ([danielpalstra](https://github.com/danielpalstra))
 - Added STR-DN1060 devinfo [\#30](https://github.com/rytilahti/python-songpal/pull/30) ([jwiese](https://github.com/jwiese))
 - Code formating fixes [\#28](https://github.com/rytilahti/python-songpal/pull/28) ([rytilahti](https://github.com/rytilahti))
-- Adding the output for dumpdevinfo of 2 models [\#27](https://github.com/rytilahti/python-songpal/pull/27) 
-([thomnico](https://github.com/thomnico))
+- Adding the output for dumpdevinfo of 2 models [\#27](https://github.com/rytilahti/python-songpal/pull/27) ([thomnico](https://github.com/thomnico))
 - Add SRS-ZR7 devinfo [\#26](https://github.com/rytilahti/python-songpal/pull/26) ([pschmitt](https://github.com/pschmitt))
 - Add files via upload [\#25](https://github.com/rytilahti/python-songpal/pull/25) ([little-boots](https://github.com/little-boots))
 
 ## [0.0.8](https://github.com/rytilahti/python-songpal/tree/0.0.8) (2018-08-30)
-
-Some very minor changes, importantly avoid spammimng the logger when several volume
-controllers are provided by the device.
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.7...0.0.8)
 
@@ -62,19 +68,7 @@ controllers are provided by the device.
 - Help with finding endpoint on hass.io [\#19](https://github.com/rytilahti/python-songpal/issues/19)
 - command not found [\#18](https://github.com/rytilahti/python-songpal/issues/18)
 
-
 ## [0.0.7](https://github.com/rytilahti/python-songpal/tree/0.0.7) (2018-03-24)
-
-First real release after getting some feedback from homeassistant users fixing various issues.
-
-Other hilights:
-* An improved support for notifications is also added, to be used later for getting changes
-  immediately without polling the device.
-
-* Support for devices implementing only the 'xhrpost' protocol using HTTP POST instead of
-  websockets for communication, including some (all?) sony bravia models.
-  The protocol to use is decided automatically, but can be overridden with --post or --websocket
-
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.6...0.0.7)
 
@@ -90,18 +84,23 @@ Other hilights:
 - Error 'empty namespace prefix is not supported in ElementPath'  [\#6](https://github.com/rytilahti/python-songpal/issues/6)
 
 ## [0.0.6](https://github.com/rytilahti/python-songpal/tree/0.0.6) (2018-02-04)
+
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.5...0.0.6)
 
 ## [0.0.5](https://github.com/rytilahti/python-songpal/tree/0.0.5) (2018-02-03)
+
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.4.1...0.0.5)
 
 ## [0.0.4.1](https://github.com/rytilahti/python-songpal/tree/0.0.4.1) (2018-02-03)
+
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.4...0.0.4.1)
 
 ## [0.0.4](https://github.com/rytilahti/python-songpal/tree/0.0.4) (2018-02-03)
+
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.3...0.0.4)
 
 ## [0.0.3](https://github.com/rytilahti/python-songpal/tree/0.0.3) (2018-01-10)
+
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.2...0.0.3)
 
 **Closed issues:**
@@ -112,9 +111,13 @@ Other hilights:
 - Error [\#1](https://github.com/rytilahti/python-songpal/issues/1)
 
 ## [0.0.2](https://github.com/rytilahti/python-songpal/tree/0.0.2) (2017-12-17)
+
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.0.1...0.0.2)
 
 ## [0.0.1](https://github.com/rytilahti/python-songpal/tree/0.0.1) (2017-12-10)
 
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/135450b001321e413163a4b3803b8746804aea59...0.0.1)
 
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+
+
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
