@@ -64,6 +64,7 @@ def convert_title(x):
 @attr.s
 class Scheme:
     """Input scheme container."""
+
     make = classmethod(make)
 
     scheme = attr.ib()
@@ -72,6 +73,7 @@ class Scheme:
 @attr.s
 class PlaybackFunction:
     """Playback function."""
+
     make = classmethod(make)
 
     function = attr.ib()
@@ -80,6 +82,7 @@ class PlaybackFunction:
 @attr.s
 class SupportedFunctions:
     """Container for supported playback functions."""
+
     make = classmethod(make)
 
     def _convert_playback_functions(x):
@@ -92,6 +95,7 @@ class SupportedFunctions:
 @attr.s
 class ContentInfo:
     """Information about available contents."""
+
     make = classmethod(make)
 
     capability = attr.ib()
@@ -101,6 +105,7 @@ class ContentInfo:
 @attr.s
 class Content:
     """Content infrormation."""
+
     make = classmethod(make)
 
     isBrowsable = attr.ib()
@@ -127,6 +132,7 @@ class Content:
 @attr.s
 class StateInfo:
     """Playback state."""
+
     make = classmethod(make)
 
     state = attr.ib()
@@ -140,6 +146,7 @@ class PlayInfo:
     This is only tested on music files,
     the outs for the method call is much, much larger
     """
+
     make = classmethod(make)
 
     def _make(x):
@@ -196,6 +203,7 @@ class PlayInfo:
 @attr.s
 class InterfaceInfo:
     """Information about the product."""
+
     make = classmethod(make)
 
     productName = attr.ib()
@@ -208,6 +216,7 @@ class InterfaceInfo:
 @attr.s
 class Sysinfo:
     """System information."""
+
     make = classmethod(make)
 
     bdAddr = attr.ib()
@@ -222,6 +231,7 @@ class Sysinfo:
 @attr.s
 class SoftwareUpdateInfo:
     """Software update information."""
+
     make = classmethod(make)
 
     isUpdatable = attr.ib(converter=convert_to_bool)
@@ -235,6 +245,7 @@ class SoftwareUpdateInfo:
 @attr.s
 class Source:
     """Source information."""
+
     make = classmethod(make)
 
     title = attr.ib()
@@ -257,6 +268,7 @@ class Source:
 @attr.s
 class Volume:
     """Volume information."""
+
     make = classmethod(make)
 
     services = attr.ib(repr=False)
@@ -274,7 +286,11 @@ class Volume:
 
     def __str__(self):
         if self.output and self.output.rfind("=") > 0:
-            s = "Zone %s Volume: %s/%s" % (self.output[self.output.rfind("=")+1:], self.volume, self.maxVolume)
+            s = "Zone %s Volume: %s/%s" % (
+                self.output[self.output.rfind("=") + 1 :],
+                self.volume,
+                self.maxVolume,
+            )
         else:
             s = "Volume: %s/%s" % (self.volume, self.maxVolume)
         if self.is_muted:
@@ -310,6 +326,7 @@ class Power:
 
     This implements __bool__() for easy checking if the device is turned on or not.
     """
+
     make = classmethod(make)
 
     def _make(x):
@@ -327,10 +344,12 @@ class Power:
         else:
             return "Power off"
 
+
 @attr.s
 class Zone:
     """Zone information.
     """
+
     make = classmethod(make)
 
     meta = attr.ib()
@@ -351,12 +370,15 @@ class Zone:
 
     async def activate(self, activate):
         """Activate this zone."""
-        return await self.services["avContent"]["setActiveTerminal"](active='active' if activate else 'inactive', uri=self.uri)
+        return await self.services["avContent"]["setActiveTerminal"](
+            active="active" if activate else "inactive", uri=self.uri
+        )
 
 
 @attr.s
 class Input:
     """Input information."""
+
     make = classmethod(make)
 
     meta = attr.ib()
@@ -376,15 +398,18 @@ class Input:
             s += " (active)"
         return s
 
-    async def activate(self, output: Zone=None):
+    async def activate(self, output: Zone = None):
         """Activate this input."""
         output_uri = output.uri if output else ""
-        return await self.services["avContent"]["setPlayContent"](uri=self.uri, output=output_uri)
+        return await self.services["avContent"]["setPlayContent"](
+            uri=self.uri, output=output_uri
+        )
 
 
 @attr.s
 class Storage:
     """Storage information."""
+
     make = classmethod(make)
 
     def _make(x):
@@ -421,6 +446,7 @@ class Storage:
 @attr.s
 class ApiMapping:
     """API mapping for some setting setters/getters."""
+
     make = classmethod(make)
 
     service = attr.ib()
@@ -434,6 +460,7 @@ class ApiMapping:
 @attr.s
 class SettingsEntry:
     """Presentation of a single setting."""
+
     make = classmethod(make)
 
     isAvailable = attr.ib()
@@ -475,6 +502,7 @@ class SettingsEntry:
 @attr.s
 class SettingCandidate:
     """Representation of a setting candidate aka. option."""
+
     make = classmethod(make)
 
     title = attr.ib()
@@ -492,6 +520,7 @@ class Setting:
 
     Use `candidate` to access the potential values.
     """
+
     make = classmethod(make)
 
     def _create_candidates(x):

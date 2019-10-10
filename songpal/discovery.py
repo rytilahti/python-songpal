@@ -5,6 +5,7 @@ import attr
 
 _LOGGER = logging.getLogger(__name__)
 
+
 @attr.s
 class DiscoveredDevice:
     name = attr.ib()
@@ -15,6 +16,7 @@ class DiscoveredDevice:
     endpoint = attr.ib()
     version = attr.ib()
     upnp_services = attr.ib()
+
 
 class Discover:
     @staticmethod
@@ -36,9 +38,7 @@ class Discover:
             if debug > 0:
                 print(etree.ElementTree.tostring(device.xml).decode())
 
-            NS = {
-                'av': 'urn:schemas-sony-com:av',
-            }
+            NS = {"av": "urn:schemas-sony-com:av"}
 
             info = device.xml.find(".//av:X_ScalarWebAPI_DeviceInfo", NS)
             if not info:
@@ -47,22 +47,26 @@ class Discover:
 
             endpoint = info.find(".//av:X_ScalarWebAPI_BaseURL", NS).text
             version = info.find(".//av:X_ScalarWebAPI_Version", NS).text
-            services = [x.text for x in info.findall(".//av:X_ScalarWebAPI_ServiceType", NS)]
+            services = [
+                x.text for x in info.findall(".//av:X_ScalarWebAPI_ServiceType", NS)
+            ]
 
-            dev = DiscoveredDevice(name=device.name,
-                                   model_number=device.model_number,
-                                   udn=device.udn,
-                                   endpoint=endpoint,
-                                   version=version,
-                                   services=services,
-                                   upnp_services=list(device.services.keys()),
-                                   upnp_location=url)
+            dev = DiscoveredDevice(
+                name=device.name,
+                model_number=device.model_number,
+                udn=device.udn,
+                endpoint=endpoint,
+                version=version,
+                services=services,
+                upnp_services=list(device.services.keys()),
+                upnp_location=url,
+            )
 
             _LOGGER.debug("Discovered: %s" % dev)
 
             if callback is not None:
                 await callback(dev)
 
-        await async_search(timeout=timeout,
-                             service_type=ST,
-                             async_callback=parse_device)
+        await async_search(
+            timeout=timeout, service_type=ST, async_callback=parse_device
+        )

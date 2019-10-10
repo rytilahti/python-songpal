@@ -3,8 +3,7 @@ import logging
 from pprint import pformat as pf
 
 import attr
-from songpal.containers import (Power, SoftwareUpdateInfo,
-                                make, convert_to_bool)
+from songpal.containers import Power, SoftwareUpdateInfo, make, convert_to_bool
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -15,6 +14,7 @@ class Notification:
     In order to listen for notifications, call `activate(callback)`
     with a coroutine to be called when a notification is received.
     """
+
     def __init__(self, endpoint, switch_method, payload):
         """Notification constructor.
 
@@ -51,6 +51,7 @@ class Notification:
 
 class ChangeNotification:
     """Dummy base-class for notifications."""
+
     pass
 
 
@@ -59,15 +60,18 @@ class ConnectChange(ChangeNotification):
     connected = attr.ib()
     exception = attr.ib(default=None)
 
+
 @attr.s
 class PowerChange(ChangeNotification, Power):
     """Notification for power status change."""
+
     pass
 
 
 @attr.s
 class SoftwareUpdateChange(ChangeNotification):
     """Notification for available software updates."""
+
     make = classmethod(make)
 
     def _convert_if_available(x):
@@ -81,6 +85,7 @@ class SoftwareUpdateChange(ChangeNotification):
 @attr.s
 class VolumeChange(ChangeNotification):
     """Notification for volume changes."""
+
     make = classmethod(make)
 
     mute = attr.ib(convert=lambda x: True if x == "on" else False)
@@ -91,6 +96,7 @@ class VolumeChange(ChangeNotification):
 @attr.s
 class SettingChange(ChangeNotification):
     """Notification for settings change."""
+
     make = classmethod(make)
 
     titleTextID = attr.ib()
@@ -104,13 +110,17 @@ class SettingChange(ChangeNotification):
     currentValue = attr.ib()
 
     def __attrs_post_init__(self):
-        if self.type == 'directory':
-            _LOGGER.debug("Got SettingChange for directory %s (see #36), "
-                          "ignoring..", self.titleTextID)
+        if self.type == "directory":
+            _LOGGER.debug(
+                "Got SettingChange for directory %s (see #36), " "ignoring..",
+                self.titleTextID,
+            )
             return
         if self.apiMappingUpdate is None:
-            _LOGGER.warning("Got SettingChange for %s without "
-                            "apiMappingUpdate, ignoring..", self.titleTextID)
+            _LOGGER.warning(
+                "Got SettingChange for %s without " "apiMappingUpdate, ignoring..",
+                self.titleTextID,
+            )
             return
         self.currentValue = self.apiMappingUpdate["currentValue"]
         self.target = self.apiMappingUpdate["target"]
@@ -127,6 +137,7 @@ class SettingChange(ChangeNotification):
 @attr.s
 class ContentChange(ChangeNotification):
     """This gets sent as a notification when the source changes."""
+
     make = classmethod(make)
 
     contentKind = attr.ib()
@@ -135,7 +146,7 @@ class ContentChange(ChangeNotification):
     output = attr.ib()
     uri = attr.ib()
     applicationName = attr.ib()
-    
+
     kind = attr.ib()
     mediaType = attr.ib()
     parentUri = attr.ib()
@@ -150,6 +161,7 @@ class ContentChange(ChangeNotification):
 @attr.s
 class NotificationChange(ChangeNotification):
     """Container for storing information about state of Notifications."""
+
     make = classmethod(make)
 
     enabled = attr.ib(convert=lambda x: [x["name"] for x in x])

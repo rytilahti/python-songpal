@@ -9,6 +9,7 @@ class DeviceErrorCode(IntEnum):
 
     Source: https://developer.sony.com/develop/audio-control-api/api-references/error-codes
     """
+
     Unknown = -1
     Generic = 1
     Timeout = 2
@@ -22,6 +23,7 @@ class DeviceErrorCode(IntEnum):
 
 class DeviceError:
     """Container for device-given errors."""
+
     def __init__(self, error):
         self.error_code, self.error_message = error
 
@@ -46,6 +48,7 @@ class SongpalException(Exception):
     and the corresponding message is stored in `code` and `message` variables
     accordingly.
     """
+
     def __init__(self, message, *, error=None):
         """Overridden __init__ to allow passing an extra error message.
 
