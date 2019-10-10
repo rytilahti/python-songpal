@@ -259,12 +259,20 @@ class Device:
     async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
         res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        return [Input.make(services=self.services, **x) for x in res if 'meta:zone:output' not in x['meta']]
+        return [
+            Input.make(services=self.services, **x)
+            for x in res
+            if "meta:zone:output" not in x["meta"]
+        ]
 
     async def get_zones(self) -> List[Zone]:
         """Return list of available zones."""
         res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        zones = [Zone.make(services=self.services, **x) for x in res if 'meta:zone:output' in x['meta']]
+        zones = [
+            Zone.make(services=self.services, **x)
+            for x in res
+            if "meta:zone:output" in x["meta"]
+        ]
         if not zones:
             raise SongpalException("Device has no zones")
         return zones

@@ -18,17 +18,19 @@ from songpal.group import GroupControl
 
 
 class OnOffBoolParamType(click.ParamType):
-    name = 'boolean'
+    name = "boolean"
 
     def convert(self, value, param, ctx):
-        if value == 'on':
+        if value == "on":
             return True
-        elif value == 'off':
+        elif value == "off":
             return False
-        else: 
+        else:
             return click.BOOL.convert(value, param, ctx)
 
+
 ONOFF_BOOL = OnOffBoolParamType()
+
 
 def err(msg):
     """Pretty-print an error."""
@@ -103,6 +105,7 @@ def print_settings(settings, depth=0):
 
 
 pass_dev = click.make_pass_decorator(Device)
+
 
 @click.group(invoke_without_command=False)
 @click.option("--endpoint", envvar="SONGPAL_ENDPOINT", required=False)
@@ -215,6 +218,7 @@ async def power(dev: Device, cmd, target, value):
 
     Accepts commands 'on', 'off', and 'settings'.
     """
+
     async def try_turn(cmd):
         state = True if cmd == "on" else False
         try:
@@ -280,7 +284,7 @@ async def zone(dev: Device, zone, activate):
     """Get and change outputs."""
     if zone:
         zone = await dev.get_zone(zone)
-        click.echo("%s %s" % ("Activating" if activate else "Deactivating", zone)) 
+        click.echo("%s %s" % ("Activating" if activate else "Deactivating", zone))
         await zone.activate(activate)
     else:
         click.echo("Zones:")
@@ -645,7 +649,7 @@ pass_groupctl = click.make_pass_decorator(GroupControl)
 
 @cli.group()
 @click.pass_context
-@click.option('--url', required=True)
+@click.option("--url", required=True)
 @coro
 async def group(ctx, url):
     gc = GroupControl(url)
@@ -690,8 +694,8 @@ async def memory(gc: GroupControl):
 
 
 @group.command()
-@click.argument('name')
-@click.argument('slaves', nargs=-1, required=True)
+@click.argument("name")
+@click.argument("slaves", nargs=-1, required=True)
 @pass_groupctl
 @coro
 async def create(gc: GroupControl, name, slaves):
@@ -708,9 +712,10 @@ async def abort(gc: GroupControl):
     click.echo("Aborting current group..")
     click.echo(await gc.abort())
 
+
 @group.command()
 @pass_groupctl
-@click.argument('slaves', nargs=-1, required=True)
+@click.argument("slaves", nargs=-1, required=True)
 @coro
 async def add(gc: GroupControl, slaves):
     """Add speakers to group."""
@@ -720,7 +725,7 @@ async def add(gc: GroupControl, slaves):
 
 @group.command()
 @pass_groupctl
-@click.argument('slaves', nargs=-1, required=True)
+@click.argument("slaves", nargs=-1, required=True)
 async def remove(gc: GroupControl, slaves):
     """Remove speakers from group."""
     click.echo("Removing from existing group: %s" % slaves)
@@ -729,7 +734,7 @@ async def remove(gc: GroupControl, slaves):
 
 @group.command()
 @pass_groupctl
-@click.argument('volume', type=int)
+@click.argument("volume", type=int)
 async def volume(gc: GroupControl, volume):
     """Adjust volume [-100, 100]"""
     click.echo("Setting volume to %s" % volume)
@@ -738,7 +743,7 @@ async def volume(gc: GroupControl, volume):
 
 @group.command()
 @pass_groupctl
-@click.argument('mute', type=bool)
+@click.argument("mute", type=bool)
 async def mute(gc: GroupControl, mute):
     """(Un)mute group."""
     click.echo("Muting group: %s" % mute)

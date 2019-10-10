@@ -14,6 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 @attr.s
 class MethodSignature:
     """Method signature."""
+
     @staticmethod
     def return_type(x: str) -> Union[type, str]:
         """Return a python type for a string presentation if possible."""
@@ -85,15 +86,14 @@ class MethodSignature:
     version = attr.ib()
 
 
-
-
 class Method:
     """A Method (int. API) represents a single API method.
 
     This class implements __call__() for calling the method, which can be used to
     invoke the method.
     """
-    def __init__(self, service: 'Service', signature: MethodSignature, debug=0):
+
+    def __init__(self, service: "Service", signature: MethodSignature, debug=0):
         """Construct a method."""
         self.versions = signature.version
         self.name = signature.name
@@ -109,11 +109,7 @@ class Method:
 
         This can be used to dump the information into a JSON file.
         """
-        return {
-            "service": self.service.name,
-            **self.signature.serialize(),
-        }
-
+        return {"service": self.service.name, **self.signature.serialize()}
 
     async def __call__(self, *args, **kwargs):
         """Call the method with given parameters.
