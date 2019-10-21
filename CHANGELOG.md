@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.11.2](https://github.com/rytilahti/python-songpal/tree/0.11.2) (2019-10-21)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.11.1...0.11.2)
+
+**Fixed bugs:**
+
+- Attempt to decode JSON with unexpected mimetype [\#58](https://github.com/rytilahti/python-songpal/issues/58)
+
+**Closed issues:**
+
+- home assistant component can't load: No Such Method [\#46](https://github.com/rytilahti/python-songpal/issues/46)
+
+**Merged pull requests:**
+
+- Disable JSON content-type validation [\#59](https://github.com/rytilahti/python-songpal/pull/59) ([rytilahti](https://github.com/rytilahti))
+
 ## [0.11.1](https://github.com/rytilahti/python-songpal/tree/0.11.1) (2019-10-10)
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.11...0.11.1)
