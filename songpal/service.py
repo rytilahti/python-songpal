@@ -56,7 +56,7 @@ class Service:
                     return res
             else:
                 res = await session.post(endpoint, json=req)
-                json = await res.json()
+                json = await res.json(content_type=None)
 
                 return json
 
@@ -198,7 +198,7 @@ class Service:
                     return res
             else:
                 res = await session.post(self.endpoint, json=req)
-                return await res.json()
+                return await res.json(content_type=None)
 
     def wrap_notification(self, data):
         """Convert notification JSON to a notification class."""

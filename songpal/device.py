@@ -98,10 +98,10 @@ class Device:
             if res.status != 200:
                 raise SongpalException(
                     "Got a non-ok (status %s) response for %s" % (res.status, method),
-                    error=await res.json()["error"],
+                    error=await res.json(content_type=None)["error"],
                 )
 
-            res = await res.json()
+            res = await res.json(content_type=None)
 
         # TODO handle exceptions from POST? This used to raise SongpalException
         #      on requests.RequestException (Unable to get APIs).
