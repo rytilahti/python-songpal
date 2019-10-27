@@ -1,7 +1,7 @@
 """Data containers for Songpal."""
 from datetime import timedelta
 import logging
-from typing import List  # noqa: F401
+from typing import List, Optional
 
 import attr
 
@@ -86,7 +86,7 @@ class SupportedFunctions:
     make = classmethod(make)
 
     def _convert_playback_functions(x) -> List[PlaybackFunction]:
-        return [PlaybackFunction.make(**y) for y in x]
+        return [PlaybackFunction.make(**y) for y in x]  # type: ignore
 
     uri = attr.ib()
     functions = attr.ib(converter=_convert_playback_functions)
@@ -150,7 +150,7 @@ class PlayInfo:
     make = classmethod(make)
 
     def _make(x) -> StateInfo:
-        return StateInfo.make(**x)
+        return StateInfo.make(**x)  # type: ignore
 
     stateInfo = attr.ib(converter=_make)
     contentKind = attr.ib()
@@ -463,13 +463,17 @@ class SettingsEntry:
     isAvailable = attr.ib()
     type = attr.ib()
 
-    def _convert_if_available(x) -> List["SettingsEntry"]:
+    def _convert_if_available(x) -> Optional[List["SettingsEntry"]]:
         if x is not None:
-            return [SettingsEntry.make(**y) for y in x]
+            return [SettingsEntry.make(**y) for y in x]  # type: ignore
 
-    def _convert_if_available_mapping(x) -> ApiMapping:
+        return None
+
+    def _convert_if_available_mapping(x) -> Optional[ApiMapping]:
         if x is not None:
-            return ApiMapping.make(**x)
+            return ApiMapping.make(**x)  # type: ignore
+
+        return None
 
     async def get_value(self, dev):
         """Return current value for this setting."""
@@ -522,7 +526,7 @@ class Setting:
 
     def _create_candidates(x) -> List[SettingCandidate]:
         if x is not None:
-            return [SettingCandidate.make(**y) for y in x]
+            return [SettingCandidate.make(**y) for y in x]  # type: ignore
 
         return []
 

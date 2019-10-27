@@ -316,8 +316,8 @@ async def source(dev: Device, scheme: str):
     If no `scheme` is given, will list sources for all sc hemes.
     """
     if scheme is None:
-        schemes = await dev.get_schemes()
-        schemes = [str(scheme.scheme) for scheme in schemes]
+        all_schemes = await dev.get_schemes()
+        schemes = [str(scheme.scheme) for scheme in all_schemes]
     else:
         schemes = [scheme]
 
@@ -731,7 +731,7 @@ async def remove(gc: GroupControl, slaves):
     click.echo(await gc.remove(slaves))
 
 
-@group.command()  # noqa: F811
+@group.command()  # type: ignore # noqa: F811
 @pass_groupctl
 @click.argument("volume", type=int)
 async def volume(gc: GroupControl, volume):
