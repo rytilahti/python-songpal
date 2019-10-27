@@ -8,12 +8,10 @@ import sys
 
 import click
 import requests
-
 from songpal import Device, SongpalException
 from songpal.common import ProtocolType
 from songpal.containers import Setting
 from songpal.discovery import Discover
-from songpal.notification import VolumeChange, PowerChange, ContentChange
 from songpal.group import GroupControl
 
 
@@ -327,7 +325,7 @@ async def source(dev: Device, scheme):
         try:
             sources = await dev.get_source_list(schema)
         except SongpalException as ex:
-            click.echo("Unable to get sources for %s" % schema)
+            click.echo("Unable to get sources for %s: %s" % (schema, ex))
             continue
         for src in sources:
             click.echo(src)
@@ -653,7 +651,7 @@ pass_groupctl = click.make_pass_decorator(GroupControl)
 @coro
 async def group(ctx, url):
     gc = GroupControl(url)
-    connect = await gc.connect()
+    await gc.connect()
     ctx.obj = gc
 
 
@@ -732,7 +730,7 @@ async def remove(gc: GroupControl, slaves):
     click.echo(await gc.remove(slaves))
 
 
-@group.command()
+@group.command()  # noqa: F811
 @pass_groupctl
 @click.argument("volume", type=int)
 async def volume(gc: GroupControl, volume):

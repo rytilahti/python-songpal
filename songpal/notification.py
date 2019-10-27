@@ -3,7 +3,7 @@ import logging
 from pprint import pformat as pf
 
 import attr
-from songpal.containers import Power, SoftwareUpdateInfo, make, convert_to_bool
+from songpal.containers import Power, SoftwareUpdateInfo, convert_to_bool, make
 
 _LOGGER = logging.getLogger(__name__)
 

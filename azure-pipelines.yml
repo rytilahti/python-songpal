@@ -29,7 +29,15 @@ steps:
 
 - script: |
     pre-commit run black --all-files
-  displayName: 'black'
+  displayName: 'Code formating (black)'
+  
+- script: |
+    pre-commit run mypy --all-files
+  displayName: 'Typing checks (mypy)'
+  
+- script: |
+    pre-commit run isort --all-files
+  displayName: 'Order of imports (isort)'
 
 - script: |
     pip install pytest pytest-azurepipelines

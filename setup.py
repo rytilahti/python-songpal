@@ -11,7 +11,7 @@ with open("songpal/version.py") as f:
 
 setup(
     name="python-songpal",
-    version=__version__,
+    version=__version__,  # noqa: F821
     description="Python library for interfacing with Sony's Songpal devices",
     long_description=readme(),
     url="https://github.com/rytilahti/python-songpal",

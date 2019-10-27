@@ -2,9 +2,9 @@
 from songpal.common import SongpalException
 from songpal.device import Device
 from songpal.notification import (
-    Notification,
     ConnectChange,
     ContentChange,
+    Notification,
     PowerChange,
     VolumeChange,
 )

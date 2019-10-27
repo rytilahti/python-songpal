@@ -1,6 +1,7 @@
 import logging
-from async_upnp_client.search import async_search
 from xml import etree
+
+from async_upnp_client.search import async_search
 import attr
 
 _LOGGER = logging.getLogger(__name__)

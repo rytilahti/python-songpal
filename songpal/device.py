@@ -1,20 +1,18 @@
 """Module presenting a single supported device."""
 import asyncio
-import aiohttp
 from collections import defaultdict
 import itertools
-import json
 import logging
 from pprint import pformat as pf
 from typing import Any, Dict, List
 from urllib.parse import urlparse
 
+import aiohttp
 from songpal.common import SongpalException
 from songpal.containers import (
     Content,
     ContentInfo,
     Input,
-    Zone,
     InterfaceInfo,
     PlayInfo,
     Power,
@@ -27,8 +25,9 @@ from songpal.containers import (
     SupportedFunctions,
     Sysinfo,
     Volume,
+    Zone,
 )
-from songpal.notification import Notification, ConnectChange
+from songpal.notification import ConnectChange, Notification
 from songpal.service import Service
 
 _LOGGER = logging.getLogger(__name__)
