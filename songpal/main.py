@@ -1,19 +1,17 @@
 """Click-based interface for Songpal."""
 import ast
 import asyncio
-from functools import update_wrapper
 import json
 import logging
 import sys
+from functools import update_wrapper
 
 import click
-import requests
 
 from songpal import Device, SongpalException
 from songpal.common import ProtocolType
 from songpal.containers import Setting
 from songpal.discovery import Discover
-from songpal.notification import VolumeChange, PowerChange, ContentChange
 from songpal.group import GroupControl
 
 
@@ -144,7 +142,7 @@ async def cli(ctx, endpoint, debug, websocket, post):
     x = Device(endpoint, force_protocol=protocol, debug=debug)
     try:
         await x.get_supported_methods()
-    except (requests.exceptions.ConnectionError, SongpalException) as ex:
+    except SongpalException as ex:
         err("Unable to get supported methods: %s" % ex)
         sys.exit(-1)
     ctx.obj = x
@@ -160,7 +158,7 @@ async def cli(ctx, endpoint, debug, websocket, post):
 async def status(dev: Device):
     """Display status information."""
     power = await dev.get_power()
-    click.echo(click.style("%s" % power, bold=power))
+    click.echo(click.style("%s" % power, bold=bool(power)))
 
     vol = await dev.get_volume_information()
     click.echo(vol.pop())
@@ -238,7 +236,7 @@ async def power(dev: Device, cmd, target, value):
         click.echo(await dev.set_power_settings(target, value))
     else:
         power = await dev.get_power()
-        click.echo(click.style(str(power), bold=power))
+        click.echo(click.style(str(power), bold=bool(power)))
 
 
 @cli.command()
@@ -312,14 +310,14 @@ async def googlecast(dev: Device, target, value):
 @click.argument("scheme", required=False)
 @pass_dev
 @coro
-async def source(dev: Device, scheme):
+async def source(dev: Device, scheme: str):
     """List available sources.
 
     If no `scheme` is given, will list sources for all sc hemes.
     """
     if scheme is None:
-        schemes = await dev.get_schemes()
-        schemes = [scheme.scheme for scheme in schemes]  # noqa: T484
+        all_schemes = await dev.get_schemes()
+        schemes = [str(scheme.scheme) for scheme in all_schemes]
     else:
         schemes = [scheme]
 
@@ -327,7 +325,7 @@ async def source(dev: Device, scheme):
         try:
             sources = await dev.get_source_list(schema)
         except SongpalException as ex:
-            click.echo("Unable to get sources for %s" % schema)
+            click.echo("Unable to get sources for %s: %s" % (schema, ex))
             continue
         for src in sources:
             click.echo(src)
@@ -384,7 +382,8 @@ async def volume(dev: Device, volume, output):
     if output is not None:
         click.echo(vol)
     else:
-        [click.echo(x) for x in vol_controls]
+        for ctl in vol_controls:
+            click.echo(ctl)
 
 
 @cli.command()
@@ -581,8 +580,8 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
 
     else:
         click.echo(click.style("Available notifications", bold=True))
-        for notification in notifications:
-            click.echo("* %s" % notification)
+        for notif in notifications:
+            click.echo("* %s" % notif)
 
 
 @cli.command()
@@ -653,7 +652,7 @@ pass_groupctl = click.make_pass_decorator(GroupControl)
 @coro
 async def group(ctx, url):
     gc = GroupControl(url)
-    connect = await gc.connect()
+    await gc.connect()
     ctx.obj = gc
 
 
@@ -732,7 +731,7 @@ async def remove(gc: GroupControl, slaves):
     click.echo(await gc.remove(slaves))
 
 
-@group.command()
+@group.command()  # type: ignore # noqa: F811
 @pass_groupctl
 @click.argument("volume", type=int)
 async def volume(gc: GroupControl, volume):

@@ -6,7 +6,7 @@ from typing import Dict, Union
 
 import attr
 
-from songpal import SongpalException
+from .common import SongpalException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -93,7 +93,7 @@ class Method:
     invoke the method.
     """
 
-    def __init__(self, service: "Service", signature: MethodSignature, debug=0):
+    def __init__(self, service, signature: MethodSignature, debug=0):
         """Construct a method."""
         self.versions = signature.version
         self.name = signature.name

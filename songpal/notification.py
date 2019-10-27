@@ -1,9 +1,11 @@
 """Module for device notifications."""
 import logging
 from pprint import pformat as pf
+from typing import List, Optional
 
 import attr
-from songpal.containers import Power, SoftwareUpdateInfo, make, convert_to_bool
+
+from songpal.containers import Power, SoftwareUpdateInfo, convert_to_bool, make
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,9 +76,11 @@ class SoftwareUpdateChange(ChangeNotification):
 
     make = classmethod(make)
 
-    def _convert_if_available(x):
+    def _convert_if_available(x) -> Optional[SoftwareUpdateInfo]:
         if x is not None:
-            return SoftwareUpdateInfo.make(**x[0])
+            return SoftwareUpdateInfo.make(**x[0])  # type: ignore
+
+        return None
 
     isUpdatable = attr.ib(converter=convert_to_bool)
     swInfo = attr.ib(converter=_convert_if_available)
@@ -88,7 +92,10 @@ class VolumeChange(ChangeNotification):
 
     make = classmethod(make)
 
-    mute = attr.ib(converter=lambda x: True if x == "on" else False)
+    def _convert_bool(x) -> bool:
+        return x == "on"
+
+    mute = attr.ib(converter=_convert_bool)
     volume = attr.ib()
     output = attr.ib()
 
@@ -164,8 +171,11 @@ class NotificationChange(ChangeNotification):
 
     make = classmethod(make)
 
-    enabled = attr.ib(converter=lambda x: [x["name"] for x in x])
-    disabled = attr.ib(converter=lambda x: [x["name"] for x in x])
+    def _extract_notification_names(x) -> List[str]:
+        return [x["name"] for x in x]  # type: ignore
+
+    enabled = attr.ib(converter=_extract_notification_names)
+    disabled = attr.ib(converter=_extract_notification_names)
 
     def __str__(self):
         return "<NotificationChange enabled: %s disabled: %s>" % (

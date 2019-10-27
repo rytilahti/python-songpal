@@ -1,7 +1,7 @@
 """Data containers for Songpal."""
-from datetime import timedelta
 import logging
-from typing import List  # noqa: F401
+from datetime import timedelta
+from typing import List, Optional
 
 import attr
 
@@ -46,17 +46,17 @@ def make(cls, **kwargs):
     return inst
 
 
-def convert_to_bool(x):
+def convert_to_bool(x) -> bool:
     """Convert string 'true' to bool."""
     return x == "true"
 
 
-def convert_is_active(x):
+def convert_is_active(x) -> bool:
     """Convert string 'active' to bool."""
     return True if x == "active" else False
 
 
-def convert_title(x):
+def convert_title(x) -> str:
     """Trim trailing characters on the title"""
     return x.strip()
 
@@ -67,7 +67,7 @@ class Scheme:
 
     make = classmethod(make)
 
-    scheme = attr.ib()
+    scheme = attr.ib()  # type: str
 
 
 @attr.s
@@ -85,8 +85,8 @@ class SupportedFunctions:
 
     make = classmethod(make)
 
-    def _convert_playback_functions(x):
-        return [PlaybackFunction.make(**y) for y in x]
+    def _convert_playback_functions(x) -> List[PlaybackFunction]:
+        return [PlaybackFunction.make(**y) for y in x]  # type: ignore
 
     uri = attr.ib()
     functions = attr.ib(converter=_convert_playback_functions)
@@ -149,8 +149,8 @@ class PlayInfo:
 
     make = classmethod(make)
 
-    def _make(x):
-        return StateInfo.make(**x)
+    def _make(x) -> StateInfo:
+        return StateInfo.make(**x)  # type: ignore
 
     stateInfo = attr.ib(converter=_make)
     contentKind = attr.ib()
@@ -329,10 +329,7 @@ class Power:
 
     make = classmethod(make)
 
-    def _make(x):
-        return True if x == "active" else False
-
-    status = attr.ib(converter=_make)
+    status = attr.ib(converter=convert_is_active)
     standbyDetail = attr.ib()
 
     def __bool__(self):
@@ -412,7 +409,7 @@ class Storage:
 
     make = classmethod(make)
 
-    def _make(x):
+    def _make(x) -> bool:
         return True if x == "mounted" else False
 
     deviceName = attr.ib()
@@ -466,13 +463,17 @@ class SettingsEntry:
     isAvailable = attr.ib()
     type = attr.ib()
 
-    def _convert_if_available(x):
+    def _convert_if_available(x) -> Optional[List["SettingsEntry"]]:
         if x is not None:
-            return [SettingsEntry.make(**y) for y in x]
+            return [SettingsEntry.make(**y) for y in x]  # type: ignore
 
-    def _convert_if_available_mapping(x):
+        return None
+
+    def _convert_if_available_mapping(x) -> Optional[ApiMapping]:
         if x is not None:
-            return ApiMapping.make(**x)
+            return ApiMapping.make(**x)  # type: ignore
+
+        return None
 
     async def get_value(self, dev):
         """Return current value for this setting."""
@@ -523,16 +524,16 @@ class Setting:
 
     make = classmethod(make)
 
-    def _create_candidates(x):
+    def _create_candidates(x) -> List[SettingCandidate]:
         if x is not None:
-            return [SettingCandidate.make(**y) for y in x]
+            return [SettingCandidate.make(**y) for y in x]  # type: ignore
 
         return []
 
     currentValue = attr.ib()
     target = attr.ib()
     type = attr.ib()
-    candidate = attr.ib(converter=_create_candidates)  # type: List[SettingCandidate]
+    candidate = attr.ib(converter=_create_candidates)
     isAvailable = attr.ib()
     title = attr.ib()
     titleTextID = attr.ib()

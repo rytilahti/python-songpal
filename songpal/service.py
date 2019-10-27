@@ -7,9 +7,8 @@ import aiohttp
 from songpal.common import ProtocolType, SongpalException
 from songpal.method import Method, MethodSignature
 from songpal.notification import (
-    Notification,
-    ConnectChange,
     ContentChange,
+    Notification,
     NotificationChange,
     PowerChange,
     SettingChange,
@@ -104,7 +103,7 @@ class Service:
             parsed_sig = MethodSignature.from_payload(*sig)
             if name in methods:
                 _LOGGER.debug(
-                    "Got duplicate signature for %s, existing was %s. Keeping the existing one",
+                    "Got duplicate signature for %s, existing was %s, keeping it.",
                     parsed_sig,
                     methods[name],
                 )

@@ -7,7 +7,7 @@ from typing import Optional
 class DeviceErrorCode(IntEnum):
     """Error code mapping.
 
-    Source: https://developer.sony.com/develop/audio-control-api/api-references/error-codes
+    https://developer.sony.com/develop/audio-control-api/api-references/error-codes
     """
 
     Unknown = -1
@@ -33,8 +33,8 @@ class DeviceError:
         try:
             errcode = DeviceErrorCode(self.error_code)
             return "%s (%s): %s" % (errcode.name, errcode.value, self.error_message)
-        except:
-            return "Error %s: %s" % (self.error_code, self.error_message)
+        except:  # noqa: E722
+            return "Unknown error %s: %s" % (self.error_code, self.error_message)
 
     def __str__(self):
         return self.error
