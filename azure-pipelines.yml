@@ -39,7 +39,7 @@ steps:
     pre-commit run isort --all-files
   displayName: 'Order of imports (isort)'
 
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+# - script: |
+#    pip install pytest pytest-azurepipelines
+#    pytest
+#  displayName: 'pytest'
