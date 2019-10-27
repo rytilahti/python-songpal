@@ -1,8 +1,8 @@
 """Module presenting a single supported device."""
 import asyncio
-from collections import defaultdict
 import itertools
 import logging
+from collections import defaultdict
 from pprint import pformat as pf
 from typing import Any, Dict, List
 from urllib.parse import urlparse

@@ -1,10 +1,10 @@
 """Click-based interface for Songpal."""
 import ast
 import asyncio
-from functools import update_wrapper
 import json
 import logging
 import sys
+from functools import update_wrapper
 
 import click
 
