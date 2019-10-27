@@ -7,7 +7,7 @@ import logging
 import sys
 
 import click
-import requests
+
 from songpal import Device, SongpalException
 from songpal.common import ProtocolType
 from songpal.containers import Setting
@@ -142,7 +142,7 @@ async def cli(ctx, endpoint, debug, websocket, post):
     x = Device(endpoint, force_protocol=protocol, debug=debug)
     try:
         await x.get_supported_methods()
-    except (requests.exceptions.ConnectionError, SongpalException) as ex:
+    except SongpalException as ex:
         err("Unable to get supported methods: %s" % ex)
         sys.exit(-1)
     ctx.obj = x

@@ -3,6 +3,7 @@ import logging
 from typing import List
 
 import aiohttp
+
 from songpal.common import ProtocolType, SongpalException
 from songpal.method import Method, MethodSignature
 from songpal.notification import (

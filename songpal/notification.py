@@ -4,6 +4,7 @@ from pprint import pformat as pf
 from typing import List, Optional
 
 import attr
+
 from songpal.containers import Power, SoftwareUpdateInfo, convert_to_bool, make
 
 _LOGGER = logging.getLogger(__name__)
