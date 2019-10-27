@@ -2,7 +2,6 @@ include *.md
 include *.txt
 include *.yaml
 include *.yml
-include .isort.cfg
 include LICENSE
 include tox.ini
 recursive-include devinfos *.json
