@@ -46,17 +46,17 @@ def make(cls, **kwargs):
     return inst
 
 
-def convert_to_bool(x):
+def convert_to_bool(x) -> bool:
     """Convert string 'true' to bool."""
     return x == "true"
 
 
-def convert_is_active(x):
+def convert_is_active(x) -> bool:
     """Convert string 'active' to bool."""
     return True if x == "active" else False
 
 
-def convert_title(x):
+def convert_title(x) -> str:
     """Trim trailing characters on the title"""
     return x.strip()
 
@@ -67,7 +67,7 @@ class Scheme:
 
     make = classmethod(make)
 
-    scheme = attr.ib()
+    scheme = attr.ib()  # type: str
 
 
 @attr.s
@@ -85,7 +85,7 @@ class SupportedFunctions:
 
     make = classmethod(make)
 
-    def _convert_playback_functions(x):
+    def _convert_playback_functions(x) -> List[PlaybackFunction]:
         return [PlaybackFunction.make(**y) for y in x]
 
     uri = attr.ib()
@@ -149,7 +149,7 @@ class PlayInfo:
 
     make = classmethod(make)
 
-    def _make(x):
+    def _make(x) -> StateInfo:
         return StateInfo.make(**x)
 
     stateInfo = attr.ib(converter=_make)
@@ -329,10 +329,7 @@ class Power:
 
     make = classmethod(make)
 
-    def _make(x):
-        return True if x == "active" else False
-
-    status = attr.ib(converter=_make)
+    status = attr.ib(converter=convert_is_active)
     standbyDetail = attr.ib()
 
     def __bool__(self):
@@ -412,7 +409,7 @@ class Storage:
 
     make = classmethod(make)
 
-    def _make(x):
+    def _make(x) -> bool:
         return True if x == "mounted" else False
 
     deviceName = attr.ib()
@@ -466,11 +463,11 @@ class SettingsEntry:
     isAvailable = attr.ib()
     type = attr.ib()
 
-    def _convert_if_available(x):
+    def _convert_if_available(x) -> List["SettingsEntry"]:
         if x is not None:
             return [SettingsEntry.make(**y) for y in x]
 
-    def _convert_if_available_mapping(x):
+    def _convert_if_available_mapping(x) -> ApiMapping:
         if x is not None:
             return ApiMapping.make(**x)
 
@@ -523,7 +520,7 @@ class Setting:
 
     make = classmethod(make)
 
-    def _create_candidates(x):
+    def _create_candidates(x) -> List[SettingCandidate]:
         if x is not None:
             return [SettingCandidate.make(**y) for y in x]
 
@@ -532,7 +529,7 @@ class Setting:
     currentValue = attr.ib()
     target = attr.ib()
     type = attr.ib()
-    candidate = attr.ib(converter=_create_candidates)  # type: List[SettingCandidate]
+    candidate = attr.ib(converter=_create_candidates)
     isAvailable = attr.ib()
     title = attr.ib()
     titleTextID = attr.ib()

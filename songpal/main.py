@@ -158,7 +158,7 @@ async def cli(ctx, endpoint, debug, websocket, post):
 async def status(dev: Device):
     """Display status information."""
     power = await dev.get_power()
-    click.echo(click.style("%s" % power, bold=power))
+    click.echo(click.style("%s" % power, bold=bool(power)))
 
     vol = await dev.get_volume_information()
     click.echo(vol.pop())
@@ -236,7 +236,7 @@ async def power(dev: Device, cmd, target, value):
         click.echo(await dev.set_power_settings(target, value))
     else:
         power = await dev.get_power()
-        click.echo(click.style(str(power), bold=power))
+        click.echo(click.style(str(power), bold=bool(power)))
 
 
 @cli.command()
@@ -310,14 +310,14 @@ async def googlecast(dev: Device, target, value):
 @click.argument("scheme", required=False)
 @pass_dev
 @coro
-async def source(dev: Device, scheme):
+async def source(dev: Device, scheme: str):
     """List available sources.
 
     If no `scheme` is given, will list sources for all sc hemes.
     """
     if scheme is None:
         schemes = await dev.get_schemes()
-        schemes = [scheme.scheme for scheme in schemes]  # noqa: T484
+        schemes = [str(scheme.scheme) for scheme in schemes]
     else:
         schemes = [scheme]
 
@@ -382,7 +382,8 @@ async def volume(dev: Device, volume, output):
     if output is not None:
         click.echo(vol)
     else:
-        [click.echo(x) for x in vol_controls]
+        for ctl in vol_controls:
+            click.echo(ctl)
 
 
 @cli.command()
@@ -579,8 +580,8 @@ async def notifications(dev: Device, notification: str, listen_all: bool):
 
     else:
         click.echo(click.style("Available notifications", bold=True))
-        for notification in notifications:
-            click.echo("* %s" % notification)
+        for notif in notifications:
+            click.echo("* %s" % notif)
 
 
 @cli.command()
