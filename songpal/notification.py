@@ -5,7 +5,7 @@ from typing import List, Optional
 
 import attr
 
-from songpal.containers import Power, SoftwareUpdateInfo, convert_to_bool, make
+from songpal.containers import Power, Zone, SoftwareUpdateInfo, convert_to_bool, make
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -68,6 +68,20 @@ class PowerChange(ChangeNotification, Power):
     """Notification for power status change."""
 
     pass
+
+@attr.s
+class ZoneActivatedChange(ChangeNotification):
+    """Notification for zone power status change."""
+
+    make = classmethod(make)
+
+    def _convert_bool(x) -> bool:
+        return x == "active"
+
+    active = attr.ib(converter=_convert_bool)
+    connection = attr.ib()
+    label = attr.ib()
+    uri = attr.ib()
 
 
 @attr.s
