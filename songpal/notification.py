@@ -5,7 +5,7 @@ from typing import List, Optional
 
 import attr
 
-from songpal.containers import Power, Zone, SoftwareUpdateInfo, convert_to_bool, make
+from songpal.containers import Power, SoftwareUpdateInfo, convert_to_bool, make
 
 _LOGGER = logging.getLogger(__name__)
 
