@@ -11,10 +11,10 @@ from songpal.notification import (
     Notification,
     NotificationChange,
     PowerChange,
-    ZoneActivatedChange,
     SettingChange,
     SoftwareUpdateChange,
     VolumeChange,
+    ZoneActivatedChange,
 )
 
 _LOGGER = logging.getLogger(__name__)
