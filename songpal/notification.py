@@ -69,6 +69,7 @@ class PowerChange(ChangeNotification, Power):
 
     pass
 
+
 @attr.s
 class ZoneActivatedChange(ChangeNotification):
     """Notification for zone power status change."""
