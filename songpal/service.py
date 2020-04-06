@@ -14,6 +14,7 @@ from songpal.notification import (
     SettingChange,
     SoftwareUpdateChange,
     VolumeChange,
+    ZoneActivatedChange,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -207,6 +208,8 @@ class Service:
             change = params[0]
             if method == "notifyPowerStatus":
                 return PowerChange.make(**change)
+            elif method == "notifyExternalTerminalStatus":
+                return ZoneActivatedChange.make(**change)
             elif method == "notifyVolumeInformation":
                 return VolumeChange.make(**change)
             elif method == "notifyPlayingContentInfo":

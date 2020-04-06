@@ -71,6 +71,21 @@ class PowerChange(ChangeNotification, Power):
 
 
 @attr.s
+class ZoneActivatedChange(ChangeNotification):
+    """Notification for zone power status change."""
+
+    make = classmethod(make)
+
+    def _convert_bool(x) -> bool:
+        return x == "active"
+
+    active = attr.ib(converter=_convert_bool)
+    connection = attr.ib()
+    label = attr.ib()
+    uri = attr.ib()
+
+
+@attr.s
 class SoftwareUpdateChange(ChangeNotification):
     """Notification for available software updates."""
 
