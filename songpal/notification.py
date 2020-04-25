@@ -54,8 +54,6 @@ class Notification:
 class ChangeNotification:
     """Dummy base-class for notifications."""
 
-    pass
-
 
 @attr.s
 class ConnectChange(ChangeNotification):
@@ -66,8 +64,6 @@ class ConnectChange(ChangeNotification):
 @attr.s
 class PowerChange(ChangeNotification, Power):
     """Notification for power status change."""
-
-    pass
 
 
 @attr.s
@@ -197,3 +193,13 @@ class NotificationChange(ChangeNotification):
             ",".join(self.enabled),
             ",".join(self.disabled),
         )
+
+
+@attr.s
+class PlaybackFunctionChange(ChangeNotification):
+    """Container for storing playback function changes."""
+
+    make = classmethod(make)
+
+    functions = attr.ib()
+    uri = attr.ib()

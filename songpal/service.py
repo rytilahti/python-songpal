@@ -10,6 +10,7 @@ from songpal.notification import (
     ContentChange,
     Notification,
     NotificationChange,
+    PlaybackFunctionChange,
     PowerChange,
     SettingChange,
     SoftwareUpdateChange,
@@ -218,6 +219,8 @@ class Service:
                 return SettingChange.make(**change)
             elif method == "notifySWUpdateInfo":
                 return SoftwareUpdateChange.make(**change)
+            elif method == "notifyAvailablePlaybackFunction":
+                return PlaybackFunctionChange.make(**change)
             else:
                 _LOGGER.warning(
                     "Got unknown notification type: %s - params: %s", method, params
