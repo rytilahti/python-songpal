@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.12](https://github.com/rytilahti/python-songpal/tree/0.12) (2020-04-26)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.11.2...0.12)
+
+**Fixed bugs:**
+
+- ModuleNotFoundError: No module named 'async\_upnp\_client.search [\#51](https://github.com/rytilahti/python-songpal/issues/51)
+
+**Closed issues:**
+
+- use homeassistant when change source of SRS-X99 always get short disconnecting [\#69](https://github.com/rytilahti/python-songpal/issues/69)
+- Hassio's latest update makes songpal disappear [\#67](https://github.com/rytilahti/python-songpal/issues/67)
+- songpal command in the console [\#66](https://github.com/rytilahti/python-songpal/issues/66)
+- Install in Hassio \(docker\) [\#65](https://github.com/rytilahti/python-songpal/issues/65)
+- HT-RT5 support \(HT-CT790 + two SRS-ZR5\) Surround Sound [\#32](https://github.com/rytilahti/python-songpal/issues/32)
+
+**Merged pull requests:**
+
+- Handles InvalidURL and ClientConnectionError exceptions [\#72](https://github.com/rytilahti/python-songpal/pull/72) ([shenxn](https://github.com/shenxn))
+- add PlaybackFunctionChange notification [\#71](https://github.com/rytilahti/python-songpal/pull/71) ([rytilahti](https://github.com/rytilahti))
+- add SRS-X99 devinfo [\#70](https://github.com/rytilahti/python-songpal/pull/70) ([FaintGhost](https://github.com/FaintGhost))
+- Create HT-XT2.json [\#68](https://github.com/rytilahti/python-songpal/pull/68) ([kurt-k](https://github.com/kurt-k))
+- Added notifications for zone activation status [\#64](https://github.com/rytilahti/python-songpal/pull/64) ([jwiese](https://github.com/jwiese))
+- use azure pipelines instead of travis [\#61](https://github.com/rytilahti/python-songpal/pull/61) ([rytilahti](https://github.com/rytilahti))
+
 ## [0.11.2](https://github.com/rytilahti/python-songpal/tree/0.11.2) (2019-10-21)
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.11.1...0.11.2)

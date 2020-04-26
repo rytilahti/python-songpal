@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "python-songpal"
+version = "0.12"
+description = "Python library for interfacing with Sony's Songpal devices"
+authors = ["Teemu R <tpr@iki.fi>"]
+license = "GPL-3.0"
+readme = "README.rst"
+repository = "https://github.com/rytilahti/python-songpal"
+packages = [
+  { include = "songpal" }
+]
+
+[tool.poetry.scripts]
+songpal = "songpal.main:cli"
+
+
+[tool.poetry.dependencies]
+python = "^3.6"
+click = "^7"
+aiohttp = "*"
+attrs = "*"
+async_upnp_client = "*"
+importlib-metadata = "*"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "*"
+mypy = "*"
+isort = "*"
+tox = "*"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
