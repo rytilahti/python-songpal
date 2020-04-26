@@ -91,21 +91,24 @@ class Device:
         if self.debug > 1:
             _LOGGER.debug("> POST %s with body: %s", self.guide_endpoint, payload)
 
-        async with aiohttp.ClientSession(headers=headers) as session:
-            res = await session.post(self.guide_endpoint, json=payload, headers=headers)
-            if self.debug > 1:
-                _LOGGER.debug("Received %s: %s" % (res.status, res.text))
-            if res.status != 200:
-                res_json = await res.json(content_type=None)
-                raise SongpalException(
-                    "Got a non-ok (status %s) response for %s" % (res.status, method),
-                    error=res_json.get("error"),
+        try:
+            async with aiohttp.ClientSession(headers=headers) as session:
+                res = await session.post(
+                    self.guide_endpoint, json=payload, headers=headers
                 )
+                if self.debug > 1:
+                    _LOGGER.debug("Received %s: %s" % (res.status, res.text))
+                if res.status != 200:
+                    res_json = await res.json(content_type=None)
+                    raise SongpalException(
+                        "Got a non-ok (status %s) response for %s"
+                        % (res.status, method),
+                        error=res_json.get("error"),
+                    )
 
-            res_json = await res.json(content_type=None)
-
-        # TODO handle exceptions from POST? This used to raise SongpalException
-        #      on requests.RequestException (Unable to get APIs).
+                res_json = await res.json(content_type=None)
+        except (aiohttp.InvalidURL, aiohttp.ClientConnectionError) as ex:
+            raise SongpalException("Unable to do POST request: %s" % ex) from ex
 
         if "error" in res_json:
             raise SongpalException(
