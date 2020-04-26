@@ -1,7 +1,7 @@
 python-songpal
 ==============
 
-|PyPI version|
+|PyPI version| |Black|
 
 Python 3 implementation of SongPal protocol as used by Sony's soundbar
 and potentially other devices.
@@ -15,23 +15,26 @@ and potentially other devices.
 Supported devices
 -----------------
 
-The library has been tested for now with following devices:
+The library has been tested to work with following devices:
 
-* HT-XT3
+* BDV-N9200W
+* CMT-SX7B
+* HT-XT2, HT-XT3
 * HT-NT5
 * HT-MT500
 * HT-ZF9
-* SRS-X77, SRS-X88
+* HT-ST5000
+* SRS-X77, SRS-X88, SRS-X99
 * STR-DN1060, STR-DN1070, STR-DN1080
 
 
 .. NOTE::
-  If no one has contributed a devinfo from your device (see devinfos/ directory),
-  please feel free to contribute one by typing `songpal dump-devinfo <filename>` 
-  and creating a pull request on this repository. 
+
+  If your device is not listed here but is working, feel free to contribute a device info file (see devinfos/ directory) by typing `songpal dump-devinfo <filename>` and creating a pull request on this repository. 
   This information can later be useful for extending the support for those devices.
 
 .. NOTE::
+
   Sony's `Supported devices page <http://vssupport.sony.net/en_ww/device.html>`_ lists devices,
   which will probably also work with this library.
 
@@ -45,7 +48,7 @@ Getting started
 Installation
 ~~~~~~~~~~~~
 
-The easiest way for installing this project is by using pypi inside a virtualenv.
+The easiest way to install is by using pip:
 
 .. code-block::
 
@@ -53,6 +56,7 @@ The easiest way for installing this project is by using pypi inside a virtualenv
 
 Locating the endpoint
 ~~~~~~~~~~~~~~~~~~~~~
+
 To communicate with the device you need to locate its endpoint URL.
 The easiest way to do is to execute the discover command:
 
@@ -345,3 +349,6 @@ Home Assistant supports devices using this library directly since 0.65: https://
 
 .. |PyPI version| image:: https://badge.fury.io/py/python-songpal.svg
    :target: https://badge.fury.io/py/python-songpal
+
+.. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
