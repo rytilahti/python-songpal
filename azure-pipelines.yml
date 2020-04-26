@@ -11,8 +11,8 @@ strategy:
       python.version: '3.6'
     Python37:
       python.version: '3.7'
-#    Python38:
-#      python.version: '3.8'
+    Python38:
+      python.version: '3.8'
 
 steps:
 - task: UsePythonVersion@0
@@ -21,10 +21,8 @@ steps:
   displayName: 'Use Python $(python.version)'
 
 - script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-    pip install pytest-azurepipelines
-    pre-commit install-hooks
+    python -m pip install --upgrade pip poetry
+    poetry install
   displayName: 'Install dependencies'
 
 - script: |
@@ -42,8 +40,3 @@ steps:
 - script: |
     pre-commit run isort --all-files
   displayName: 'Order of imports (isort)'
-
-# - script: |
-#    pip install pytest pytest-azurepipelines
-#    pytest
-#  displayName: 'pytest'
