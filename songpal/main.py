@@ -725,6 +725,7 @@ async def add(gc: GroupControl, slaves):
 @group.command()
 @pass_groupctl
 @click.argument("slaves", nargs=-1, required=True)
+@coro
 async def remove(gc: GroupControl, slaves):
     """Remove speakers from group."""
     click.echo("Removing from existing group: %s" % slaves)
@@ -734,6 +735,7 @@ async def remove(gc: GroupControl, slaves):
 @group.command()  # type: ignore # noqa: F811
 @pass_groupctl
 @click.argument("volume", type=int)
+@coro
 async def volume(gc: GroupControl, volume):  # noqa: F811
     """Adjust volume [-100, 100]"""
     click.echo("Setting volume to %s" % volume)
@@ -743,6 +745,7 @@ async def volume(gc: GroupControl, volume):  # noqa: F811
 @group.command()
 @pass_groupctl
 @click.argument("mute", type=bool)
+@coro
 async def mute(gc: GroupControl, mute):
     """(Un)mute group."""
     click.echo("Muting group: %s" % mute)
@@ -751,6 +754,7 @@ async def mute(gc: GroupControl, mute):
 
 @group.command()
 @pass_groupctl
+@coro
 async def play(gc: GroupControl):
     """Play?"""
     click.echo("Sending play command: %s" % await gc.play())
@@ -758,6 +762,7 @@ async def play(gc: GroupControl):
 
 @group.command()
 @pass_groupctl
+@coro
 async def stop(gc: GroupControl):
     """Stop playing?"""
     click.echo("Sending stop command: %s" % await gc.stop())
