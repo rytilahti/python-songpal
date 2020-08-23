@@ -202,19 +202,19 @@ class GroupControl:
     async def abort(self):
         """Abort current group session."""
         state = await self.state()
-        res = await self.call("X_Abort", MasterSessionID=state.MasterSessionID)
+        res = await self.call("X_Abort", MasterSessionID=state.SessionID)
         return res
 
     async def stop(self):
         """Stop playback?"""
         state = await self.state()
-        res = await self.call("X_Stop", MasterSessionID=state.MasterSessionID)
+        res = await self.call("X_Stop", MasterSessionID=state.SessionID)
         return res
 
     async def play(self):
         """Start playback?"""
         state = await self.state()
-        res = await self.call("X_Play", MasterSessionID=state.MasterSessionID)
+        res = await self.call("X_Play", MasterSessionID=state.SessionID)
         return res
 
     async def create(self, name, slaves):
@@ -234,7 +234,7 @@ class GroupControl:
         """Add slaves to the current group."""
         state = await self.state()
         res = await self.call(
-            "X_Entry", MasterSessionID=state.MasterSessionID, SlaveList=slaves
+            "X_Entry", MasterSessionID=state.SessionID, SlaveList=slaves
         )
         return res
 
@@ -242,21 +242,21 @@ class GroupControl:
         """Unknown usage."""
         state = await self.state()
         return await self.call(
-            "X_EntryM", MasterSessionID=state.MasterSessionID, SlaveList=slaves
+            "X_EntryM", MasterSessionID=state.SessionID, SlaveList=slaves
         )
 
     async def remove(self, slaves):
         """Remove slaves from the current group."""
         state = await self.state()
         return await self.call(
-            "X_Leave", MasterSessionID=state.MasterSessionID, SlaveList=slaves
+            "X_Leave", MasterSessionID=state.SessionID, SlaveList=slaves
         )
 
     async def remove_m(self, slaves):
         """Unknown usage."""
         state = await self.state()
         return await self.call(
-            "X_LeaveM", MasterSessionID=state.MasterSessionID, SlaveList=slaves
+            "X_LeaveM", MasterSessionID=state.SessionID, SlaveList=slaves
         )
 
     async def set_mute(self, activate):
