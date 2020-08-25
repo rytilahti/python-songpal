@@ -301,7 +301,7 @@ Group Control
 
     $ songpal group 
     
-Group command require using the UPnP URL ``--url`` instead of the API ``--endpoint``, and you'll need the ``UUIDs`` of the devices you want to group as well. All group commands should be executed on the master
+Group command require using the UPnP URL ``--url`` instead of the API ``--endpoint``, and you'll need the ``UUIDs`` of the devices you want to group as well. Both of these can be obtained through the ``discover`` function. All group commands should be executed on the master
 
 Creating groups:
 
