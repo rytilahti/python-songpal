@@ -294,6 +294,51 @@ global settings tree, but have to be separatedly accessed using the ``bluetooth`
     Patches improving this are welcome!
 
 
+Group Control
+-------------
+
+.. code-block::
+
+    $ songpal group 
+    
+Group command require using the UPnP URL ``--url`` instead of the API ``--endpoint``, and you'll need the ``UUIDs`` of the devices you want to group as well. Both of these can be obtained through the ``discover`` function. All group commands should be executed on the master
+
+Creating groups:
+
+.. code-block::
+
+    $ songpal group --url [upnpurl] create [groupname] [slave uuids]
+
+    $ songpal group --url "http://x.x.x.x:52323/dmr.xml" create GroupName uuid:00000000-0000-1010-8000-xxxx uuid:00000000-0000-1010-8000-xxxx
+
+Aborting groups
+
+.. code-block::
+
+    $ songpal group --url [pnpurl] abort
+
+    $ songpal group --url "http://x.x.x.x:52323/dmr.xml" abort
+    
+Changing volume
+
+.. code-block::
+
+    $ songpal group --url [pnpurl] volume [value -100,100]
+
+    $ songpal group --url "http://x.x.x.x:52323/dmr.xml" volume -- -5
+    $ songpal group --url "http://x.x.x.x:52323/dmr.xml" volume 5
+
+Muting
+
+.. code-block::
+
+    $ songpal group --url [pnpurl] mute [true|false]
+
+    $ songpal group --url "http://x.x.x.x:52323/dmr.xml" mute true
+    $ songpal group --url "http://x.x.x.x:52323/dmr.xml" mute false
+
+
+
 Executing custom commands
 -------------------------
 
