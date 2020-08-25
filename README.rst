@@ -307,7 +307,7 @@ Creating groups:
 
 .. code-block::
 
-    $ songpal group --url [pnpurl] create [groupname] [slave uuids]
+    $ songpal group --url [upnpurl] create [groupname] [slave uuids]
 
     $ songpal group --url "http://x.x.x.x:52323/dmr.xml" create GroupName uuid:00000000-0000-1010-8000-xxxx uuid:00000000-0000-1010-8000-xxxx
 
