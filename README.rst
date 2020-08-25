@@ -295,7 +295,7 @@ global settings tree, but have to be separatedly accessed using the ``bluetooth`
 
 
 Group Control
---------------
+-------------
 
 .. code-block::
 
