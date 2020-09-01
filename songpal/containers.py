@@ -344,8 +344,7 @@ class Power:
 
 @attr.s
 class Zone:
-    """Zone information.
-    """
+    """Zone information."""
 
     make = classmethod(make)
 
