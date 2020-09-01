@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.13](https://github.com/rytilahti/python-songpal/tree/0.13) (2020-09-01)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.12...0.13)
+
+**Fixed bugs:**
+
+- group abort command is not working [\#63](https://github.com/rytilahti/python-songpal/issues/63)
+
+**Merged pull requests:**
+
+- Add Group commands to readme [\#79](https://github.com/rytilahti/python-songpal/pull/79) ([maximoei](https://github.com/maximoei))
+- Fix broken group command to use correct SessionID [\#77](https://github.com/rytilahti/python-songpal/pull/77) ([maximoei](https://github.com/maximoei))
+- Add @coro for group commands [\#76](https://github.com/rytilahti/python-songpal/pull/76) ([maximoei](https://github.com/maximoei))
+- Added STR-ZA810ES devinfo [\#75](https://github.com/rytilahti/python-songpal/pull/75) ([rfeagley](https://github.com/rfeagley))
+
 ## [0.12](https://github.com/rytilahti/python-songpal/tree/0.12) (2020-04-26)
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.11.2...0.12)
@@ -18,6 +33,8 @@
 
 **Merged pull requests:**
 
+- fix azure pipelines to use poetry [\#74](https://github.com/rytilahti/python-songpal/pull/74) ([rytilahti](https://github.com/rytilahti))
+- Prepare 0.12 [\#73](https://github.com/rytilahti/python-songpal/pull/73) ([rytilahti](https://github.com/rytilahti))
 - Handles InvalidURL and ClientConnectionError exceptions [\#72](https://github.com/rytilahti/python-songpal/pull/72) ([shenxn](https://github.com/shenxn))
 - add PlaybackFunctionChange notification [\#71](https://github.com/rytilahti/python-songpal/pull/71) ([rytilahti](https://github.com/rytilahti))
 - add SRS-X99 devinfo [\#70](https://github.com/rytilahti/python-songpal/pull/70) ([FaintGhost](https://github.com/FaintGhost))
