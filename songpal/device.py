@@ -1,6 +1,7 @@
 """Module presenting a single supported device."""
 import asyncio
 import itertools
+import json
 import logging
 from collections import defaultdict
 from pprint import pformat as pf
@@ -43,7 +44,7 @@ class Device:
     WEBSOCKET_PROTOCOL = "v10.webapi.scalar.sony.com"
     WEBSOCKET_VERSION = 13
 
-    def __init__(self, endpoint, force_protocol=None, debug=0):
+    def __init__(self, endpoint, force_protocol=None, debug=0, devinfo_file=None):
         """Initialize Device.
 
         :param endpoint: the main API endpoint.
@@ -66,6 +67,28 @@ class Device:
         self.services = {}  # type: Dict[str, Service]
 
         self.callbacks = defaultdict(set)
+
+        self.devinfo = None
+        if devinfo_file is not None:
+            _LOGGER.debug("Using device info file: %s", devinfo_file)
+            self.devinfo = self._load_devinfo_file(devinfo_file)
+
+    def _load_devinfo_file(self, file):
+        """Internal method to create getSupportedApiInfo like response.
+
+        This reads an existing devinfo file and creates a minimal data structure
+        that is enough to construct services objects as long as the service endpoints
+        expose the getMethodTypes() method.
+        """
+        data = json.load(file)
+        methods = data["supported_methods"]
+        devinfo = []
+
+        for service, values in methods.items():
+            serv = {"service": service, "protocols": values["protocols"]}
+            devinfo.append(serv)
+
+        return devinfo
 
     async def __aenter__(self):
         """Asynchronous context manager, initializes the list of available methods."""
@@ -130,31 +153,35 @@ class Device:
         Calling this as the first thing before doing anything else is
         necessary to fill the available services table.
         """
-        response = await self.request_supported_methods()
+        if self.devinfo is None:
+            response = await self.request_supported_methods()
 
-        if "result" in response:
-            services = response["result"][0]
-            _LOGGER.debug("Got %s services!" % len(services))
+            if "result" in response:
+                services = response["result"][0]
+            else:
+                raise SongpalException("Supported methods responded without result")
+        else:
+            services = self.devinfo
 
-            for x in services:
-                serv = await Service.from_payload(
-                    x, self.endpoint, self.idgen, self.debug, self.force_protocol
-                )
-                if serv is not None:
-                    self.services[x["service"]] = serv
-                else:
-                    _LOGGER.warning("Unable to create service %s", x["service"])
+        _LOGGER.debug("Got %s services!" % len(services))
 
-            for service in self.services.values():
+        for x in services:
+            serv = await Service.from_payload(
+                x, self.endpoint, self.idgen, self.debug, self.force_protocol
+            )
+            if serv is not None:
+                self.services[x["service"]] = serv
+            else:
+                _LOGGER.warning("Unable to create service %s", x["service"])
+
+        for service in self.services.values():
+            if self.debug > 1:
+                _LOGGER.debug("Service %s", service)
+            for api in service.methods:
+                # self.logger.debug("%s > %s" % (service, api))
                 if self.debug > 1:
-                    _LOGGER.debug("Service %s", service)
-                for api in service.methods:
-                    # self.logger.debug("%s > %s" % (service, api))
-                    if self.debug > 1:
-                        _LOGGER.debug("> %s" % api)
-            return self.services
-
-        return None
+                    _LOGGER.debug("> %s" % api)
+        return self.services
 
     async def get_power(self) -> Power:
         """Get the device state."""
