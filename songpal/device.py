@@ -1,20 +1,15 @@
 """Module presenting a single supported device."""
 import asyncio
-import aiohttp
-from collections import defaultdict
 import itertools
-import json
 import logging
-from pprint import pformat as pf
+from collections import defaultdict
 from typing import Any, Dict, List
 from urllib.parse import urlparse
-from songpal.services import Guide, System, Audio, AVContent
 
-from songpal.common import SongpalException, ProtocolType
+from songpal.common import ProtocolType, SongpalException
 from songpal.containers import (
     Content,
     Input,
-    Zone,
     InterfaceInfo,
     PlayInfo,
     Power,
@@ -27,8 +22,11 @@ from songpal.containers import (
     SupportedFunctions,
     Sysinfo,
     Volume,
+    Zone,
 )
-from .notification import Notification, ConnectChange
+from songpal.services import Audio, AVContent, Guide, System
+
+from .notification import ConnectChange, Notification
 from .services.service import Service
 
 _LOGGER = logging.getLogger(__name__)
@@ -81,8 +79,16 @@ class Device:
         Calling this as the first thing before doing anything else is
         necessary to fill the available services table.
         """
-        guide = Guide("guide", endpoint=self.guide_endpoint, protocol=ProtocolType.XHRPost, idgen=self.idgen, debug=self.debug)
-        self.services = await guide.get_supported_apis(self.endpoint, self.force_protocol)
+        guide = Guide(
+            "guide",
+            endpoint=self.guide_endpoint,
+            protocol=ProtocolType.XHRPost,
+            idgen=self.idgen,
+            debug=self.debug,
+        )
+        self.services = await guide.get_supported_apis(
+            self.endpoint, self.force_protocol
+        )
         print(self.services.keys())
         if "system" in self.services:
             self.system = self.services["system"]
@@ -132,7 +138,7 @@ class Device:
 
     async def get_misc_settings(self) -> List[Setting]:
         """Return miscellaneous settings such as name and timezone."""
-        raise Exception("moved")
+        return await self.system.get_misc_settings()
 
     async def set_misc_settings(self, target: str, value: str):
         """Change miscellaneous settings."""
@@ -164,7 +170,7 @@ class Device:
 
     async def get_play_info(self) -> PlayInfo:
         """Return  of the device."""
-        raise Exception("moved to avcontent")
+        return await self.avcontent.get_play_info()
 
     async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
@@ -240,7 +246,7 @@ class Device:
         :param uri: URI for the source.
         :return: List of Content objects.
         """
-        raise Exception("moved to avcontent")
+        return await self.avcontent.get_contents()
 
     async def get_available_playback_functions(self, output=""):
         """Return available playback functions.
@@ -263,7 +269,6 @@ class Device:
     async def set_soundfield(self, value):
         """Set soundfield."""
         return await self.audio.set_sound_settings("soundField", value)
-        raise Exception("Removed, use set_sound_settings")
 
     async def set_sound_settings(self, target: str, value: str):
         """Change a sound setting."""
@@ -276,7 +281,6 @@ class Device:
     async def set_speaker_settings(self, target: str, value: str):
         """Set speaker settings."""
         return await self.audio.set_speaker_setting(target, value)
-
 
     def on_notification(self, type_, callback):
         """Register a notification callback.
