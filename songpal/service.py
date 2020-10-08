@@ -90,7 +90,24 @@ class Service:
         # creation here we want to pass the created service class to methods.
         service = cls(service_name, service_endpoint, protocol, idgen, debug)
 
-        sigs = await cls.fetch_signatures(service_endpoint, protocol, idgen)
+        await service.fetch_mehods(debug)
+
+        if "notifications" in payload and "switchNotifications" in service.methods:
+            notifications = [
+                Notification(
+                    service_endpoint,
+                    service.methods["switchNotifications"],
+                    notification,
+                )
+                for notification in payload["notifications"]
+            ]
+            service.notifications = notifications
+            _LOGGER.debug("Got notifications: %s" % notifications)
+
+    async def fetch_methods(self, debug):
+        sigs = await self.__class__.fetch_signatures(
+            self.endpoint, self.active_protocol, self.idgen
+        )
 
         if debug > 1:
             _LOGGER.debug("Signatures: %s", sigs)
@@ -110,21 +127,10 @@ class Service:
                     methods[name],
                 )
             else:
-                methods[name] = Method(service, parsed_sig, debug)
+                methods[name] = Method(self, parsed_sig, debug)
 
-        service.methods = methods
-
-        if "notifications" in payload and "switchNotifications" in methods:
-            notifications = [
-                Notification(
-                    service_endpoint, methods["switchNotifications"], notification
-                )
-                for notification in payload["notifications"]
-            ]
-            service.notifications = notifications
-            _LOGGER.debug("Got notifications: %s" % notifications)
-
-        return service
+        self.methods = methods
+        return self.methods
 
     async def call_method(self, method, *args, **kwargs):
         """Call a method (internal).
@@ -255,6 +261,9 @@ class Service:
     @methods.setter
     def methods(self, methods):
         self._methods = methods
+
+    def has_method(self, name):
+        return name in self._methods
 
     @property
     def protocols(self):

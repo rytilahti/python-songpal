@@ -5,6 +5,8 @@ from typing import List, Optional
 
 import attr
 
+from songpal import SongpalException
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -279,6 +281,8 @@ class Volume:
     step = attr.ib()
     volume = attr.ib()
 
+    renderingControl = attr.ib(default=None)
+
     @property
     def is_muted(self):
         """Return True if volume is muted."""
@@ -303,21 +307,43 @@ class Volume:
         if activate:
             enabled = "on"
 
-        return await self.services["audio"]["setAudioMute"](
-            mute=enabled, output=self.output
-        )
+        if self.services and self.services["audio"].has_method("setAudioMute"):
+            return await self.services["audio"]["setAudioMute"](
+                mute=enabled, output=self.output
+            )
+        else:
+            return await self.renderingControl.action("SetMute").async_call(
+                InstanceID=0, Channel="Master", DesiredMute=activate
+            )
 
     async def toggle_mute(self):
         """Toggle mute."""
-        return await self.services["audio"]["setAudioMute"](
-            mute="toggle", output=self.output
-        )
+        if self.services and self.services["audio"].has_method("setAudioMute"):
+            return await self.services["audio"]["setAudioMute"](
+                mute="toggle", output=self.output
+            )
+        else:
+            mute_result = await self.renderingControl.action("GetMute").async_call(
+                InstanceID=0, Channel="Master"
+            )
+            return self.set_mute(not mute_result["CurrentMute"])
 
-    async def set_volume(self, volume: int):
+    async def set_volume(self, volume: str):
         """Set volume level."""
-        return await self.services["audio"]["setAudioVolume"](
-            volume=str(volume), output=self.output
-        )
+
+        if self.services and self.services["audio"].has_method("setAudioVolume"):
+            return await self.services["audio"]["setAudioVolume"](
+                volume=str(volume), output=self.output
+            )
+        else:
+            if "+" in volume or "-" in volume:
+                raise SongpalException(
+                    "Setting relative volume not supported with UPnP"
+                )
+
+            return await self.renderingControl.action("SetVolume").async_call(
+                InstanceID=0, Channel="Master", DesiredVolume=int(volume)
+            )
 
 
 @attr.s
@@ -388,6 +414,9 @@ class Input:
     iconUrl = attr.ib()
     outputs = attr.ib(default=attr.Factory(list))
 
+    avTransport = attr.ib(default=None)
+    uriMetadata = attr.ib(default=None)
+
     def __str__(self):
         s = "%s (uri: %s)" % (self.title, self.uri)
         if self.active:
@@ -397,9 +426,16 @@ class Input:
     async def activate(self, output: Zone = None):
         """Activate this input."""
         output_uri = output.uri if output else ""
-        return await self.services["avContent"]["setPlayContent"](
-            uri=self.uri, output=output_uri
-        )
+
+        if self.services and "avContent" in self.services:
+            return await self.services["avContent"]["setPlayContent"](
+                uri=self.uri, output=output_uri
+            )
+
+        if self.avTransport:
+            return await self.avTransport.action("SetAVTransportURI").async_call(
+                InstanceID=0, CurrentURI=self.uri, CurrentURIMetaData=self.uriMetadata
+            )
 
 
 @attr.s
