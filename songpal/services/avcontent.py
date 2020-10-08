@@ -1,8 +1,19 @@
 from typing import List
 
-from .service import Service, command
 from songpal.common import SongpalException
-from songpal.containers import Input, Zone, Content, Source, Scheme, Setting, SupportedFunctions, ContentInfo, PlayInfo
+from songpal.containers import (
+    Content,
+    ContentInfo,
+    Input,
+    PlayInfo,
+    Scheme,
+    Setting,
+    Source,
+    SupportedFunctions,
+    Zone,
+)
+
+from .service import Service, command
 
 
 class AVContent(Service):
@@ -10,13 +21,19 @@ class AVContent(Service):
     async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
         res = await self["getCurrentExternalTerminalsStatus"]()
-        return [Input.make(service=self, **x) for x in res if 'meta:zone:output' not in x['meta']]
+        return [
+            Input.make(service=self, **x)
+            for x in res
+            if "meta:zone:output" not in x["meta"]
+        ]
 
     @command("getCurrentExternalTerminalsStatus")
     async def get_zones(self) -> List[Zone]:
         """Return list of available zones."""
         res = await self["getCurrentExternalTerminalsStatus"]()
-        zones = [Zone.make(service=self, **x) for x in res if 'meta:zone:output' in x['meta']]
+        zones = [
+            Zone.make(service=self, **x) for x in res if "meta:zone:output" in x["meta"]
+        ]
         if not zones:
             raise SongpalException("Device has no zones")
         return zones
@@ -24,7 +41,9 @@ class AVContent(Service):
     @command(["getPlaybackModeSettings", "setPlaybackModeSettings"])
     async def get_playback_settings(self) -> List[Setting]:
         """Get playback settings such as shuffle and repeat."""
-        return await self.get_settings(self["getPlaybackModeSettings"], self["setPlaybackModeSettings"])
+        return await self.get_settings(
+            self["getPlaybackModeSettings"], self["setPlaybackModeSettings"]
+        )
 
     async def set_playback_settings(self, target, value) -> None:
         """Set playback settings such a shuffle and repeat."""
@@ -33,7 +52,9 @@ class AVContent(Service):
     @command(["getBluetoothSettings", "setBluetoothSettings"])
     async def get_bluetooth_settings(self) -> List[Setting]:
         """Get bluetooth settings."""
-        return await self.get_settings(self["getBluetoothSettings"], self["setBluetoothSettings"])
+        return await self.get_settings(
+            self["getBluetoothSettings"], self["setBluetoothSettings"]
+        )
 
     async def set_bluetooth_setting(self, target: str, value: str) -> None:
         """Set bluetooth settings."""
@@ -46,9 +67,7 @@ class AVContent(Service):
         """Return list of inputs and their supported functions."""
         return [
             SupportedFunctions.make(**x)
-            for x in await self["getSupportedPlaybackFunction"](
-                uri=uri
-            )
+            for x in await self["getSupportedPlaybackFunction"](uri=uri)
         ]
 
     @command("getSchemeList")
@@ -62,17 +81,17 @@ class AVContent(Service):
     @command("getSourceList")
     async def get_source_list(self, scheme: str = "") -> List[Source]:
         """Return available sources for playback."""
-        for scheme in await self.get_schemes():
-            if scheme.scheme == scheme:
-                return await scheme.get_sources()
+        for sch in await self.get_schemes():
+            if sch.scheme == scheme:
+                return await sch.get_sources()
+
+        raise SongpalException("Unable to find source list for %s" % scheme)
 
     @command("getContentCount")
     async def get_content_count(self, source: str):
         """Return file listing for source."""
         params = {"uri": source, "type": None, "target": "all", "view": "flat"}
-        return ContentInfo.make(
-            **await self["getContentCount"](params)
-        )
+        return ContentInfo.make(**await self["getContentCount"](params))
 
     @command("getContentList")
     async def get_contents(self, uri) -> List[Content]:
@@ -81,10 +100,7 @@ class AVContent(Service):
         :param uri: URI for the source.
         :return: List of Content objects.
         """
-        contents = [
-            Content.make(**x)
-            for x in await self["getContentList"](uri=uri)
-        ]
+        contents = [Content.make(**x) for x in await self["getContentList"](uri=uri)]
         contentlist = []
 
         for content in contents:
