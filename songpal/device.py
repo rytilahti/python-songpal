@@ -424,11 +424,26 @@ class Device:
         current_uri = media_info.get("CurrentURI")
 
         inputs = didl_lite.from_xml_string(result["Result"])
+
+        def is_input_active(input, current_uri):
+            if not current_uri:
+                return False
+
+            # when input is switched on device, uri can have file:// format
+            if current_uri.startswith("file://"):
+                # UPnP 'Bluetooth AUDIO' can be file://Bluetooth
+                # UPnP 'AUDIO' can be file://Audio
+                return current_uri.lower() in "file://" + input.title.lower()
+
+            if current_uri.startswith("local://"):
+                # current uri can have additional query params, such as zone
+                return input.resources[0].uri in current_uri
+
         return [
             Input.make(
                 title=i.title,
                 uri=i.resources[0].uri,
-                active="active" if i.resources[0].uri in current_uri else "",
+                active="active" if is_input_active(i, current_uri) else "",
                 avTransport=av_transport,
                 uriMetadata=didl_lite.to_xml_string(i).decode("utf-8"),
             )
