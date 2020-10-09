@@ -426,9 +426,21 @@ class Input:
             )
 
         if self.avTransport:
-            return await self.avTransport.action("SetAVTransportURI").async_call(
+            result = await self.avTransport.action("SetAVTransportURI").async_call(
                 InstanceID=0, CurrentURI=self.uri, CurrentURIMetaData=self.uriMetadata
             )
+
+            try:
+                # Attempt to play as the songpal app is doing after changing input,
+                # sometimes needed so that input emits sound
+                await self.avTransport.action("Play").async_call(
+                    InstanceID=0, Speed="1"
+                )
+            except Exception:
+                # Play action can cause 500 error in certain cases
+                pass
+
+            return result
 
 
 @attr.s
