@@ -5,8 +5,6 @@ from typing import List, Optional
 
 import attr
 
-from songpal import SongpalException
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -328,7 +326,7 @@ class Volume:
             )
             return self.set_mute(not mute_result["CurrentMute"])
 
-    async def set_volume(self, volume: str):
+    async def set_volume(self, volume: int):
         """Set volume level."""
 
         if self.services and self.services["audio"].has_method("setAudioVolume"):
@@ -336,13 +334,8 @@ class Volume:
                 volume=str(volume), output=self.output
             )
         else:
-            if "+" in volume or "-" in volume:
-                raise SongpalException(
-                    "Setting relative volume not supported with UPnP"
-                )
-
             return await self.renderingControl.action("SetVolume").async_call(
-                InstanceID=0, Channel="Master", DesiredVolume=int(volume)
+                InstanceID=0, Channel="Master", DesiredVolume=volume
             )
 
 
