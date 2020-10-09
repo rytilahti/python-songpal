@@ -278,7 +278,26 @@ class Device:
 
     async def get_system_info(self) -> Sysinfo:
         """Return system information including mac addresses and current version."""
-        return Sysinfo.make(**await self.services["system"]["getSystemInformation"]())
+
+        if self.services["system"].has_method("getSystemInformation"):
+            return Sysinfo.make(
+                **await self.services["system"]["getSystemInformation"]()
+            )
+        elif self.services["system"].has_method("getNetworkSettings"):
+            info = await self.services["system"]["getNetworkSettings"](netif="")
+
+            def get_addr(info, iface):
+                addr = next((i for i in info if i["netif"] == iface), {}).get("hwAddr")
+                return addr.lower().replace("-", ":") if addr else addr
+
+            macAddr = get_addr(info, "eth0")
+            wirelessMacAddr = get_addr(info, "wlan0")
+            version = self._upnp_discovery.version if self._upnp_discovery else None
+            return Sysinfo.make(
+                macAddr=macAddr, wirelessMacAddr=wirelessMacAddr, version=version
+            )
+        else:
+            raise SongpalException("getSystemInformation not supported")
 
     async def get_sleep_timer_settings(self) -> List[Setting]:
         """Get sleep timer settings."""
