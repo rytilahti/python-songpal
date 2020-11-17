@@ -4,16 +4,23 @@ import itertools
 import logging
 from collections import defaultdict
 from pprint import pformat as pf
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Mapping
 from urllib.parse import urlparse
 
 import aiohttp
+from async_upnp_client import UpnpFactory
+from async_upnp_client.aiohttp import AiohttpRequester
+from async_upnp_client.profiles.dlna import DmrDevice
+from async_upnp_client.search import async_search
 
-from songpal.common import SongpalException
+from didl_lite import didl_lite
+from songpal.common import ProtocolType, SongpalException
 from songpal.containers import (
     Content,
     ContentInfo,
     Input,
+    InputControlSongpal,
+    InputControlUpnp,
     InterfaceInfo,
     PlayInfo,
     Power,
@@ -26,8 +33,11 @@ from songpal.containers import (
     SupportedFunctions,
     Sysinfo,
     Volume,
+    VolumeControlSongpal,
+    VolumeControlUpnp,
     Zone,
 )
+from songpal.discovery import Discover
 from songpal.notification import ConnectChange, Notification
 from songpal.service import Service
 
@@ -266,7 +276,7 @@ class Device:
         """Return list of available outputs."""
         res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
         return [
-            Input.make(services=self.services, **x)
+            InputControlSongpal.make(services=self.services, **x)
             for x in res
             if "meta:zone:output" not in x["meta"]
         ]
@@ -387,7 +397,9 @@ class Device:
     async def get_volume_information(self) -> List[Volume]:
         """Get the volume information."""
         res = await self.services["audio"]["getVolumeInformation"]({})
-        volume_info = [Volume.make(services=self.services, **x) for x in res]
+        volume_info = [
+            VolumeControlSongpal.make(services=self.services, **x) for x in res
+        ]
         if len(volume_info) < 1:
             logging.warning("Unable to get volume information")
         elif len(volume_info) > 1:
@@ -516,3 +528,259 @@ class Device:
         """
         _LOGGER.info("Calling %s.%s(%s)", service, method, params)
         return await self.services[service][method](params)
+
+
+class UpnpDevice(Device):
+    def __init__(self, endpoint, force_protocol=None, debug=0):
+        super().__init__(endpoint, force_protocol=force_protocol, debug=debug)
+        self._upnp_discovery = None
+        self._upnp_server = None
+        self._upnp_renderer = None
+
+    @staticmethod
+    async def create(endpoint, force_protocol=None, debug=0, timeout=5):
+        self = UpnpDevice(endpoint, force_protocol=force_protocol, debug=debug)
+        await self.discover(timeout=timeout)
+        return self
+
+    async def discover(self, timeout=5):
+        host = urlparse(self.endpoint).hostname
+
+        sony_device_future = asyncio.Future()
+        media_renderer_future = asyncio.Future()
+
+        requester = AiohttpRequester()
+        factory = UpnpFactory(requester)
+
+        search_cancel_event = asyncio.Event()
+
+        async def on_response(data: Mapping[str, str]) -> None:
+            print(data)
+            if "st" not in data or "location" not in data:
+                return
+
+            if urlparse(data["location"]).hostname != host:
+                return
+
+            if data["st"] == Discover.ST:
+                device = await Discover.parse_device(data)
+                if device:
+                    sony_device_future.set_result(device)
+
+            if data["st"] in DmrDevice.DEVICE_TYPES:
+                media_renderer_future.set_result(data["location"])
+
+            if sony_device_future.done() and media_renderer_future.done():
+                search_cancel_event.set()
+
+        search_finished_future = async_search(
+            async_callback=on_response, timeout=timeout
+        )
+        data_found_future = asyncio.gather(sony_device_future, media_renderer_future)
+        await asyncio.wait(
+            [data_found_future, search_finished_future],
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+
+        if not sony_device_future.done():
+            raise SongpalException("Could not find UPnP media server")
+
+        if not media_renderer_future.done():
+            raise SongpalException("Could not find UPnP media renderer")
+
+        found_device = sony_device_future.result()
+        self._upnp_discovery = found_device
+        self._upnp_server = await factory.async_create_device(
+            found_device.upnp_location
+        )
+        self._upnp_renderer = await factory.async_create_device(
+            media_renderer_future.result()
+        )
+
+        return self._upnp_server, self._upnp_renderer
+
+    async def get_supported_methods(self):
+        if self._upnp_discovery is None:
+            raise SongpalException("Discovery required")
+
+        if len(self.services) > 0:
+            return self.services
+
+        for service_name in self._upnp_discovery.services:
+            service = Service(
+                service_name,
+                self.endpoint + "/" + service_name,
+                ProtocolType.XHRPost,
+                self.idgen,
+            )
+            await service.fetch_methods(self.debug)
+            self.services[service_name] = service
+
+        return self.services
+
+    async def get_system_info(self) -> Sysinfo:
+        if "system" in self.services and self.services["system"].has_method(
+            "getSystemInformation"
+        ):
+            return await super().get_system_info()
+
+        if "system" not in self.services or not self.services["system"].has_method(
+            "getNetworkSettings"
+        ):
+            raise SongpalException("getNetworkSettings not supported")
+
+        if self._upnp_discovery is None:
+            raise SongpalException("Discovery required")
+
+        info = await self.services["system"]["getNetworkSettings"](netif="")
+
+        def get_addr(info, iface):
+            addr = next((i for i in info if i["netif"] == iface), {}).get("hwAddr")
+            return addr.lower().replace("-", ":") if addr else addr
+
+        macAddr = get_addr(info, "eth0")
+        wirelessMacAddr = get_addr(info, "wlan0")
+        version = self._upnp_discovery.version if self._upnp_discovery else None
+        return Sysinfo.make(
+            macAddr=macAddr, wirelessMacAddr=wirelessMacAddr, version=version
+        )
+
+    async def get_inputs(self) -> List[Input]:
+        if "avContent" in self.services and self.services["avContent"].has_method(
+            "getCurrentExternalTerminalsStatus"
+        ):
+            return await super().get_inputs()
+
+        if self._upnp_discovery is None:
+            raise SongpalException("Discovery required")
+
+        content_directory = self._upnp_server.service(
+            next(
+                s for s in self._upnp_discovery.upnp_services if "ContentDirectory" in s
+            )
+        )
+
+        browse = content_directory.action("Browse")
+        filter = (
+            "av:BIVL,av:liveType,av:containerClass,dc:title,dc:date,"
+            "res,res@duration,res@resolution,upnp:albumArtURI,"
+            "upnp:albumArtURI@dlna:profileID,upnp:artist,upnp:album,upnp:genre"
+        )
+        result = await browse.async_call(
+            ObjectID="0",
+            BrowseFlag="BrowseDirectChildren",
+            Filter=filter,
+            StartingIndex=0,
+            RequestedCount=25,
+            SortCriteria="",
+        )
+
+        root_items = didl_lite.from_xml_string(result["Result"])
+        input_item = next(
+            (
+                i
+                for i in root_items
+                if isinstance(i, didl_lite.Container) and i.title == "Input"
+            ),
+            None,
+        )
+
+        result = await browse.async_call(
+            ObjectID=input_item.id,
+            BrowseFlag="BrowseDirectChildren",
+            Filter=filter,
+            StartingIndex=0,
+            RequestedCount=25,
+            SortCriteria="",
+        )
+
+        av_transport = self._upnp_renderer.service(
+            next(s for s in self._upnp_renderer.services if "AVTransport" in s)
+        )
+
+        media_info = await av_transport.action("GetMediaInfo").async_call(InstanceID=0)
+        current_uri = media_info.get("CurrentURI")
+
+        inputs = didl_lite.from_xml_string(result["Result"])
+
+        def is_input_active(input, current_uri):
+            if not current_uri:
+                return False
+
+            # when input is switched on device, uri can have file:// format
+            if current_uri.startswith("file://"):
+                # UPnP 'Bluetooth AUDIO' can be file://Bluetooth
+                # UPnP 'AUDIO' can be file://Audio
+                return current_uri.lower() in "file://" + input.title.lower()
+
+            if current_uri.startswith("local://"):
+                # current uri can have additional query params, such as zone
+                return input.resources[0].uri in current_uri
+
+        return [
+            InputControlUpnp.make(
+                title=i.title,
+                label=i.title,
+                iconUrl="",
+                uri=i.resources[0].uri,
+                active="active" if is_input_active(i, current_uri) else "",
+                avTransport=av_transport,
+                uriMetadata=didl_lite.to_xml_string(i).decode("utf-8"),
+            )
+            for i in inputs
+        ]
+
+    async def get_volume_information(self) -> List[Volume]:
+        if "audio" in self.services and self.services["audio"].has_method(
+            "getVolumeInformation"
+        ):
+            return await super().get_volume_information()
+
+        if self._upnp_renderer is None:
+            raise SongpalException("Discovery required")
+
+        rendering_control_service = self._upnp_renderer.service(
+            next(s for s in self._upnp_renderer.services if "RenderingControl" in s)
+        )
+        volume_result = await rendering_control_service.action("GetVolume").async_call(
+            InstanceID=0, Channel="Master"
+        )
+        mute_result = await rendering_control_service.action("GetMute").async_call(
+            InstanceID=0, Channel="Master"
+        )
+
+        min_volume = rendering_control_service.state_variables["Volume"].min_value
+        max_volume = rendering_control_service.state_variables["Volume"].max_value
+
+        return [
+            VolumeControlUpnp.make(
+                volume=volume_result["CurrentVolume"],
+                mute=mute_result["CurrentMute"],
+                minVolume=min_volume,
+                maxVolume=max_volume,
+                step=1,
+                output=None,
+                renderingControl=rendering_control_service,
+            )
+        ]
+
+
+class DeviceFactory:
+    @staticmethod
+    async def get(endpoint, force_protocol=None, debug=0, timeout=5):
+        device = Device(endpoint, force_protocol=force_protocol, debug=debug)
+        try:
+            await device.get_supported_methods()
+            return device
+        except SongpalException as e:
+            if e.code == 12 and e.error_message == "getSupportedApiInfo":
+                device = await UpnpDevice.create(
+                    endpoint,
+                    force_protocol=force_protocol,
+                    debug=debug,
+                    timeout=timeout,
+                )
+                await device.get_supported_methods()
+                return device
+            else:
+                raise e
