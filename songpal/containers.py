@@ -271,7 +271,6 @@ class Volume:
 
     make = classmethod(make)
 
-    services = attr.ib(repr=False)
     maxVolume = attr.ib()
     minVolume = attr.ib()
     mute = attr.ib()
@@ -279,12 +278,10 @@ class Volume:
     step = attr.ib()
     volume = attr.ib()
 
-    renderingControl = attr.ib(default=None)
-
     @property
     def is_muted(self):
         """Return True if volume is muted."""
-        return self.mute == "on"
+        return self.mute == "on" or self.mute is True
 
     def __str__(self):
         if self.output and self.output.rfind("=") > 0:
@@ -301,42 +298,63 @@ class Volume:
 
     async def set_mute(self, activate: bool):
         """Set mute on/off."""
+        raise NotImplementedError
+
+    async def toggle_mute(self):
+        """Toggle mute."""
+        raise NotImplementedError
+
+    async def set_volume(self, volume: int):
+        """Set volume level."""
+        raise NotImplementedError
+
+
+@attr.s
+class VolumeControlSongpal(Volume):
+    services = attr.ib(repr=False)
+
+    async def set_mute(self, activate: bool):
         enabled = "off"
         if activate:
             enabled = "on"
 
-        if self.services and self.services["audio"].has_method("setAudioMute"):
-            return await self.services["audio"]["setAudioMute"](
-                mute=enabled, output=self.output
-            )
-        else:
-            return await self.renderingControl.action("SetMute").async_call(
-                InstanceID=0, Channel="Master", DesiredMute=activate
-            )
+        return await self.services["audio"]["setAudioMute"](
+            mute=enabled, output=self.output
+        )
 
     async def toggle_mute(self):
-        """Toggle mute."""
-        if self.services and self.services["audio"].has_method("setAudioMute"):
-            return await self.services["audio"]["setAudioMute"](
-                mute="toggle", output=self.output
-            )
-        else:
-            mute_result = await self.renderingControl.action("GetMute").async_call(
-                InstanceID=0, Channel="Master"
-            )
-            return self.set_mute(not mute_result["CurrentMute"])
+        return await self.services["audio"]["setAudioMute"](
+            mute="toggle", output=self.output
+        )
 
     async def set_volume(self, volume: int):
-        """Set volume level."""
+        return await self.services["audio"]["setAudioVolume"](
+            volume=str(volume), output=self.output
+        )
 
-        if self.services and self.services["audio"].has_method("setAudioVolume"):
-            return await self.services["audio"]["setAudioVolume"](
-                volume=str(volume), output=self.output
-            )
-        else:
-            return await self.renderingControl.action("SetVolume").async_call(
-                InstanceID=0, Channel="Master", DesiredVolume=volume
-            )
+
+@attr.s
+class VolumeControlUpnp(Volume):
+
+    renderingControl = attr.ib(default=None)
+
+    async def set_mute(self, activate: bool):
+        """Set mute on/off."""
+
+        return await self.renderingControl.action("SetMute").async_call(
+            InstanceID=0, Channel="Master", DesiredMute=activate
+        )
+
+    async def toggle_mute(self):
+        mute_result = await self.renderingControl.action("GetMute").async_call(
+            InstanceID=0, Channel="Master"
+        )
+        return self.set_mute(not mute_result["CurrentMute"])
+
+    async def set_volume(self, volume: int):
+        return await self.renderingControl.action("SetVolume").async_call(
+            InstanceID=0, Channel="Master", DesiredVolume=volume
+        )
 
 
 @attr.s
@@ -396,19 +414,13 @@ class Input:
 
     make = classmethod(make)
 
-    meta = attr.ib()
-    connection = attr.ib()
     title = attr.ib(converter=convert_title)
     uri = attr.ib()
 
-    services = attr.ib(repr=False)
     active = attr.ib(converter=convert_is_active)
     label = attr.ib()
     iconUrl = attr.ib()
     outputs = attr.ib(default=attr.Factory(list))
-
-    avTransport = attr.ib(default=None)
-    uriMetadata = attr.ib(default=None)
 
     def __str__(self):
         s = "%s (uri: %s)" % (self.title, self.uri)
@@ -418,29 +430,48 @@ class Input:
 
     async def activate(self, output: Zone = None):
         """Activate this input."""
+        raise NotImplementedError
+
+
+@attr.s
+class InputControlSongpal(Input):
+    meta = attr.ib(default=None)
+    connection = attr.ib(default=None)
+    services = attr.ib(default=None, repr=False)
+
+    def __str__(self):
+        s = "%s (uri: %s)" % (self.title, self.uri)
+        if self.active:
+            s += " (active)"
+        return s
+
+    async def activate(self, output: Zone = None):
         output_uri = output.uri if output else ""
+        return await self.services["avContent"]["setPlayContent"](
+            uri=self.uri, output=output_uri
+        )
 
-        if self.services and "avContent" in self.services:
-            return await self.services["avContent"]["setPlayContent"](
-                uri=self.uri, output=output_uri
-            )
 
-        if self.avTransport:
-            result = await self.avTransport.action("SetAVTransportURI").async_call(
-                InstanceID=0, CurrentURI=self.uri, CurrentURIMetaData=self.uriMetadata
-            )
+@attr.s
+class InputControlUpnp(Input):
 
-            try:
-                # Attempt to play as the songpal app is doing after changing input,
-                # sometimes needed so that input emits sound
-                await self.avTransport.action("Play").async_call(
-                    InstanceID=0, Speed="1"
-                )
-            except Exception:
-                # Play action can cause 500 error in certain cases
-                pass
+    avTransport = attr.ib(default=None)
+    uriMetadata = attr.ib(default=None)
 
-            return result
+    async def activate(self, output: Zone = None):
+        result = await self.avTransport.action("SetAVTransportURI").async_call(
+            InstanceID=0, CurrentURI=self.uri, CurrentURIMetaData=self.uriMetadata
+        )
+
+        try:
+            # Attempt to play as the songpal app is doing after changing input,
+            # sometimes needed so that input emits sound
+            await self.avTransport.action("Play").async_call(InstanceID=0, Speed="1")
+        except Exception:
+            # Play action can cause 500 error in certain cases
+            pass
+
+        return result
 
 
 @attr.s

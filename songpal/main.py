@@ -11,6 +11,7 @@ import click
 from songpal import Device, SongpalException
 from songpal.common import ProtocolType
 from songpal.containers import Setting
+from songpal.device import DeviceFactory
 from songpal.discovery import Discover
 from songpal.group import GroupControl
 
@@ -139,13 +140,13 @@ async def cli(ctx, endpoint, debug, websocket, post):
         protocol = ProtocolType.XHRPost
 
     logging.debug("Using endpoint %s", endpoint)
-    x = Device(endpoint, force_protocol=protocol, debug=debug)
     try:
-        await x.get_supported_methods()
+        ctx.obj = await DeviceFactory.get(
+            endpoint, force_protocol=protocol, debug=debug, timeout=1
+        )
     except SongpalException as ex:
-        err("Unable to get supported methods: %s" % ex)
+        err("Unable to get device: %s" % ex)
         sys.exit(-1)
-    ctx.obj = x
 
     # this causes RuntimeError: This event loop is already running
     # if ctx.invoked_subcommand is None:
