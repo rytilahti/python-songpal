@@ -378,7 +378,7 @@ async def volume(dev: Device, volume, output):
         await vol.set_mute(False)
     elif volume:
         click.echo("Setting volume to %s" % volume)
-        await vol.set_volume(int(volume))
+        await vol.set_volume(volume)
 
     if output is not None:
         click.echo(vol)

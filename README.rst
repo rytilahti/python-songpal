@@ -166,6 +166,9 @@ Volume Control
 
     $ songpal volume 20
 
+    $ songpal volume +5
+
+    $ songpal volume -10
 
     $ songpal volume --output 'Zone 2'
 

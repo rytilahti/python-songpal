@@ -1,9 +1,11 @@
 """Data containers for Songpal."""
 import logging
 from datetime import timedelta
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import attr
+
+from songpal import SongpalException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -304,7 +306,7 @@ class Volume:
         """Toggle mute."""
         raise NotImplementedError
 
-    async def set_volume(self, volume: int):
+    async def set_volume(self, volume: Union[str, int]):
         """Set volume level."""
         raise NotImplementedError
 
@@ -327,7 +329,7 @@ class VolumeControlSongpal(Volume):
             mute="toggle", output=self.output
         )
 
-    async def set_volume(self, volume: int):
+    async def set_volume(self, volume: Union[str, int]):
         return await self.services["audio"]["setAudioVolume"](
             volume=str(volume), output=self.output
         )
@@ -351,9 +353,20 @@ class VolumeControlUpnp(Volume):
         )
         return self.set_mute(not mute_result["CurrentMute"])
 
-    async def set_volume(self, volume: int):
+    async def set_volume(self, volume: Union[str, int]):
+        if isinstance(volume, str):
+            if "+" in volume or "-" in volume:
+                raise SongpalException(
+                    "Setting relative volume not supported with UPnP"
+                )
+            desired_volume = int(volume)
+        elif isinstance(volume, int):
+            desired_volume = volume
+        else:
+            raise SongpalException("Invalid volume %s" % volume)
+
         return await self.renderingControl.action("SetVolume").async_call(
-            InstanceID=0, Channel="Master", DesiredVolume=volume
+            InstanceID=0, Channel="Master", DesiredVolume=desired_volume
         )
 
 
