@@ -226,6 +226,9 @@ class Sysinfo:
     bssid = attr.ib()
     ssid = attr.ib()
     bleID = attr.ib()
+    serialNumber = attr.ib()
+    generation = attr.ib()
+    model = attr.ib()
 
 
 @attr.s
