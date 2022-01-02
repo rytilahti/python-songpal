@@ -20,3 +20,5 @@ repos:
   hooks:
   - id: mypy
     args: [--no-strict-optional, --ignore-missing-imports]
+    additional_dependencies:
+      - types-attrs
