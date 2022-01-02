@@ -5,7 +5,13 @@ from typing import List, Optional
 
 import attr
 
-from songpal.containers import Power, SoftwareUpdateInfo, convert_to_bool, make
+from songpal.containers import (
+    PlayInfo,
+    Power,
+    SoftwareUpdateInfo,
+    convert_to_bool,
+    make,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -153,22 +159,10 @@ class SettingChange(ChangeNotification):
 
 
 @attr.s
-class ContentChange(ChangeNotification):
+class ContentChange(ChangeNotification, PlayInfo):
     """This gets sent as a notification when the source changes."""
 
     make = classmethod(make)
-
-    contentKind = attr.ib()
-    service = attr.ib()
-    source = attr.ib()
-    output = attr.ib()
-    uri = attr.ib()
-    applicationName = attr.ib()
-
-    kind = attr.ib()
-    mediaType = attr.ib()
-    parentUri = attr.ib()
-    stateInfo = attr.ib()
 
     @property
     def is_input(self):
