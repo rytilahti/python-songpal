@@ -162,6 +162,7 @@ class PlayInfo:
     service = attr.ib()
     artist = attr.ib()
     albumName = attr.ib()
+    thumbnailUrl = attr.ib()
     title = attr.ib()
     durationMsec = attr.ib()
     mediaType = attr.ib()
