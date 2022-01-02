@@ -402,7 +402,7 @@ class Device:
         res = await self.services["audio"]["getSoundSettings"]({"target": target})
         return [Setting.make(**x) for x in res]
 
-    async def get_soundfield(self) -> List[Setting]:
+    async def get_soundfield(self) -> Setting:
         """Get the current sound field settings."""
         res = await self.services["audio"]["getSoundSettings"]({"target": "soundField"})
         return Setting.make(**res[0])
