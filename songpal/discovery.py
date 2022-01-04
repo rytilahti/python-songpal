@@ -2,6 +2,8 @@ import logging
 from xml import etree
 
 import attr
+from async_upnp_client import UpnpFactory
+from async_upnp_client.aiohttp import AiohttpRequester
 from async_upnp_client.search import async_search
 
 _LOGGER = logging.getLogger(__name__)
@@ -26,15 +28,20 @@ class Discover:
         ST = "urn:schemas-sony-com:service:ScalarWebAPI:1"
         _LOGGER.info("Discovering for %s seconds" % timeout)
 
-        from async_upnp_client import UpnpFactory
-        from async_upnp_client.aiohttp import AiohttpRequester
-
         async def parse_device(device):
             requester = AiohttpRequester()
             factory = UpnpFactory(requester)
 
             url = device["location"]
-            device = await factory.async_create_device(url)
+            try:
+                device = await factory.async_create_device(url)
+            except Exception as ex:
+                _LOGGER.error(
+                    "Unable to download the device description file from %s: %s",
+                    url,
+                    ex,
+                )
+                return
 
             if debug > 0:
                 print(etree.ElementTree.tostring(device.xml).decode())
