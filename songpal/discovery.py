@@ -2,6 +2,8 @@ import logging
 from xml import etree
 
 import attr
+from async_upnp_client import UpnpFactory
+from async_upnp_client.aiohttp import AiohttpRequester
 from async_upnp_client.search import async_search
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,9 +27,6 @@ class Discover:
         """Discover supported devices."""
         ST = "urn:schemas-sony-com:service:ScalarWebAPI:1"
         _LOGGER.info("Discovering for %s seconds" % timeout)
-
-        from async_upnp_client import UpnpFactory
-        from async_upnp_client.aiohttp import AiohttpRequester
 
         async def parse_device(device):
             requester = AiohttpRequester()
