@@ -34,7 +34,15 @@ class Discover:
             factory = UpnpFactory(requester)
 
             url = device["location"]
-            device = await factory.async_create_device(url)
+            try:
+                device = await factory.async_create_device(url)
+            except Exception as ex:
+                _LOGGER.error(
+                    "Unable to download the device description file from %s: %s",
+                    url,
+                    ex,
+                )
+                return
 
             if debug > 0:
                 print(etree.ElementTree.tostring(device.xml).decode())
