@@ -14,6 +14,7 @@ from songpal.notification import (
     PowerChange,
     SettingChange,
     SoftwareUpdateChange,
+    StorageChange,
     VolumeChange,
     ZoneActivatedChange,
 )
@@ -203,28 +204,30 @@ class Service:
 
     def wrap_notification(self, data):
         """Convert notification JSON to a notification class."""
+        notification_to_handler = {
+            "notifyPowerStatus": PowerChange,
+            "notifyExternalTerminalStatus": ZoneActivatedChange,
+            "notifyVolumeInformation": VolumeChange,
+            "notifyPlayingContentInfo": ContentChange,
+            "notifySettingsUpdate": SettingChange,
+            "notifySWUpdateInfo": SoftwareUpdateChange,
+            "notifyAvailablePlaybackFunction": PlaybackFunctionChange,
+            "notifyStorageStatus": StorageChange,
+        }
+
         if "method" in data:
             method = data["method"]
             params = data["params"]
             change = params[0]
-            if method == "notifyPowerStatus":
-                return PowerChange.make(**change)
-            elif method == "notifyExternalTerminalStatus":
-                return ZoneActivatedChange.make(**change)
-            elif method == "notifyVolumeInformation":
-                return VolumeChange.make(**change)
-            elif method == "notifyPlayingContentInfo":
-                return ContentChange.make(**change)
-            elif method == "notifySettingsUpdate":
-                return SettingChange.make(**change)
-            elif method == "notifySWUpdateInfo":
-                return SoftwareUpdateChange.make(**change)
-            elif method == "notifyAvailablePlaybackFunction":
-                return PlaybackFunctionChange.make(**change)
-            else:
+
+            if method not in notification_to_handler:
                 _LOGGER.warning(
                     "Got unknown notification type: %s - params: %s", method, params
                 )
+                return
+
+            return notification_to_handler[method].make(**change)
+
         elif "result" in data:
             result = data["result"][0]
             if "enabled" in result and "enabled" in result:

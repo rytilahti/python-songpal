@@ -203,3 +203,14 @@ class PlaybackFunctionChange(ChangeNotification):
 
     functions = attr.ib()
     uri = attr.ib()
+
+
+@attr.s
+class StorageChange(ChangeNotification):
+    """Container for storing storage changes."""
+
+    make = classmethod(make)
+
+    isAvailable = attr.ib()
+    mounted = attr.ib()
+    uri = attr.ib()
