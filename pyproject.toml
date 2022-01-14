@@ -16,7 +16,7 @@ songpal = "songpal.main:cli"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-click = "^7"
+click = ">=7"
 aiohttp = "*"
 attrs = "*"
 async_upnp_client = "*"

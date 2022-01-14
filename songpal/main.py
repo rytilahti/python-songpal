@@ -111,7 +111,7 @@ pass_dev = click.make_pass_decorator(Device)
 @click.option("--post", is_flag=True, required=False)
 @click.option("--websocket", is_flag=True, required=False)
 @click.pass_context
-@click.version_option()
+@click.version_option(package_name="python-songpal")
 @coro
 async def cli(ctx, endpoint, debug, websocket, post):
     """Songpal CLI."""
