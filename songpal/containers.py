@@ -158,6 +158,7 @@ class PlayInfo:
     output = attr.ib()
 
     # only available when being played
+    applicationName = attr.ib()
     service = attr.ib()
     artist = attr.ib()
     albumName = attr.ib()
