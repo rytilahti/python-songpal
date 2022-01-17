@@ -234,17 +234,32 @@ class Sysinfo:
 
 
 @attr.s
-class SoftwareUpdateInfo:
-    """Software update information."""
+class SoftwareUpdateInfoDetails:
+    """Details for the available software update."""
 
     make = classmethod(make)
 
-    isUpdatable = attr.ib(converter=convert_to_bool)
     swInfo = attr.ib()
     estimatedTimeSec = attr.ib()
     target = attr.ib()
     updatableVersion = attr.ib()
     forcedUpdate = attr.ib(converter=convert_to_bool)
+
+
+@attr.s
+class SoftwareUpdateInfo:
+    """Software update information."""
+
+    make = classmethod(make)
+
+    def _convert_if_available(x) -> Optional[SoftwareUpdateInfoDetails]:
+        if x is not None:
+            return SoftwareUpdateInfoDetails.make(**x[0])  # type: ignore
+
+        return None
+
+    isUpdatable = attr.ib(converter=convert_to_bool)
+    swInfo = attr.ib(converter=_convert_if_available)
 
 
 @attr.s
