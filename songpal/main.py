@@ -412,7 +412,7 @@ async def check_update(dev: Device, internet: bool, update: bool):
         click.echo("No updates available.")
         return
     if not update:
-        click.echo("Update available: %s" % update_info)
+        click.echo("Update available: %s" % update_info.swInfo)
         click.echo("Use --update to activate update!")
     else:
         click.echo("Activating update, please be seated.")

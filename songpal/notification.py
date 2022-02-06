@@ -1,11 +1,11 @@
 """Module for device notifications."""
 import logging
 from pprint import pformat as pf
-from typing import List, Optional
+from typing import List
 
 import attr
 
-from songpal.containers import Power, SoftwareUpdateInfo, convert_to_bool, make
+from songpal.containers import PlayInfo, Power, SoftwareUpdateInfo, make
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -82,19 +82,8 @@ class ZoneActivatedChange(ChangeNotification):
 
 
 @attr.s
-class SoftwareUpdateChange(ChangeNotification):
+class SoftwareUpdateChange(ChangeNotification, SoftwareUpdateInfo):
     """Notification for available software updates."""
-
-    make = classmethod(make)
-
-    def _convert_if_available(x) -> Optional[SoftwareUpdateInfo]:
-        if x is not None:
-            return SoftwareUpdateInfo.make(**x[0])  # type: ignore
-
-        return None
-
-    isUpdatable = attr.ib(converter=convert_to_bool)
-    swInfo = attr.ib(converter=_convert_if_available)
 
 
 @attr.s
@@ -153,22 +142,10 @@ class SettingChange(ChangeNotification):
 
 
 @attr.s
-class ContentChange(ChangeNotification):
+class ContentChange(ChangeNotification, PlayInfo):
     """This gets sent as a notification when the source changes."""
 
     make = classmethod(make)
-
-    contentKind = attr.ib()
-    service = attr.ib()
-    source = attr.ib()
-    output = attr.ib()
-    uri = attr.ib()
-    applicationName = attr.ib()
-
-    kind = attr.ib()
-    mediaType = attr.ib()
-    parentUri = attr.ib()
-    stateInfo = attr.ib()
 
     @property
     def is_input(self):

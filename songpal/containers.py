@@ -158,9 +158,11 @@ class PlayInfo:
     output = attr.ib()
 
     # only available when being played
+    applicationName = attr.ib()
     service = attr.ib()
     artist = attr.ib()
     albumName = attr.ib()
+    thumbnailUrl = attr.ib()
     title = attr.ib()
     durationMsec = attr.ib()
     mediaType = attr.ib()
@@ -226,6 +228,22 @@ class Sysinfo:
     bssid = attr.ib()
     ssid = attr.ib()
     bleID = attr.ib()
+    serialNumber = attr.ib()
+    generation = attr.ib()
+    model = attr.ib()
+
+
+@attr.s
+class SoftwareUpdateInfoDetails:
+    """Details for the available software update."""
+
+    make = classmethod(make)
+
+    swInfo = attr.ib()
+    estimatedTimeSec = attr.ib()
+    target = attr.ib()
+    updatableVersion = attr.ib()
+    forcedUpdate = attr.ib(converter=convert_to_bool)
 
 
 @attr.s
@@ -234,12 +252,14 @@ class SoftwareUpdateInfo:
 
     make = classmethod(make)
 
+    def _convert_if_available(x) -> Optional[SoftwareUpdateInfoDetails]:
+        if x is not None:
+            return SoftwareUpdateInfoDetails.make(**x[0])  # type: ignore
+
+        return None
+
     isUpdatable = attr.ib(converter=convert_to_bool)
-    swInfo = attr.ib()
-    estimatedTimeSec = attr.ib()
-    target = attr.ib()
-    updatableVersion = attr.ib()
-    forcedUpdate = attr.ib(converter=convert_to_bool)
+    swInfo = attr.ib(converter=_convert_if_available)
 
 
 @attr.s
