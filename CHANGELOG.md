@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.14](https://github.com/rytilahti/python-songpal/tree/0.14) (2022-02-17)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.13...0.14)
+
+**Closed issues:**
+
+- Relaxed click requirements allow click 7, which does not work [\#103](https://github.com/rytilahti/python-songpal/issues/103)
+- Unhandled 404 errors when other UPnP devices in the network [\#92](https://github.com/rytilahti/python-songpal/issues/92)
+- Switch to click 8 [\#91](https://github.com/rytilahti/python-songpal/issues/91)
+- Volume up works but Volume down doesn't [\#87](https://github.com/rytilahti/python-songpal/issues/87)
+- Send command with Bluetooth [\#80](https://github.com/rytilahti/python-songpal/issues/80)
+- SRS-ZR5: error on source + active source not indicated [\#31](https://github.com/rytilahti/python-songpal/issues/31)
+
+**Merged pull requests:**
+
+- Require click8+ [\#105](https://github.com/rytilahti/python-songpal/pull/105) ([rytilahti](https://github.com/rytilahti))
+- Relax click version requirement [\#102](https://github.com/rytilahti/python-songpal/pull/102) ([rytilahti](https://github.com/rytilahti))
+- Add StorageChange notification \('notifyStorageStatus'\) [\#98](https://github.com/rytilahti/python-songpal/pull/98) ([rytilahti](https://github.com/rytilahti))
+- Catch exceptions on device description file fetch [\#97](https://github.com/rytilahti/python-songpal/pull/97) ([rytilahti](https://github.com/rytilahti))
+- Support for HT-A7000 [\#96](https://github.com/rytilahti/python-songpal/pull/96) ([Flameeyes](https://github.com/Flameeyes))
+- Fix typing mistake in get\_soundfield [\#95](https://github.com/rytilahti/python-songpal/pull/95) ([Flameeyes](https://github.com/Flameeyes))
+- switch to poetry-core [\#90](https://github.com/rytilahti/python-songpal/pull/90) ([dotlambda](https://github.com/dotlambda))
+
 ## [0.13](https://github.com/rytilahti/python-songpal/tree/0.13) (2020-09-01)
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.12...0.13)
@@ -10,6 +33,7 @@
 
 **Merged pull requests:**
 
+- Release 0.13 [\#81](https://github.com/rytilahti/python-songpal/pull/81) ([rytilahti](https://github.com/rytilahti))
 - Add Group commands to readme [\#79](https://github.com/rytilahti/python-songpal/pull/79) ([maximoei](https://github.com/maximoei))
 - Fix broken group command to use correct SessionID [\#77](https://github.com/rytilahti/python-songpal/pull/77) ([maximoei](https://github.com/maximoei))
 - Add @coro for group commands [\#76](https://github.com/rytilahti/python-songpal/pull/76) ([maximoei](https://github.com/maximoei))
