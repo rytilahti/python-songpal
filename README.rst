@@ -30,7 +30,7 @@ The library has been tested to work with following devices:
 
 .. NOTE::
 
-  If your device is not listed here but is working, feel free to contribute a device info file (see devinfos/ directory) by typing `songpal dump-devinfo <filename>` and creating a pull request on this repository. 
+  If your device is not listed here but is working, feel free to contribute a device info file (see devinfos/ directory) by typing `songpal dump-devinfo <filename>` and creating a pull request on this repository.
   This information can later be useful for extending the support for those devices.
 
 .. NOTE::
@@ -195,7 +195,7 @@ Zone Control
 
 .. code-block::
 
-    $ songpal zone 
+    $ songpal zone
 
     Zones:
       * Main Zone (uri: extOutput:zone?zone=1) (active)
@@ -208,11 +208,11 @@ Zone Control
     Activating Main Zone (uri: extOutput:zone?zone=1) (active)
 
     $ songpal zone 'Zone 2' true
-    
+
     Activating Zone 2 (uri: extOutput:zone?zone=2) (active)
 
     $ songpal zone 'Zone 2' false
-    
+
     Deactivating Zone 2 (uri: extOutput:zone?zone=2) (active)
 
 Input Control
@@ -299,8 +299,8 @@ Group Control
 
 .. code-block::
 
-    $ songpal group 
-    
+    $ songpal group
+
 Group command require using the UPnP URL ``--url`` instead of the API ``--endpoint``, and you'll need the ``UUIDs`` of the devices you want to group as well. Both of these can be obtained through the ``discover`` function. All group commands should be executed on the master
 
 Creating groups:
@@ -318,7 +318,7 @@ Aborting groups
     $ songpal group --url [pnpurl] abort
 
     $ songpal group --url "http://x.x.x.x:52323/dmr.xml" abort
-    
+
 Changing volume
 
 .. code-block::
