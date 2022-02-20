@@ -32,9 +32,9 @@ class DeviceError:
         """Return user-friendly error message."""
         try:
             errcode = DeviceErrorCode(self.error_code)
-            return "%s (%s): %s" % (errcode.name, errcode.value, self.error_message)
+            return f"{errcode.name} ({errcode.value}): {self.error_message}"
         except:  # noqa: E722
-            return "Unknown error %s: %s" % (self.error_code, self.error_message)
+            return f"Unknown error {self.error_code}: {self.error_message}"
 
     def __str__(self):
         return self.error
@@ -80,7 +80,7 @@ class SongpalException(Exception):
         return None
 
     def __str__(self):
-        return "%s: %s" % (self.message, str(self.error))
+        return f"{self.message}: {str(self.error)}"
 
 
 class ProtocolType(Enum):

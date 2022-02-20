@@ -129,7 +129,7 @@ class Method:
         if "error" in res:
             _LOGGER.debug(self)
             raise SongpalException(
-                "Got an error for %s: %s" % (self.name, res["error"]),
+                "Got an error for {}: {}".format(self.name, res["error"]),
                 error=res["error"],
             )
 
@@ -161,7 +161,7 @@ class Method:
         return self.signature.output
 
     def __repr__(self):
-        return "<Method %s.%s(%s) -> %s>" % (
+        return "<Method {}.{}({}) -> {}>".format(
             self.service.name,
             self.name,
             pf(self.inputs),
