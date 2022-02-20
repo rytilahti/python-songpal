@@ -150,7 +150,10 @@ class PlayInfo:
     make = classmethod(make)
 
     def _make(x) -> StateInfo:
-        return StateInfo.make(**x)  # type: ignore
+        if x is not None:
+            return StateInfo.make(**x)  # type: ignore
+
+        return None
 
     stateInfo = attr.ib(converter=_make)
     contentKind = attr.ib()
@@ -179,6 +182,9 @@ class PlayInfo:
     @property
     def state(self):
         """Return playback state."""
+        if self.stateInfo is None:
+            return None
+
         return self.stateInfo.state
 
     @property
