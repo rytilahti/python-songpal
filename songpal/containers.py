@@ -140,6 +140,15 @@ class StateInfo:
 
 
 @attr.s
+class PlayContentInfo:
+    """Playback content info."""
+
+    make = classmethod(make)
+
+    thumbnailUrl = attr.ib()
+
+
+@attr.s
 class PlayInfo:
     """Information about played content.
 
@@ -155,6 +164,12 @@ class PlayInfo:
 
         return None
 
+    def _make_content(x) -> PlayContentInfo:
+        if x is not None:
+            return PlayContentInfo.make(**x)  # type: ignore
+
+        return None
+
     stateInfo = attr.ib(converter=_make)
     contentKind = attr.ib()
     uri = attr.ib()
@@ -165,7 +180,6 @@ class PlayInfo:
     service = attr.ib()
     artist = attr.ib()
     albumName = attr.ib()
-    thumbnailUrl = attr.ib()
     title = attr.ib()
     durationMsec = attr.ib()
     mediaType = attr.ib()
@@ -173,6 +187,9 @@ class PlayInfo:
     positionMsec = attr.ib()
     repeatType = attr.ib()
     source = attr.ib()
+
+    # Documented only for "radio:" but used for Cast and Spotify too.
+    content = attr.ib(converter=_make_content)
 
     @property
     def is_idle(self):
