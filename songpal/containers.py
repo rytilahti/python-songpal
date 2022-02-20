@@ -126,7 +126,7 @@ class Content:
     broadcastFreq = attr.ib()
 
     def __str__(self):
-        return "%s (%s, kind: %s)" % (self.title, self.uri, self.contentKind)
+        return f"{self.title} ({self.uri}, kind: {self.contentKind})"
 
 
 @attr.s
@@ -194,7 +194,7 @@ class PlayInfo:
             return timedelta(milliseconds=self.positionMsec)
 
     def __str__(self):
-        return "%s (%s/%s), state %s" % (
+        return "{} ({}/{}), state {}".format(
             self.title,
             self.position,
             self.duration,
@@ -279,7 +279,7 @@ class Source:
     outputs = attr.ib()
 
     def __str__(self):
-        s = "%s (%s)" % (self.title, self.source)
+        s = f"{self.title} ({self.source})"
         if self.outputs is not None:
             s += " - outs: %s" % self.outputs
         return s
@@ -306,13 +306,13 @@ class Volume:
 
     def __str__(self):
         if self.output and self.output.rfind("=") > 0:
-            s = "Zone %s Volume: %s/%s" % (
+            s = "Zone {} Volume: {}/{}".format(
                 self.output[self.output.rfind("=") + 1 :],
                 self.volume,
                 self.maxVolume,
             )
         else:
-            s = "Volume: %s/%s" % (self.volume, self.maxVolume)
+            s = f"Volume: {self.volume}/{self.maxVolume}"
         if self.is_muted:
             s += " (muted)"
         return s
@@ -379,7 +379,7 @@ class Zone:
     iconUrl = attr.ib()
 
     def __str__(self):
-        s = "%s (uri: %s)" % (self.title, self.uri)
+        s = f"{self.title} (uri: {self.uri})"
         if self.active:
             s += " (active)"
         return s
@@ -409,7 +409,7 @@ class Input:
     outputs = attr.ib(default=attr.Factory(list))
 
     def __str__(self):
-        s = "%s (uri: %s)" % (self.title, self.uri)
+        s = f"{self.title} (uri: {self.uri})"
         if self.active:
             s += " (active)"
         return s
@@ -448,7 +448,7 @@ class Storage:
     position = attr.ib()
 
     def __str__(self):
-        return "%s (%s) in %s (%s/%s free), available: %s, mounted: %s" % (
+        return "{} ({}) in {} ({}/{} free), available: {}, mounted: {}".format(
             self.deviceName,
             self.uri,
             self.position,
@@ -516,7 +516,7 @@ class SettingsEntry:
     deviceUIInfo = attr.ib()
 
     def __str__(self):
-        return "%s (%s, %s)" % (self.title, self.titleTextID, self.type)
+        return f"{self.title} ({self.titleTextID}, {self.type})"
 
 
 @attr.s

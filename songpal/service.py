@@ -82,11 +82,11 @@ class Service:
             protocol = ProtocolType.XHRPost
         else:
             raise SongpalException(
-                "No known protocols for %s, got: %s" % (service_name, protocols)
+                f"No known protocols for {service_name}, got: {protocols}"
             )
         _LOGGER.debug("Using protocol: %s" % protocol)
 
-        service_endpoint = "%s/%s" % (endpoint, service_name)
+        service_endpoint = f"{endpoint}/{service_name}"
 
         # creation here we want to pass the created service class to methods.
         service = cls(service_name, service_endpoint, protocol, idgen, debug)
@@ -135,9 +135,7 @@ class Service:
          The return values are JSON objects.
         Use :func:__call__: provides external API leveraging this.
         """
-        _LOGGER.debug(
-            "%s got called with args (%s) kwargs (%s)" % (method.name, args, kwargs)
-        )
+        _LOGGER.debug(f"{method.name} got called with args ({args}) kwargs ({kwargs})")
 
         # Used for allowing keeping reading from the socket
         _consumer = None
@@ -247,7 +245,7 @@ class Service:
 
         """
         if item not in self._methods:
-            raise SongpalException("%s does not contain method %s" % (self, item))
+            raise SongpalException(f"{self} does not contain method {item}")
         return self._methods[item]
 
     @property

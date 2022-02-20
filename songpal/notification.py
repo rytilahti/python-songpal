@@ -44,7 +44,7 @@ class Notification:
         await self.switch_method({"enabled": [self.asdict()]}, _consumer=callback)
 
     def __repr__(self):
-        return "<Notification %s, versions=%s, endpoint=%s>" % (
+        return "<Notification {}, versions={}, endpoint={}>".format(
             self.name,
             self.versions,
             self.endpoint,
@@ -133,7 +133,7 @@ class SettingChange(ChangeNotification):
         self.target = self.apiMappingUpdate["target"]
 
     def __str__(self):
-        return "<SettingChange %s %s (%s): %s>" % (
+        return "<SettingChange {} {} ({}): {}>".format(
             self.title,
             self.type,
             self.target,
@@ -166,7 +166,7 @@ class NotificationChange(ChangeNotification):
     disabled = attr.ib(converter=_extract_notification_names)
 
     def __str__(self):
-        return "<NotificationChange enabled: %s disabled: %s>" % (
+        return "<NotificationChange enabled: {} disabled: {}>".format(
             ",".join(self.enabled),
             ",".join(self.disabled),
         )

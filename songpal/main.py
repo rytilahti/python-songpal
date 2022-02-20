@@ -63,13 +63,13 @@ async def traverse_settings(dev, module, settings, depth=0):
     """Print all available settings."""
     for setting in settings:
         if setting.is_directory:
-            print("%s%s (%s)" % (depth * " ", setting.title, module))
+            print("{}{} ({})".format(depth * " ", setting.title, module))
             return await traverse_settings(dev, module, setting.settings, depth + 2)
         else:
             try:
                 print_settings([await setting.get_value(dev)], depth=depth)
             except SongpalException as ex:
-                err("Unable to read setting %s: %s" % (setting, ex))
+                err(f"Unable to read setting {setting}: {ex}")
                 continue
 
 
@@ -96,7 +96,7 @@ def print_settings(settings, depth=0):
                 continue
             click.echo(
                 click.style(
-                    "%s  - %s (%s)" % (" " * depth, opt.title, opt.value),
+                    "{}  - {} ({})".format(" " * depth, opt.title, opt.value),
                     bold=opt.value == cur,
                 )
             )
@@ -186,7 +186,7 @@ async def discover(ctx):
     TIMEOUT = 5
 
     async def print_discovered(dev):
-        pretty_name = "%s - %s" % (dev.name, dev.model_number)
+        pretty_name = f"{dev.name} - {dev.model_number}"
 
         click.echo(click.style("\nFound %s" % pretty_name, bold=True))
         click.echo("* API version: %s" % dev.version)
@@ -250,7 +250,7 @@ async def input(dev: Device, input, output):
     if input:
         click.echo("Activating %s" % input)
         try:
-            input = next((x for x in inputs if x.title == input))
+            input = next(x for x in inputs if x.title == input)
         except StopIteration:
             click.echo("Unable to find input %s" % input)
             return
@@ -258,7 +258,7 @@ async def input(dev: Device, input, output):
         if output:
             zone = await dev.get_zone(output)
             if zone.uri not in input.outputs:
-                click.echo("Input %s not valid for zone %s" % (input.title, output))
+                click.echo(f"Input {input.title} not valid for zone {output}")
                 return
 
         await input.activate(zone)
@@ -282,7 +282,7 @@ async def zone(dev: Device, zone, activate):
     """Get and change outputs."""
     if zone:
         zone = await dev.get_zone(zone)
-        click.echo("%s %s" % ("Activating" if activate else "Deactivating", zone))
+        click.echo("{} {}".format("Activating" if activate else "Deactivating", zone))
         await zone.activate(activate)
     else:
         click.echo("Zones:")
@@ -301,7 +301,7 @@ async def zone(dev: Device, zone, activate):
 async def googlecast(dev: Device, target, value):
     """Return Googlecast settings."""
     if target and value:
-        click.echo("Setting %s = %s" % (target, value))
+        click.echo(f"Setting {target} = {value}")
         await dev.set_googlecast_settings(target, value)
     print_settings(await dev.get_googlecast_settings())
 
@@ -325,7 +325,7 @@ async def source(dev: Device, scheme: str):
         try:
             sources = await dev.get_source_list(schema)
         except SongpalException as ex:
-            click.echo("Unable to get sources for %s: %s" % (schema, ex))
+            click.echo(f"Unable to get sources for {schema}: {ex}")
             continue
         for src in sources:
             click.echo(src)
@@ -335,7 +335,7 @@ async def source(dev: Device, scheme: str):
                     if count.count > 0:
                         click.echo("  %s" % count)
                         for content in await dev.get_contents(src.source):
-                            click.echo("   %s\n\t%s" % (content.title, content.uri))
+                            click.echo(f"   {content.title}\n\t{content.uri}")
                     else:
                         click.echo("  No content to list.")
                 except SongpalException as ex:
@@ -479,7 +479,7 @@ async def storage(dev: Device):
 async def sound(dev: Device, target, value):
     """Get or set sound settings."""
     if target and value:
-        click.echo("Setting %s to %s" % (target, value))
+        click.echo(f"Setting {target} to {value}")
         click.echo(await dev.set_sound_settings(target, value))
 
     print_settings(await dev.get_sound_settings())
@@ -537,7 +537,7 @@ async def playback(dev: Device, cmd, target, value):
 async def speaker(dev: Device, target, value):
     """Get and set external speaker settings."""
     if target and value:
-        click.echo("Setting %s to %s" % (target, value))
+        click.echo(f"Setting {target} to {value}")
         await dev.set_speaker_settings(target, value)
 
     print_settings(await dev.get_speaker_settings())
@@ -613,7 +613,7 @@ async def command(dev, service, method, parameters):
     params = None
     if parameters is not None:
         params = ast.literal_eval(parameters)
-    click.echo("Calling %s.%s with params %s" % (service, method, params))
+    click.echo(f"Calling {service}.{method} with params {params}")
     res = await dev.raw_command(service, method, params)
     click.echo(res)
 
@@ -699,7 +699,7 @@ async def memory(gc: GroupControl):
 @coro
 async def create(gc: GroupControl, name, slaves):
     """Create new group"""
-    click.echo("Creating group %s with slaves: %s" % (name, slaves))
+    click.echo(f"Creating group {name} with slaves: {slaves}")
     click.echo(await gc.create(name, slaves))
 
 

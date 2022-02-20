@@ -97,7 +97,7 @@ class Device:
                     self.guide_endpoint, json=payload, headers=headers
                 )
                 if self.debug > 1:
-                    _LOGGER.debug("Received %s: %s" % (res.status, res.text))
+                    _LOGGER.debug(f"Received {res.status}: {res.text}")
                 if res.status != 200:
                     res_json = await res.json(content_type=None)
                     raise SongpalException(
@@ -286,7 +286,7 @@ class Device:
     async def get_zone(self, name) -> Zone:
         zones = await self.get_zones()
         try:
-            zone = next((x for x in zones if x.title == name))
+            zone = next(x for x in zones if x.title == name)
             return zone
         except StopIteration:
             raise SongpalException("Unable to find zone %s" % name)
