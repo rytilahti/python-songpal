@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.14.1](https://github.com/rytilahti/python-songpal/tree/0.14.1) (2022-03-01)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.14...0.14.1)
+
+**Closed issues:**
+
+- Inconsistency between `get_update_info` and `SoftwareUpdateChange` [\#93](https://github.com/rytilahti/python-songpal/issues/93)
+
+**Merged pull requests:**
+
+- Add pyupgade to pre-commit hooks and CI [\#110](https://github.com/rytilahti/python-songpal/pull/110) ([rytilahti](https://github.com/rytilahti))
+- Drop support for python 3.6 [\#109](https://github.com/rytilahti/python-songpal/pull/109) ([rytilahti](https://github.com/rytilahti))
+- Use github actions instead of azure pipelines for CI [\#108](https://github.com/rytilahti/python-songpal/pull/108) ([rytilahti](https://github.com/rytilahti))
+- Bugfixes for HT-A7000. [\#107](https://github.com/rytilahti/python-songpal/pull/107) ([Flameeyes](https://github.com/Flameeyes))
+
 ## [0.14](https://github.com/rytilahti/python-songpal/tree/0.14) (2022-02-17)
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.13...0.14)
@@ -15,6 +30,7 @@
 
 **Merged pull requests:**
 
+- Prepare 0.14 [\#106](https://github.com/rytilahti/python-songpal/pull/106) ([rytilahti](https://github.com/rytilahti))
 - Require click8+ [\#105](https://github.com/rytilahti/python-songpal/pull/105) ([rytilahti](https://github.com/rytilahti))
 - Relax click version requirement [\#102](https://github.com/rytilahti/python-songpal/pull/102) ([rytilahti](https://github.com/rytilahti))
 - Add StorageChange notification \('notifyStorageStatus'\) [\#98](https://github.com/rytilahti/python-songpal/pull/98) ([rytilahti](https://github.com/rytilahti))
