@@ -28,7 +28,12 @@ from songpal.containers import (
     Volume,
     Zone,
 )
-from songpal.notification import ConnectChange, Notification, NotificationCallback
+from songpal.notification import (
+    ChangeNotification,
+    ConnectChange,
+    Notification,
+    NotificationCallback,
+)
 from songpal.service import Service
 
 _LOGGER = logging.getLogger(__name__)
@@ -458,31 +463,27 @@ class Device:
         """
         tasks = []
 
-        async def handle_notification(notification):
-            if type(notification) not in self.callbacks:
-                if not fallback_callback:
-                    _LOGGER.debug("No callbacks for %s", notification)
-                    # _LOGGER.debug("Existing callbacks for: %s" % self.callbacks)
-                else:
-                    await fallback_callback(notification)
+        async def handle_notification(notification: ChangeNotification) -> None:
+            callbacks = self.callbacks.get(type(notification), [fallback_callback])
+            if not callbacks:
+                _LOGGER.debug("No callbacks defined for %s", notification)
                 return
-            for cb in self.callbacks[type(notification)]:
-                await cb(notification)
 
-        for serv in self.services.values():
-            tasks.append(
-                asyncio.ensure_future(
-                    serv.listen_all_notifications(handle_notification)
-                )
+            await asyncio.gather(
+                *(cb(notification) for cb in callbacks), return_exceptions=True
             )
 
+        tasks = [
+            asyncio.ensure_future(serv.listen_all_notifications(handle_notification))
+            for serv in self.services.values()
+        ]
+
         try:
-            print(await asyncio.gather(*tasks))
+            await asyncio.gather(*tasks)
         except Exception as ex:
             # TODO: do a slightly restricted exception handling?
             # Notify about disconnect
             await handle_notification(ConnectChange(connected=False, exception=ex))
-            return
 
     async def stop_listen_notifications(self):
         """Stop listening on notifications."""
