@@ -4,7 +4,7 @@ import itertools
 import logging
 from collections import defaultdict
 from pprint import pformat as pf
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Set, Type
 from urllib.parse import urlparse
 
 import aiohttp
@@ -28,7 +28,7 @@ from songpal.containers import (
     Volume,
     Zone,
 )
-from songpal.notification import ConnectChange, Notification
+from songpal.notification import ConnectChange, Notification, NotificationCallback
 from songpal.service import Service
 
 _LOGGER = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ class Device:
         self.idgen = itertools.count(start=1)
         self.services = {}  # type: Dict[str, Service]
 
-        self.callbacks = defaultdict(set)
+        self.callbacks: Dict[Type, Set[NotificationCallback]] = defaultdict(set)
 
     async def __aenter__(self):
         """Asynchronous context manager, initializes the list of available methods."""
@@ -433,7 +433,7 @@ class Device:
         """
         await self.services["avContent"]["getAvailablePlaybackFunction"](output=output)
 
-    def on_notification(self, type_, callback):
+    def on_notification(self, type_, callback: NotificationCallback) -> None:
         """Register a notification callback.
 
         The callbacks registered by this method are called when an expected
@@ -449,7 +449,9 @@ class Device:
         """Clear all notification callbacks."""
         self.callbacks.clear()
 
-    async def listen_notifications(self, fallback_callback=None):
+    async def listen_notifications(
+        self, fallback_callback: Optional[NotificationCallback] = None
+    ):
         """Listen for notifications from the device forever.
 
         Use :func:on_notification: to register what notifications to listen to.
