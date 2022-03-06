@@ -4,7 +4,7 @@ import itertools
 import logging
 from collections import defaultdict
 from pprint import pformat as pf
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Set, Type
 from urllib.parse import urlparse
 
 import aiohttp
@@ -28,7 +28,12 @@ from songpal.containers import (
     Volume,
     Zone,
 )
-from songpal.notification import ConnectChange, Notification
+from songpal.notification import (
+    ChangeNotification,
+    ConnectChange,
+    Notification,
+    NotificationCallback,
+)
 from songpal.service import Service
 
 _LOGGER = logging.getLogger(__name__)
@@ -65,7 +70,7 @@ class Device:
         self.idgen = itertools.count(start=1)
         self.services = {}  # type: Dict[str, Service]
 
-        self.callbacks = defaultdict(set)
+        self.callbacks: Dict[Type, Set[NotificationCallback]] = defaultdict(set)
 
     async def __aenter__(self):
         """Asynchronous context manager, initializes the list of available methods."""
@@ -433,7 +438,7 @@ class Device:
         """
         await self.services["avContent"]["getAvailablePlaybackFunction"](output=output)
 
-    def on_notification(self, type_, callback):
+    def on_notification(self, type_, callback: NotificationCallback) -> None:
         """Register a notification callback.
 
         The callbacks registered by this method are called when an expected
@@ -449,38 +454,36 @@ class Device:
         """Clear all notification callbacks."""
         self.callbacks.clear()
 
-    async def listen_notifications(self, fallback_callback=None):
+    async def listen_notifications(
+        self, fallback_callback: Optional[NotificationCallback] = None
+    ):
         """Listen for notifications from the device forever.
 
         Use :func:on_notification: to register what notifications to listen to.
         """
         tasks = []
 
-        async def handle_notification(notification):
-            if type(notification) not in self.callbacks:
-                if not fallback_callback:
-                    _LOGGER.debug("No callbacks for %s", notification)
-                    # _LOGGER.debug("Existing callbacks for: %s" % self.callbacks)
-                else:
-                    await fallback_callback(notification)
+        async def handle_notification(notification: ChangeNotification) -> None:
+            callbacks = self.callbacks.get(type(notification), [fallback_callback])
+            if not callbacks:
+                _LOGGER.debug("No callbacks defined for %s", notification)
                 return
-            for cb in self.callbacks[type(notification)]:
-                await cb(notification)
 
-        for serv in self.services.values():
-            tasks.append(
-                asyncio.ensure_future(
-                    serv.listen_all_notifications(handle_notification)
-                )
+            await asyncio.gather(
+                *(cb(notification) for cb in callbacks), return_exceptions=True
             )
 
+        tasks = [
+            asyncio.ensure_future(serv.listen_all_notifications(handle_notification))
+            for serv in self.services.values()
+        ]
+
         try:
-            print(await asyncio.gather(*tasks))
+            await asyncio.gather(*tasks)
         except Exception as ex:
             # TODO: do a slightly restricted exception handling?
             # Notify about disconnect
             await handle_notification(ConnectChange(connected=False, exception=ex))
-            return
 
     async def stop_listen_notifications(self):
         """Stop listening on notifications."""

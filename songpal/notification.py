@@ -1,7 +1,8 @@
 """Module for device notifications."""
 import logging
+from collections.abc import Awaitable
 from pprint import pformat as pf
-from typing import List
+from typing import Callable, List
 
 import attr
 
@@ -53,6 +54,10 @@ class Notification:
 
 class ChangeNotification:
     """Dummy base-class for notifications."""
+
+
+# A type-annotation for change notification callbacks
+NotificationCallback = Callable[[ChangeNotification], Awaitable[None]]
 
 
 @attr.s
