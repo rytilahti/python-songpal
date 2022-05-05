@@ -2,7 +2,7 @@ import logging
 from xml import etree
 
 import attr
-from async_upnp_client import UpnpFactory
+from async_upnp_client.client_factory import UpnpFactory
 from async_upnp_client.aiohttp import AiohttpRequester
 from async_upnp_client.search import async_search
 
