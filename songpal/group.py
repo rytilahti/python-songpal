@@ -1,8 +1,8 @@
 import logging
 
 import attr
-from async_upnp_client.client_factory import UpnpFactory
 from async_upnp_client.aiohttp import AiohttpRequester
+from async_upnp_client.client_factory import UpnpFactory
 
 from .containers import make
 
