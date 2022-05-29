@@ -514,7 +514,7 @@ async def eq(dev: Device):
 async def playback(dev: Device, cmd, target, value):
     """Get and set playback settings, e.g. repeat and shuffle.."""
     if target and value:
-        dev.set_playback_settings(target, value)
+        await dev.set_playback_settings(target, value)
     if cmd == "support":
         click.echo("Supported playback functions:")
         supported = await dev.get_supported_playback_functions("storage:usb1")
