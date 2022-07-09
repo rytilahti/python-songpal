@@ -178,8 +178,7 @@ class Device:
     async def get_play_info(self) -> PlayInfo:
         """Return  of the device."""
         info = await self.services["avContent"]["getPlayingContentInfo"]({})
-        return[PlayInfo.make(services=self.services, **x)
-            for x in info]
+        return [PlayInfo.make(services=self.services, **x) for x in info]
 
     async def get_power_settings(self) -> List[Setting]:
         """Get power settings."""
