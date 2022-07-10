@@ -163,11 +163,12 @@ async def status(dev: Device):
     vol = await dev.get_volume_information()
     click.echo(vol.pop())
 
-    play_info = await dev.get_play_info()
-    if not play_info.is_idle:
-        click.echo("Playing %s" % play_info)
-    else:
-        click.echo("Not playing any media")
+    play_infos = await dev.get_play_info()
+    for play_info in play_infos:
+        if not play_info.is_idle:
+            click.echo("Playing %s" % play_info)
+        else:
+            click.echo("Not playing any media")
 
     outs = await dev.get_inputs()
     for out in outs:
@@ -526,7 +527,10 @@ async def playback(dev: Device, cmd, target, value):
         # funcs = await dev.get_available_playback_functions()
         # print(funcs)
     else:
-        click.echo("Currently playing: %s" % await dev.get_play_info())
+        infos = await dev.get_play_info()
+
+        for info in infos:
+            click.echo("Currently playing: %s" % info)
 
 
 @cli.command()

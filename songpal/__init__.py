@@ -9,6 +9,7 @@ from songpal.notification import (
     Notification,
     PowerChange,
     VolumeChange,
+    ZoneActivatedChange,
 )
 
 __version__ = version("python-songpal")

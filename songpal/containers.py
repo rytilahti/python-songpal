@@ -217,7 +217,9 @@ class PlayInfo:
             return timedelta(milliseconds=self.positionMsec)
 
     def __str__(self):
-        return "{} ({}/{}), state {}".format(
+        return "{} on {} {} ({}/{}), state {}".format(
+            self.source,
+            self.output,
             self.title,
             self.position,
             self.duration,

@@ -175,10 +175,10 @@ class Device:
         # TODO WoL works when quickboot is not enabled
         return await self.services["system"]["setPowerStatus"](status=status)
 
-    async def get_play_info(self) -> PlayInfo:
+    async def get_play_info(self) -> List[PlayInfo]:
         """Return  of the device."""
         info = await self.services["avContent"]["getPlayingContentInfo"]({})
-        return PlayInfo.make(**info.pop())
+        return [PlayInfo.make(services=self.services, **x) for x in info]
 
     async def get_power_settings(self) -> List[Setting]:
         """Get power settings."""
