@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.15](https://github.com/rytilahti/python-songpal/tree/0.15) (2022-07-13)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.14.1...0.15)
+
+**Breaking changes:**
+
+- Change `get_play_info` to return info from all available zones [\#114](https://github.com/rytilahti/python-songpal/pull/114) (@jwiese)
+
+**Merged pull requests:**
+
+- Depend on async\_upnp\_client \>=0.27 and fix UpnpFactory imports [\#113](https://github.com/rytilahti/python-songpal/pull/113) (@yllar)
+- Notification listen refactor [\#112](https://github.com/rytilahti/python-songpal/pull/112) (@Flameeyes)
+
 ## [0.14.1](https://github.com/rytilahti/python-songpal/tree/0.14.1) (2022-03-01)
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.14...0.14.1)
@@ -10,10 +23,11 @@
 
 **Merged pull requests:**
 
-- Add pyupgade to pre-commit hooks and CI [\#110](https://github.com/rytilahti/python-songpal/pull/110) ([rytilahti](https://github.com/rytilahti))
-- Drop support for python 3.6 [\#109](https://github.com/rytilahti/python-songpal/pull/109) ([rytilahti](https://github.com/rytilahti))
-- Use github actions instead of azure pipelines for CI [\#108](https://github.com/rytilahti/python-songpal/pull/108) ([rytilahti](https://github.com/rytilahti))
-- Bugfixes for HT-A7000. [\#107](https://github.com/rytilahti/python-songpal/pull/107) ([Flameeyes](https://github.com/Flameeyes))
+- Prepare 0.14.1 [\#111](https://github.com/rytilahti/python-songpal/pull/111) (@rytilahti)
+- Add pyupgade to pre-commit hooks and CI [\#110](https://github.com/rytilahti/python-songpal/pull/110) (@rytilahti)
+- Drop support for python 3.6 [\#109](https://github.com/rytilahti/python-songpal/pull/109) (@rytilahti)
+- Use github actions instead of azure pipelines for CI [\#108](https://github.com/rytilahti/python-songpal/pull/108) (@rytilahti)
+- Bugfixes for HT-A7000. [\#107](https://github.com/rytilahti/python-songpal/pull/107) (@Flameeyes)
 
 ## [0.14](https://github.com/rytilahti/python-songpal/tree/0.14) (2022-02-17)
 
@@ -30,14 +44,14 @@
 
 **Merged pull requests:**
 
-- Prepare 0.14 [\#106](https://github.com/rytilahti/python-songpal/pull/106) ([rytilahti](https://github.com/rytilahti))
-- Require click8+ [\#105](https://github.com/rytilahti/python-songpal/pull/105) ([rytilahti](https://github.com/rytilahti))
-- Relax click version requirement [\#102](https://github.com/rytilahti/python-songpal/pull/102) ([rytilahti](https://github.com/rytilahti))
-- Add StorageChange notification \('notifyStorageStatus'\) [\#98](https://github.com/rytilahti/python-songpal/pull/98) ([rytilahti](https://github.com/rytilahti))
-- Catch exceptions on device description file fetch [\#97](https://github.com/rytilahti/python-songpal/pull/97) ([rytilahti](https://github.com/rytilahti))
-- Support for HT-A7000 [\#96](https://github.com/rytilahti/python-songpal/pull/96) ([Flameeyes](https://github.com/Flameeyes))
-- Fix typing mistake in get\_soundfield [\#95](https://github.com/rytilahti/python-songpal/pull/95) ([Flameeyes](https://github.com/Flameeyes))
-- switch to poetry-core [\#90](https://github.com/rytilahti/python-songpal/pull/90) ([dotlambda](https://github.com/dotlambda))
+- Prepare 0.14 [\#106](https://github.com/rytilahti/python-songpal/pull/106) (@rytilahti)
+- Require click8+ [\#105](https://github.com/rytilahti/python-songpal/pull/105) (@rytilahti)
+- Relax click version requirement [\#102](https://github.com/rytilahti/python-songpal/pull/102) (@rytilahti)
+- Add StorageChange notification \('notifyStorageStatus'\) [\#98](https://github.com/rytilahti/python-songpal/pull/98) (@rytilahti)
+- Catch exceptions on device description file fetch [\#97](https://github.com/rytilahti/python-songpal/pull/97) (@rytilahti)
+- Support for HT-A7000 [\#96](https://github.com/rytilahti/python-songpal/pull/96) (@Flameeyes)
+- Fix typing mistake in get\_soundfield [\#95](https://github.com/rytilahti/python-songpal/pull/95) (@Flameeyes)
+- switch to poetry-core [\#90](https://github.com/rytilahti/python-songpal/pull/90) (@dotlambda)
 
 ## [0.13](https://github.com/rytilahti/python-songpal/tree/0.13) (2020-09-01)
 
@@ -49,11 +63,11 @@
 
 **Merged pull requests:**
 
-- Release 0.13 [\#81](https://github.com/rytilahti/python-songpal/pull/81) ([rytilahti](https://github.com/rytilahti))
-- Add Group commands to readme [\#79](https://github.com/rytilahti/python-songpal/pull/79) ([maximoei](https://github.com/maximoei))
-- Fix broken group command to use correct SessionID [\#77](https://github.com/rytilahti/python-songpal/pull/77) ([maximoei](https://github.com/maximoei))
-- Add @coro for group commands [\#76](https://github.com/rytilahti/python-songpal/pull/76) ([maximoei](https://github.com/maximoei))
-- Added STR-ZA810ES devinfo [\#75](https://github.com/rytilahti/python-songpal/pull/75) ([rfeagley](https://github.com/rfeagley))
+- Release 0.13 [\#81](https://github.com/rytilahti/python-songpal/pull/81) (@rytilahti)
+- Add Group commands to readme [\#79](https://github.com/rytilahti/python-songpal/pull/79) (@maximoei)
+- Fix broken group command to use correct SessionID [\#77](https://github.com/rytilahti/python-songpal/pull/77) (@maximoei)
+- Add @coro for group commands [\#76](https://github.com/rytilahti/python-songpal/pull/76) (@maximoei)
+- Added STR-ZA810ES devinfo [\#75](https://github.com/rytilahti/python-songpal/pull/75) (@rfeagley)
 
 ## [0.12](https://github.com/rytilahti/python-songpal/tree/0.12) (2020-04-26)
 
@@ -73,14 +87,14 @@
 
 **Merged pull requests:**
 
-- fix azure pipelines to use poetry [\#74](https://github.com/rytilahti/python-songpal/pull/74) ([rytilahti](https://github.com/rytilahti))
-- Prepare 0.12 [\#73](https://github.com/rytilahti/python-songpal/pull/73) ([rytilahti](https://github.com/rytilahti))
-- Handles InvalidURL and ClientConnectionError exceptions [\#72](https://github.com/rytilahti/python-songpal/pull/72) ([shenxn](https://github.com/shenxn))
-- add PlaybackFunctionChange notification [\#71](https://github.com/rytilahti/python-songpal/pull/71) ([rytilahti](https://github.com/rytilahti))
-- add SRS-X99 devinfo [\#70](https://github.com/rytilahti/python-songpal/pull/70) ([FaintGhost](https://github.com/FaintGhost))
-- Create HT-XT2.json [\#68](https://github.com/rytilahti/python-songpal/pull/68) ([kurt-k](https://github.com/kurt-k))
-- Added notifications for zone activation status [\#64](https://github.com/rytilahti/python-songpal/pull/64) ([jwiese](https://github.com/jwiese))
-- use azure pipelines instead of travis [\#61](https://github.com/rytilahti/python-songpal/pull/61) ([rytilahti](https://github.com/rytilahti))
+- fix azure pipelines to use poetry [\#74](https://github.com/rytilahti/python-songpal/pull/74) (@rytilahti)
+- Prepare 0.12 [\#73](https://github.com/rytilahti/python-songpal/pull/73) (@rytilahti)
+- Handles InvalidURL and ClientConnectionError exceptions [\#72](https://github.com/rytilahti/python-songpal/pull/72) (@shenxn)
+- add PlaybackFunctionChange notification [\#71](https://github.com/rytilahti/python-songpal/pull/71) (@rytilahti)
+- add SRS-X99 devinfo [\#70](https://github.com/rytilahti/python-songpal/pull/70) (@FaintGhost)
+- Create HT-XT2.json [\#68](https://github.com/rytilahti/python-songpal/pull/68) (@kurt-k)
+- Added notifications for zone activation status [\#64](https://github.com/rytilahti/python-songpal/pull/64) (@jwiese)
+- use azure pipelines instead of travis [\#61](https://github.com/rytilahti/python-songpal/pull/61) (@rytilahti)
 
 ## [0.11.2](https://github.com/rytilahti/python-songpal/tree/0.11.2) (2019-10-21)
 
@@ -96,7 +110,7 @@
 
 **Merged pull requests:**
 
-- Disable JSON content-type validation [\#59](https://github.com/rytilahti/python-songpal/pull/59) ([rytilahti](https://github.com/rytilahti))
+- Disable JSON content-type validation [\#59](https://github.com/rytilahti/python-songpal/pull/59) (@rytilahti)
 
 ## [0.11.1](https://github.com/rytilahti/python-songpal/tree/0.11.1) (2019-10-10)
 
@@ -109,7 +123,7 @@
 
 **Merged pull requests:**
 
-- use converter instead of convert for attrib [\#57](https://github.com/rytilahti/python-songpal/pull/57) ([rytilahti](https://github.com/rytilahti))
+- use converter instead of convert for attrib [\#57](https://github.com/rytilahti/python-songpal/pull/57) (@rytilahti)
 
 ## [0.11](https://github.com/rytilahti/python-songpal/tree/0.11) (2019-10-10)
 
@@ -123,11 +137,11 @@
 
 **Merged pull requests:**
 
-- Prepare 0.11 release [\#56](https://github.com/rytilahti/python-songpal/pull/56) ([rytilahti](https://github.com/rytilahti))
-- Report unknown notification variables using debug logger [\#55](https://github.com/rytilahti/python-songpal/pull/55) ([rytilahti](https://github.com/rytilahti))
-- songpal dump-devinfo \<BDV-N9200W - BDV-2014\> [\#53](https://github.com/rytilahti/python-songpal/pull/53) ([anhtuanng98](https://github.com/anhtuanng98))
-- Added devinfo file for Sony CMT-SX7B [\#50](https://github.com/rytilahti/python-songpal/pull/50) ([birt](https://github.com/birt))
-- Remove leftover usage of request lib [\#45](https://github.com/rytilahti/python-songpal/pull/45) ([rytilahti](https://github.com/rytilahti))
+- Prepare 0.11 release [\#56](https://github.com/rytilahti/python-songpal/pull/56) (@rytilahti)
+- Report unknown notification variables using debug logger [\#55](https://github.com/rytilahti/python-songpal/pull/55) (@rytilahti)
+- songpal dump-devinfo \<BDV-N9200W - BDV-2014\> [\#53](https://github.com/rytilahti/python-songpal/pull/53) (@anhtuanng98)
+- Added devinfo file for Sony CMT-SX7B [\#50](https://github.com/rytilahti/python-songpal/pull/50) (@birt)
+- Remove leftover usage of request lib [\#45](https://github.com/rytilahti/python-songpal/pull/45) (@rytilahti)
 
 ## [0.10](https://github.com/rytilahti/python-songpal/tree/0.10) (2019-02-17)
 
@@ -140,15 +154,15 @@
 
 **Merged pull requests:**
 
-- Update changelog and bump version to 0.10 [\#44](https://github.com/rytilahti/python-songpal/pull/44) ([rytilahti](https://github.com/rytilahti))
-- Initial support for zone control [\#42](https://github.com/rytilahti/python-songpal/pull/42) ([jwiese](https://github.com/jwiese))
-- Update because async\_upnp\_client changed "discover" to "search" [\#41](https://github.com/rytilahti/python-songpal/pull/41) ([jwiese](https://github.com/jwiese))
-- Avoid crashing on setting changes we don't know how to handle [\#40](https://github.com/rytilahti/python-songpal/pull/40) ([rytilahti](https://github.com/rytilahti))
-- Added SRS-X77 devinfo [\#39](https://github.com/rytilahti/python-songpal/pull/39) ([tobyh](https://github.com/tobyh))
-- Add ability to change googlecast settings [\#38](https://github.com/rytilahti/python-songpal/pull/38) ([rytilahti](https://github.com/rytilahti))
-- multi-word arguments should use dashes [\#37](https://github.com/rytilahti/python-songpal/pull/37) ([flyingclimber](https://github.com/flyingclimber))
-- convert discovery to use async\_upnp\_client [\#35](https://github.com/rytilahti/python-songpal/pull/35) ([rytilahti](https://github.com/rytilahti))
-- Initial support for controlling device groups [\#34](https://github.com/rytilahti/python-songpal/pull/34) ([rytilahti](https://github.com/rytilahti))
+- Update changelog and bump version to 0.10 [\#44](https://github.com/rytilahti/python-songpal/pull/44) (@rytilahti)
+- Initial support for zone control [\#42](https://github.com/rytilahti/python-songpal/pull/42) (@jwiese)
+- Update because async\_upnp\_client changed "discover" to "search" [\#41](https://github.com/rytilahti/python-songpal/pull/41) (@jwiese)
+- Avoid crashing on setting changes we don't know how to handle [\#40](https://github.com/rytilahti/python-songpal/pull/40) (@rytilahti)
+- Added SRS-X77 devinfo [\#39](https://github.com/rytilahti/python-songpal/pull/39) (@tobyh)
+- Add ability to change googlecast settings [\#38](https://github.com/rytilahti/python-songpal/pull/38) (@rytilahti)
+- multi-word arguments should use dashes [\#37](https://github.com/rytilahti/python-songpal/pull/37) (@flyingclimber)
+- convert discovery to use async\_upnp\_client [\#35](https://github.com/rytilahti/python-songpal/pull/35) (@rytilahti)
+- Initial support for controlling device groups [\#34](https://github.com/rytilahti/python-songpal/pull/34) (@rytilahti)
 
 ## [0.0.9](https://github.com/rytilahti/python-songpal/tree/0.0.9) (2018-12-08)
 
@@ -161,12 +175,12 @@
 
 **Merged pull requests:**
 
-- Added devinfo for HT-ZF9 [\#33](https://github.com/rytilahti/python-songpal/pull/33) ([danielpalstra](https://github.com/danielpalstra))
-- Added STR-DN1060 devinfo [\#30](https://github.com/rytilahti/python-songpal/pull/30) ([jwiese](https://github.com/jwiese))
-- Code formating fixes [\#28](https://github.com/rytilahti/python-songpal/pull/28) ([rytilahti](https://github.com/rytilahti))
-- Adding the output for dumpdevinfo of 2 models [\#27](https://github.com/rytilahti/python-songpal/pull/27) ([thomnico](https://github.com/thomnico))
-- Add SRS-ZR7 devinfo [\#26](https://github.com/rytilahti/python-songpal/pull/26) ([pschmitt](https://github.com/pschmitt))
-- Add files via upload [\#25](https://github.com/rytilahti/python-songpal/pull/25) ([little-boots](https://github.com/little-boots))
+- Added devinfo for HT-ZF9 [\#33](https://github.com/rytilahti/python-songpal/pull/33) (@danielpalstra)
+- Added STR-DN1060 devinfo [\#30](https://github.com/rytilahti/python-songpal/pull/30) (@jwiese)
+- Code formating fixes [\#28](https://github.com/rytilahti/python-songpal/pull/28) (@rytilahti)
+- Adding the output for dumpdevinfo of 2 models [\#27](https://github.com/rytilahti/python-songpal/pull/27) (@thomnico)
+- Add SRS-ZR7 devinfo [\#26](https://github.com/rytilahti/python-songpal/pull/26) (@pschmitt)
+- Add files via upload [\#25](https://github.com/rytilahti/python-songpal/pull/25) (@little-boots)
 
 ## [0.0.8](https://github.com/rytilahti/python-songpal/tree/0.0.8) (2018-08-30)
 
