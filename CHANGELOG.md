@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.1](https://github.com/rytilahti/python-songpal/tree/0.15.1) (2022-09-12)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.15...0.15.1)
+
+**Fixed bugs:**
+
+- Fix the default value for the notification fallback callback [\#117](https://github.com/rytilahti/python-songpal/pull/117) (@Flameeyes)
+
 ## [0.15](https://github.com/rytilahti/python-songpal/tree/0.15) (2022-07-13)
 
 [Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.14.1...0.15)
@@ -10,6 +18,7 @@
 
 **Merged pull requests:**
 
+- Release 0.15 [\#115](https://github.com/rytilahti/python-songpal/pull/115) (@rytilahti)
 - Depend on async\_upnp\_client \>=0.27 and fix UpnpFactory imports [\#113](https://github.com/rytilahti/python-songpal/pull/113) (@yllar)
 - Notification listen refactor [\#112](https://github.com/rytilahti/python-songpal/pull/112) (@Flameeyes)
 
