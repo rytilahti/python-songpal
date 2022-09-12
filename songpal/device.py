@@ -464,7 +464,11 @@ class Device:
         tasks = []
 
         async def handle_notification(notification: ChangeNotification) -> None:
-            callbacks = self.callbacks.get(type(notification), [fallback_callback])
+            fallback_callback_set = (
+                {fallback_callback} if fallback_callback is not None else set()
+            )
+
+            callbacks = self.callbacks.get(type(notification), fallback_callback_set)
             if not callbacks:
                 _LOGGER.debug("No callbacks defined for %s", notification)
                 return
