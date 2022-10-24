@@ -76,5 +76,5 @@ class Discover:
                 await callback(dev)
 
         await async_search(
-            timeout=timeout, service_type=ST, async_callback=parse_device
+            timeout=timeout, search_target=ST, async_callback=parse_device
         )
