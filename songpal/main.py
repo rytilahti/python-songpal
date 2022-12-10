@@ -40,7 +40,6 @@ def coro(f):
 
     Source https://github.com/pallets/click/issues/85#issuecomment-43378930
     """
-    f = asyncio.coroutine(f)
 
     def wrapper(*args, **kwargs):
         loop = asyncio.get_event_loop()
