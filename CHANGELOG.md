@@ -1,12 +1,30 @@
 # Changelog
 
-## [0.15.1](https://github.com/rytilahti/python-songpal/tree/0.15.1) (2022-09-12)
+## [0.15.2](https://github.com/rytilahti/python-songpal/tree/0.15.2) (2023-03-17)
 
-[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.15...0.15.1)
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.15.1...0.15.2)
+
+**Fixed bugs:**
+
+- Songpal discover giving errors [\#122](https://github.com/rytilahti/python-songpal/issues/122)
+- Python 3.11 not supported \(asyncio.coroutine has been removed\) [\#120](https://github.com/rytilahti/python-songpal/issues/120)
+- Fix python 3.11 support, bump async\_upnp\_client dependency [\#121](https://github.com/rytilahti/python-songpal/pull/121) (@rytilahti)
+
+**Closed issues:**
+
+- SRS-ZR7 integration connection issues  [\#119](https://github.com/rytilahti/python-songpal/issues/119)
+
+## [release/0.15.1](https://github.com/rytilahti/python-songpal/tree/release/0.15.1) (2022-09-12)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/0.15...release/0.15.1)
 
 **Fixed bugs:**
 
 - Fix the default value for the notification fallback callback [\#117](https://github.com/rytilahti/python-songpal/pull/117) (@Flameeyes)
+
+**Merged pull requests:**
+
+- Release 0.15.1 [\#118](https://github.com/rytilahti/python-songpal/pull/118) (@rytilahti)
 
 ## [0.15](https://github.com/rytilahti/python-songpal/tree/0.15) (2022-07-13)
 
