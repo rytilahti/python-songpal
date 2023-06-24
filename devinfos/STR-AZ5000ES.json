@@ -1,0 +1,2209 @@
+{
+    "interface_info": {
+        "interfaceVersion": "6.1.0",
+        "modelName": "STR-AZ5000ES",
+        "productCategory": "homeTheaterSystem",
+        "productName": "SoundBar",
+        "serverName": ""
+    },
+    "settings": [
+        {
+            "apiMapping": null,
+            "deviceUIInfo": null,
+            "isAvailable": true,
+            "settings": [
+                {
+                    "apiMapping": null,
+                    "deviceUIInfo": null,
+                    "isAvailable": true,
+                    "settings": [
+                        {
+                            "apiMapping": null,
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": [
+                                {
+                                    "apiMapping": null,
+                                    "deviceUIInfo": "sliderAndEnum",
+                                    "isAvailable": true,
+                                    "settings": [
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "frontBassLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Front Bass Level",
+                                            "titleTextID": "sound-equalizer-front-bass",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        },
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "frontTrebleLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Front Treble Level",
+                                            "titleTextID": "sound-equalizer-front-treble",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        }
+                                    ],
+                                    "title": "Front",
+                                    "titleTextID": "sound-equalizer-front",
+                                    "type": "directory",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": null,
+                                    "deviceUIInfo": "sliderAndEnum",
+                                    "isAvailable": true,
+                                    "settings": [
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "centerBassLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Center Bass Level",
+                                            "titleTextID": "sound-equalizer-center-bass",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        },
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "centerTrebleLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Center Treble Level",
+                                            "titleTextID": "sound-equalizer-center-treble",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        }
+                                    ],
+                                    "title": "Center Level",
+                                    "titleTextID": "sound-equalizer-center",
+                                    "type": "directory",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": null,
+                                    "deviceUIInfo": "sliderAndEnum",
+                                    "isAvailable": true,
+                                    "settings": [
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "surroundBassLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Surround Bass Level",
+                                            "titleTextID": "sound-equalizer-surround-surroundback-bass",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        },
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "surroundTrebleLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Surround Treble Level",
+                                            "titleTextID": "sound-equalizer-surround-surroundback-treble",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        }
+                                    ],
+                                    "title": "Surround/Surround Back",
+                                    "titleTextID": "sound-equalizer-surround-surroundback",
+                                    "type": "directory",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": null,
+                                    "deviceUIInfo": "sliderAndEnum",
+                                    "isAvailable": true,
+                                    "settings": [
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "heightBassLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Height1 Bass Level",
+                                            "titleTextID": "sound-equalizer-height1-bass",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        },
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "heightTrebleLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Height1 Treble Level",
+                                            "titleTextID": "sound-equalizer-height1-treble",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        }
+                                    ],
+                                    "title": "Height1",
+                                    "titleTextID": "sound-equalizer-height1",
+                                    "type": "directory",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": null,
+                                    "deviceUIInfo": "sliderAndEnum",
+                                    "isAvailable": true,
+                                    "settings": [
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "height2BassLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Height2 Bass Level",
+                                            "titleTextID": "sound-equalizer-height2-bass",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        },
+                                        {
+                                            "apiMapping": {
+                                                "getApi": {
+                                                    "name": "getCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "service": "audio",
+                                                "setApi": {
+                                                    "name": "setCustomEqualizerSettings",
+                                                    "version": "1.0"
+                                                },
+                                                "target": "height2TrebleLevel",
+                                                "targetSuppl": null
+                                            },
+                                            "deviceUIInfo": "sliderVertical",
+                                            "isAvailable": true,
+                                            "settings": null,
+                                            "title": "Height2 Treble Level",
+                                            "titleTextID": "sound-equalizer-height2-treble",
+                                            "type": "integerTarget",
+                                            "usage": null
+                                        }
+                                    ],
+                                    "title": "Height2",
+                                    "titleTextID": "sound-equalizer-height2",
+                                    "type": "directory",
+                                    "usage": null
+                                }
+                            ],
+                            "title": "Equalizer",
+                            "titleTextID": "sound-equalizer",
+                            "type": "directory",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "soundField",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": "soundFieldFig",
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Sound Field",
+                            "titleTextID": "sound-soundfield",
+                            "type": "enumTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "dsdNative",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "DSD Native",
+                            "titleTextID": "sound-dsdnative",
+                            "type": "enumTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "pureDirect",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Pure Direct",
+                            "titleTextID": "sound-puredirect",
+                            "type": "booleanTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSpeakerSettings",
+                                    "version": "1.0"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSpeakerSettings",
+                                    "version": "1.0"
+                                },
+                                "target": "inCeilingSpeakerMode",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "In-Ceiling Speaker Mode",
+                            "titleTextID": "sound-inceiling",
+                            "type": "enumTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "360SSM",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "360 Spatial Sound Mapping",
+                            "titleTextID": "sound-360ssm",
+                            "type": "enumTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "calibrationType",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Calibration Type",
+                            "titleTextID": "sound-calibrationtype",
+                            "type": "enumTarget",
+                            "usage": null
+                        }
+                    ],
+                    "title": "Sound Setting",
+                    "titleTextID": "sound",
+                    "type": "directory",
+                    "usage": null
+                },
+                {
+                    "apiMapping": null,
+                    "deviceUIInfo": null,
+                    "isAvailable": true,
+                    "settings": [
+                        {
+                            "apiMapping": null,
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": [
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "frontLLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Front L Level",
+                                    "titleTextID": "speaker-speakerlevel-frontl",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "frontRLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Front R Level",
+                                    "titleTextID": "speaker-speakerlevel-frontr",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "center1Level",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Center1 Level",
+                                    "titleTextID": "speaker-speakerlevel-center",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "center2Level",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Center2 Level",
+                                    "titleTextID": "speaker-speakerlevel-center2",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "tvCenterLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "TV Center Level",
+                                    "titleTextID": "speaker-speakerlevel-tvcenterlevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "surroundLLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Surround L Level",
+                                    "titleTextID": "speaker-speakerlevel-surroundllevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "surroundRLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Surround R Level",
+                                    "titleTextID": "speaker-speakerlevel-surroundrlevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "highLLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Height L Level",
+                                    "titleTextID": "speaker-speakerlevel-heigth1llevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "highRLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Height R Level",
+                                    "titleTextID": "speaker-speakerlevel-heigth1rlevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "surroundBackLLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Surround Back L Level",
+                                    "titleTextID": "speaker-speakerlevel-surroundbackllevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "surroundBackRLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Surround Back R Level",
+                                    "titleTextID": "speaker-speakerlevel-surroundbackrlevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "high2LLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Height2 L Level",
+                                    "titleTextID": "speaker-speakerlevel-heigth2llevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "high2RLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Height2 R Level",
+                                    "titleTextID": "speaker-speakerlevel-heigth2rlevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                },
+                                {
+                                    "apiMapping": {
+                                        "getApi": {
+                                            "name": "getSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "service": "audio",
+                                        "setApi": {
+                                            "name": "setSpeakerSettings",
+                                            "version": "1.0"
+                                        },
+                                        "target": "subwooferLevel",
+                                        "targetSuppl": null
+                                    },
+                                    "deviceUIInfo": "picker",
+                                    "isAvailable": true,
+                                    "settings": null,
+                                    "title": "Subwoofer Level",
+                                    "titleTextID": "speaker-speakerlevel-subwooferlevel",
+                                    "type": "doubleNumberTarget",
+                                    "usage": null
+                                }
+                            ],
+                            "title": "Level",
+                            "titleTextID": "speaker-speakerlevel",
+                            "type": "directory",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSpeakerSettings",
+                                    "version": "1.0"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSpeakerSettings",
+                                    "version": "1.0"
+                                },
+                                "target": "speakerSelection",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Speakers",
+                            "titleTextID": "speaker-speakers",
+                            "type": "enumTarget",
+                            "usage": null
+                        }
+                    ],
+                    "title": "Speaker",
+                    "titleTextID": "speaker",
+                    "type": "directory",
+                    "usage": null
+                },
+                {
+                    "apiMapping": null,
+                    "deviceUIInfo": null,
+                    "isAvailable": true,
+                    "settings": [
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "sceneSelection",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Custom Preset",
+                            "titleTextID": "custompreset-custompreset",
+                            "type": "enumTarget",
+                            "usage": null
+                        }
+                    ],
+                    "title": "Custom Preset",
+                    "titleTextID": "custompreset",
+                    "type": "directory",
+                    "usage": null
+                },
+                {
+                    "apiMapping": null,
+                    "deviceUIInfo": null,
+                    "isAvailable": true,
+                    "settings": [
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSWUpdateInfo",
+                                    "version": "1.0"
+                                },
+                                "service": "system",
+                                "setApi": {
+                                    "name": "actSWUpdate",
+                                    "version": "1.0"
+                                },
+                                "target": null,
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": false,
+                            "settings": null,
+                            "title": "Software Update",
+                            "titleTextID": "system-update",
+                            "type": "nullTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getPowerSettings",
+                                    "version": "1.0"
+                                },
+                                "service": "system",
+                                "setApi": {
+                                    "name": "setPowerSettings",
+                                    "version": "1.0"
+                                },
+                                "target": "quickStartMode",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": "",
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Network / Bluetooth Standby",
+                            "titleTextID": "system-networkstandby",
+                            "type": "booleanTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "dimmer",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": "",
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Dimmer",
+                            "titleTextID": "system-dimmer",
+                            "type": "enumTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "service": "audio",
+                                "setApi": {
+                                    "name": "setSoundSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "hdmiOutput",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": "",
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "HDMI Output",
+                            "titleTextID": "system-hdimoutput",
+                            "type": "enumTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getDeviceMiscSettings",
+                                    "version": "1.0"
+                                },
+                                "service": "system",
+                                "setApi": {
+                                    "name": "setDeviceMiscSettings",
+                                    "version": "1.0"
+                                },
+                                "target": "deviceName",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Device Name",
+                            "titleTextID": "system-networkdevicename",
+                            "type": "stringTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getDeviceMiscSettings",
+                                    "version": "1.0"
+                                },
+                                "service": "system",
+                                "setApi": {
+                                    "name": "setDeviceMiscSettings",
+                                    "version": "1.0"
+                                },
+                                "target": "swAutoUpdate",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Auto Update ",
+                            "titleTextID": "system-autoupdate",
+                            "type": "booleanTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getDeviceMiscSettings",
+                                    "version": "1.0"
+                                },
+                                "service": "system",
+                                "setApi": {
+                                    "name": "setDeviceMiscSettings",
+                                    "version": "1.0"
+                                },
+                                "target": "timeZone",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Time Zone",
+                            "titleTextID": "system-timezone",
+                            "type": "stringTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getSystemInformation",
+                                    "version": "1.3"
+                                },
+                                "service": "system",
+                                "setApi": null,
+                                "target": "",
+                                "targetSuppl": "version"
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "STR-AZ5000ES Software Version",
+                            "titleTextID": "other-htversion-TBD",
+                            "type": "stringTarget",
+                            "usage": null
+                        }
+                    ],
+                    "title": "Setting",
+                    "titleTextID": "system",
+                    "type": "directory",
+                    "usage": null
+                }
+            ],
+            "title": null,
+            "titleTextID": null,
+            "type": "directory",
+            "usage": "deviceConfig"
+        },
+        {
+            "apiMapping": null,
+            "deviceUIInfo": null,
+            "isAvailable": true,
+            "settings": [
+                {
+                    "apiMapping": null,
+                    "deviceUIInfo": null,
+                    "isAvailable": true,
+                    "settings": [
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getPlaybackModeSettings",
+                                    "version": "1.0"
+                                },
+                                "service": "avContent",
+                                "setApi": {
+                                    "name": "setPlaybackModeSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "repeatType",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Repeat",
+                            "titleTextID": "playbackMode-repeatType",
+                            "type": "enumTarget",
+                            "usage": null
+                        },
+                        {
+                            "apiMapping": {
+                                "getApi": {
+                                    "name": "getPlaybackModeSettings",
+                                    "version": "1.0"
+                                },
+                                "service": "avContent",
+                                "setApi": {
+                                    "name": "setPlaybackModeSettings",
+                                    "version": "1.1"
+                                },
+                                "target": "shuffleType",
+                                "targetSuppl": null
+                            },
+                            "deviceUIInfo": null,
+                            "isAvailable": true,
+                            "settings": null,
+                            "title": "Shuffle",
+                            "titleTextID": "playbackMode-shuffleType",
+                            "type": "enumTarget",
+                            "usage": null
+                        }
+                    ],
+                    "title": "Playback Mode",
+                    "titleTextID": "playbackMode",
+                    "type": "directory",
+                    "usage": null
+                }
+            ],
+            "title": null,
+            "titleTextID": null,
+            "type": "directory",
+            "usage": "playingControl"
+        },
+        {
+            "apiMapping": null,
+            "deviceUIInfo": null,
+            "isAvailable": true,
+            "settings": [
+                {
+                    "apiMapping": {
+                        "getApi": {
+                            "name": "getPowerSettings",
+                            "version": "1.0"
+                        },
+                        "service": "system",
+                        "setApi": {
+                            "name": "setPowerSettings",
+                            "version": "1.0"
+                        },
+                        "target": "quickStartMode",
+                        "targetSuppl": null
+                    },
+                    "deviceUIInfo": "",
+                    "isAvailable": true,
+                    "settings": null,
+                    "title": "Network / Bluetooth Standby",
+                    "titleTextID": "system-networkstandby",
+                    "type": "booleanTarget",
+                    "usage": null
+                },
+                {
+                    "apiMapping": {
+                        "getApi": {
+                            "name": "getDeviceMiscSettings",
+                            "version": "1.0"
+                        },
+                        "service": "system",
+                        "setApi": {
+                            "name": "setDeviceMiscSettings",
+                            "version": "1.0"
+                        },
+                        "target": "swAutoUpdate",
+                        "targetSuppl": null
+                    },
+                    "deviceUIInfo": null,
+                    "isAvailable": true,
+                    "settings": null,
+                    "title": "Auto Update ",
+                    "titleTextID": "system-autoupdate",
+                    "type": "booleanTarget",
+                    "usage": null
+                },
+                {
+                    "apiMapping": {
+                        "getApi": {
+                            "name": "getDeviceMiscSettings",
+                            "version": "1.0"
+                        },
+                        "service": "system",
+                        "setApi": {
+                            "name": "setDeviceMiscSettings",
+                            "version": "1.0"
+                        },
+                        "target": "timeZone",
+                        "targetSuppl": null
+                    },
+                    "deviceUIInfo": null,
+                    "isAvailable": true,
+                    "settings": null,
+                    "title": "Time Zone",
+                    "titleTextID": "system-timezone",
+                    "type": "stringTarget",
+                    "usage": null
+                }
+            ],
+            "title": null,
+            "titleTextID": null,
+            "type": "directory",
+            "usage": "initialSetting"
+        }
+    ],
+    "supported_methods": {
+        "appControl": {
+            "methods": {
+                "getApplicationList": {
+                    "input": {
+                        "os": "str",
+                        "type": "str"
+                    },
+                    "name": "getApplicationList",
+                    "output": {
+                        "isAvailable": "bool",
+                        "service": "ApplicationList[]"
+                    },
+                    "service": "appControl",
+                    "version": "1.2"
+                },
+                "getMethodTypes": {
+                    "input": "str",
+                    "name": "getMethodTypes",
+                    "output": "str",
+                    "service": "appControl",
+                    "version": "1.0"
+                },
+                "getVersions": {
+                    "input": null,
+                    "name": "getVersions",
+                    "output": "str",
+                    "service": "appControl",
+                    "version": "1.0"
+                },
+                "switchNotifications": {
+                    "input": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]"
+                    },
+                    "name": "switchNotifications",
+                    "output": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]",
+                        "rejected": "ApiIdentity[]",
+                        "unsupported": "ApiIdentity[]"
+                    },
+                    "service": "appControl",
+                    "version": "1.0"
+                }
+            },
+            "notifications": {},
+            "protocols": []
+        },
+        "audio": {
+            "methods": {
+                "getCustomEqualizerSettings": {
+                    "input": {
+                        "target": "str"
+                    },
+                    "name": "getCustomEqualizerSettings",
+                    "output": {
+                        "candidate": "GeneralSettingsCandidate[]",
+                        "currentValue": "str",
+                        "deviceUIInfo": "str",
+                        "isAvailable": "bool",
+                        "target": "str",
+                        "title": "str",
+                        "titleTextID": "str",
+                        "type": "str"
+                    },
+                    "service": "audio",
+                    "version": "1.0"
+                },
+                "getMethodTypes": {
+                    "input": "str",
+                    "name": "getMethodTypes",
+                    "output": "str",
+                    "service": "audio",
+                    "version": "1.0"
+                },
+                "getSoundSettings": {
+                    "input": {
+                        "target": "str"
+                    },
+                    "name": "getSoundSettings",
+                    "output": {
+                        "candidate": "GeneralSettingsCandidate[]",
+                        "currentValue": "str",
+                        "deviceUIInfo": "str",
+                        "isAvailable": "bool",
+                        "target": "str",
+                        "title": "str",
+                        "titleTextID": "str",
+                        "type": "str"
+                    },
+                    "service": "audio",
+                    "version": "1.1"
+                },
+                "getSpeakerSettings": {
+                    "input": {
+                        "target": "str"
+                    },
+                    "name": "getSpeakerSettings",
+                    "output": {
+                        "candidate": "GeneralSettingsCandidate[]",
+                        "currentValue": "str",
+                        "deviceUIInfo": "str",
+                        "isAvailable": "bool",
+                        "target": "str",
+                        "title": "str",
+                        "titleTextID": "str",
+                        "type": "str"
+                    },
+                    "service": "audio",
+                    "version": "1.0"
+                },
+                "getVersions": {
+                    "input": null,
+                    "name": "getVersions",
+                    "output": "str",
+                    "service": "audio",
+                    "version": "1.0"
+                },
+                "getVolumeInformation": {
+                    "input": {
+                        "output": "str"
+                    },
+                    "name": "getVolumeInformation",
+                    "output": {
+                        "maxVolume": "int",
+                        "minVolume": "int",
+                        "mute": "str",
+                        "output": "str",
+                        "step": "int",
+                        "volume": "int"
+                    },
+                    "service": "audio",
+                    "version": "1.1"
+                },
+                "setAudioMute": {
+                    "input": {
+                        "mute": "str",
+                        "output": "str"
+                    },
+                    "name": "setAudioMute",
+                    "output": null,
+                    "service": "audio",
+                    "version": "1.1"
+                },
+                "setAudioVolume": {
+                    "input": {
+                        "output": "str",
+                        "volume": "str"
+                    },
+                    "name": "setAudioVolume",
+                    "output": null,
+                    "service": "audio",
+                    "version": "1.1"
+                },
+                "setCustomEqualizerSettings": {
+                    "input": {
+                        "settings": "GeneralSettings[]"
+                    },
+                    "name": "setCustomEqualizerSettings",
+                    "output": null,
+                    "service": "audio",
+                    "version": "1.0"
+                },
+                "setSoundSettings": {
+                    "input": {
+                        "settings": "GeneralSettings[]"
+                    },
+                    "name": "setSoundSettings",
+                    "output": null,
+                    "service": "audio",
+                    "version": "1.1"
+                },
+                "setSpeakerSettings": {
+                    "input": {
+                        "settings": "GeneralSettings[]"
+                    },
+                    "name": "setSpeakerSettings",
+                    "output": null,
+                    "service": "audio",
+                    "version": "1.0"
+                },
+                "switchNotifications": {
+                    "input": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]"
+                    },
+                    "name": "switchNotifications",
+                    "output": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]",
+                        "rejected": "ApiIdentity[]",
+                        "unsupported": "ApiIdentity[]"
+                    },
+                    "service": "audio",
+                    "version": "1.0"
+                }
+            },
+            "notifications": {
+                "notifyVolumeInformation": {
+                    "name": "notifyVolumeInformation",
+                    "version": "1.0"
+                }
+            },
+            "protocols": []
+        },
+        "avContent": {
+            "methods": {
+                "getAvailablePlaybackFunction": {
+                    "input": {
+                        "output": "str"
+                    },
+                    "name": "getAvailablePlaybackFunction",
+                    "output": {
+                        "functions": "FunctionInfo[]",
+                        "output": "str",
+                        "uri": "str"
+                    },
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "getBluetoothSettings": {
+                    "input": {
+                        "target": "str"
+                    },
+                    "name": "getBluetoothSettings",
+                    "output": {
+                        "candidate": "GeneralSettingsCandidate[]",
+                        "currentValue": "str",
+                        "deviceUIInfo": "str",
+                        "isAvailable": "bool",
+                        "target": "str",
+                        "title": "str",
+                        "titleTextID": "str",
+                        "type": "str"
+                    },
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "getContentCount": {
+                    "input": {
+                        "target": "str",
+                        "type": "string*",
+                        "uri": "str",
+                        "view": "str"
+                    },
+                    "name": "getContentCount",
+                    "output": {
+                        "capability": "int",
+                        "count": "int"
+                    },
+                    "service": "avContent",
+                    "version": "1.3"
+                },
+                "getContentList": {
+                    "input": {
+                        "cnt": "int",
+                        "sort": "str",
+                        "stIdx": "int",
+                        "target": "str",
+                        "type": "string*",
+                        "uri": "str",
+                        "view": "str"
+                    },
+                    "name": "getContentList",
+                    "output": {
+                        "albumName": "str",
+                        "artist": "str",
+                        "audioInfo": "AudioInfo[]",
+                        "broadcastFreq": "int",
+                        "broadcastFreqBand": "str",
+                        "channelName": "str",
+                        "channelSurfingVisibility": "str",
+                        "chapterCount": "int",
+                        "content": "ContentInfo",
+                        "contentKind": "str",
+                        "contentType": "str",
+                        "createdTime": "str",
+                        "directRemoteNum": "int",
+                        "dispNum": "str",
+                        "durationMsec": "int",
+                        "epgVisibility": "str",
+                        "fileNo": "str",
+                        "fileSizeByte": "int",
+                        "folderNo": "str",
+                        "genre": "string*",
+                        "index": "int",
+                        "isAlreadyPlayed": "str",
+                        "isBrowsable": "str",
+                        "isPlayable": "str",
+                        "isProtected": "str",
+                        "originalDispNum": "str",
+                        "parentUri": "str",
+                        "parentalInfo": "ParentalInfo[]",
+                        "playlistName": "str",
+                        "podcastName": "str",
+                        "productID": "str",
+                        "programMediaType": "str",
+                        "programNum": "int",
+                        "remotePlayType": "string*",
+                        "sizeMB": "int",
+                        "startDateTime": "str",
+                        "storageUri": "str",
+                        "subtitleInfo": "SubtitleInfo[]",
+                        "title": "str",
+                        "tripletStr": "str",
+                        "uri": "str",
+                        "userContentFlag": "bool",
+                        "videoInfo": "VideoInfo",
+                        "visibility": "str"
+                    },
+                    "service": "avContent",
+                    "version": "1.4"
+                },
+                "getCurrentExternalTerminalsStatus": {
+                    "input": null,
+                    "name": "getCurrentExternalTerminalsStatus",
+                    "output": {
+                        "active": "str",
+                        "connection": "str",
+                        "iconUrl": "str",
+                        "label": "str",
+                        "meta": "str",
+                        "outputs": "string*",
+                        "title": "str",
+                        "uri": "str"
+                    },
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "getMethodTypes": {
+                    "input": "str",
+                    "name": "getMethodTypes",
+                    "output": "str",
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "getPlaybackModeSettings": {
+                    "input": {
+                        "target": "str",
+                        "uri": "str"
+                    },
+                    "name": "getPlaybackModeSettings",
+                    "output": {
+                        "candidate": "PlaybackModeSettingsCandidate[]",
+                        "currentValue": "str",
+                        "deviceUIInfo": "str",
+                        "isAvailable": "bool",
+                        "target": "str",
+                        "title": "str",
+                        "titleTextID": "str",
+                        "type": "str",
+                        "uri": "str"
+                    },
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "getPlayingContentInfo": {
+                    "input": {
+                        "output": "str"
+                    },
+                    "name": "getPlayingContentInfo",
+                    "output": {
+                        "albumName": "str",
+                        "applicationName": "str",
+                        "artist": "str",
+                        "audioInfo": "AudioInfo[]",
+                        "bivl_assetId": "str",
+                        "bivl_provider": "str",
+                        "bivl_serviceId": "str",
+                        "broadcastFreq": "int",
+                        "broadcastFreqBand": "str",
+                        "channelName": "str",
+                        "chapterCount": "int",
+                        "chapterIndex": "int",
+                        "contentKind": "str",
+                        "dabInfo": "DabInfo",
+                        "dispNum": "str",
+                        "durationMsec": "int",
+                        "durationSec": "double",
+                        "fileNo": "str",
+                        "genre": "string*",
+                        "index": "int",
+                        "mediaType": "str",
+                        "originalDispNum": "str",
+                        "output": "str",
+                        "parentUri": "str",
+                        "playSpeed": "str",
+                        "playSpeedStep": "int",
+                        "playlistName": "str",
+                        "podcastName": "str",
+                        "positionMsec": "int",
+                        "positionSec": "double",
+                        "programNum": "int",
+                        "programTitle": "str",
+                        "repeatType": "str",
+                        "service": "str",
+                        "source": "str",
+                        "sourceLabel": "str",
+                        "startDateTime": "str",
+                        "stateInfo": "StateInfo",
+                        "subtitleIndex": "int",
+                        "title": "str",
+                        "totalCount": "int",
+                        "tripletStr": "str",
+                        "uri": "str",
+                        "videoInfo": "VideoInfo"
+                    },
+                    "service": "avContent",
+                    "version": "1.2"
+                },
+                "getSchemeList": {
+                    "input": null,
+                    "name": "getSchemeList",
+                    "output": {
+                        "scheme": "str"
+                    },
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "getSourceList": {
+                    "input": {
+                        "scheme": "str"
+                    },
+                    "name": "getSourceList",
+                    "output": {
+                        "iconUrl": "str",
+                        "isBrowsable": "bool",
+                        "isPlayable": "bool",
+                        "meta": "str",
+                        "outputs": "string*",
+                        "playAction": "str",
+                        "protocols": "string*",
+                        "source": "str",
+                        "title": "str",
+                        "upnpOperationInfo": "UpnpOperationInfo"
+                    },
+                    "service": "avContent",
+                    "version": "1.2"
+                },
+                "getSupportedPlaybackFunction": {
+                    "input": {
+                        "uri": "str"
+                    },
+                    "name": "getSupportedPlaybackFunction",
+                    "output": {
+                        "functions": "SupportedFunctionInfo[]",
+                        "uri": "str"
+                    },
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "getVersions": {
+                    "input": null,
+                    "name": "getVersions",
+                    "output": "str",
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "pausePlayingContent": {
+                    "input": {
+                        "output": "str"
+                    },
+                    "name": "pausePlayingContent",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.1"
+                },
+                "presetBroadcastStation": {
+                    "input": {
+                        "frequency": "int",
+                        "uri": "str"
+                    },
+                    "name": "presetBroadcastStation",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "scanPlayingContent": {
+                    "input": {
+                        "direction": "str",
+                        "output": "str"
+                    },
+                    "name": "scanPlayingContent",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "seekBroadcastStation": {
+                    "input": {
+                        "direction": "str",
+                        "tuning": "str"
+                    },
+                    "name": "seekBroadcastStation",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "setActiveTerminal": {
+                    "input": {
+                        "active": "str",
+                        "uri": "str"
+                    },
+                    "name": "setActiveTerminal",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "setBluetoothSettings": {
+                    "input": {
+                        "settings": "GeneralSettings[]"
+                    },
+                    "name": "setBluetoothSettings",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "setPlayContent": {
+                    "input": {
+                        "keepLastFrame": "bool",
+                        "output": "str",
+                        "positionMsec": "int",
+                        "positionSec": "double",
+                        "repeatType": "str",
+                        "requester": "str",
+                        "resume": "bool",
+                        "uri": "str"
+                    },
+                    "name": "setPlayContent",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.2"
+                },
+                "setPlayNextContent": {
+                    "input": {
+                        "output": "str"
+                    },
+                    "name": "setPlayNextContent",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "setPlayPreviousContent": {
+                    "input": {
+                        "output": "str"
+                    },
+                    "name": "setPlayPreviousContent",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "setPlaybackModeSettings": {
+                    "input": {
+                        "settings": "PlaybackModeSettings[]"
+                    },
+                    "name": "setPlaybackModeSettings",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.1"
+                },
+                "startContentBrowsing": {
+                    "input": {
+                        "uri": "str"
+                    },
+                    "name": "startContentBrowsing",
+                    "output": {
+                        "errorMessage": "str",
+                        "status": "str"
+                    },
+                    "service": "avContent",
+                    "version": "1.0"
+                },
+                "stopPlayingContent": {
+                    "input": {
+                        "keepLastFrame": "bool",
+                        "output": "str"
+                    },
+                    "name": "stopPlayingContent",
+                    "output": null,
+                    "service": "avContent",
+                    "version": "1.1"
+                },
+                "switchNotifications": {
+                    "input": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]"
+                    },
+                    "name": "switchNotifications",
+                    "output": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]",
+                        "rejected": "ApiIdentity[]",
+                        "unsupported": "ApiIdentity[]"
+                    },
+                    "service": "avContent",
+                    "version": "1.0"
+                }
+            },
+            "notifications": {
+                "notifyAvailablePlaybackFunction": {
+                    "name": "notifyAvailablePlaybackFunction",
+                    "version": "1.0"
+                },
+                "notifyExternalTerminalStatus": {
+                    "name": "notifyExternalTerminalStatus",
+                    "version": "1.0"
+                },
+                "notifyPlayingContentInfo": {
+                    "name": "notifyPlayingContentInfo",
+                    "version": "1.0"
+                }
+            },
+            "protocols": []
+        },
+        "guide": {
+            "methods": {
+                "getMethodTypes": {
+                    "input": "str",
+                    "name": "getMethodTypes",
+                    "output": "str",
+                    "service": "guide",
+                    "version": "1.0"
+                },
+                "getSupportedApiInfo": {
+                    "input": {
+                        "services": "string*"
+                    },
+                    "name": "getSupportedApiInfo",
+                    "output": {
+                        "apis": "ApiInfo[]",
+                        "notifications": "NotificationInfo[]",
+                        "protocols": "string*",
+                        "service": "str"
+                    },
+                    "service": "guide",
+                    "version": "1.0"
+                },
+                "getVersions": {
+                    "input": null,
+                    "name": "getVersions",
+                    "output": "str",
+                    "service": "guide",
+                    "version": "1.0"
+                },
+                "switchNotifications": {
+                    "input": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]"
+                    },
+                    "name": "switchNotifications",
+                    "output": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]",
+                        "rejected": "ApiIdentity[]",
+                        "unsupported": "ApiIdentity[]"
+                    },
+                    "service": "guide",
+                    "version": "1.0"
+                }
+            },
+            "notifications": {},
+            "protocols": []
+        },
+        "system": {
+            "methods": {
+                "actSWUpdate": {
+                    "input": null,
+                    "name": "actSWUpdate",
+                    "output": null,
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "connectBluetoothDevice": {
+                    "input": {
+                        "bdAddr": "str"
+                    },
+                    "name": "connectBluetoothDevice",
+                    "output": null,
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getAlexaDeviceInfo": {
+                    "input": {
+                        "encKey": "str"
+                    },
+                    "name": "getAlexaDeviceInfo",
+                    "output": {
+                        "codeChallenge": "str",
+                        "dsn": "str",
+                        "productID": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getAlexaRegistrationStatus": {
+                    "input": null,
+                    "name": "getAlexaRegistrationStatus",
+                    "output": {
+                        "status": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getDeviceMiscSettings": {
+                    "input": {
+                        "target": "str"
+                    },
+                    "name": "getDeviceMiscSettings",
+                    "output": {
+                        "candidate": "GeneralSettingsCandidate[]",
+                        "currentValue": "str",
+                        "deviceUIInfo": "str",
+                        "isAvailable": "bool",
+                        "target": "str",
+                        "title": "str",
+                        "titleTextID": "str",
+                        "type": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getEciaDeviceInfo": {
+                    "input": null,
+                    "name": "getEciaDeviceInfo",
+                    "output": {
+                        "deviceId": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getInterfaceInformation": {
+                    "input": null,
+                    "name": "getInterfaceInformation",
+                    "output": {
+                        "interfaceVersion": "str",
+                        "modelName": "str",
+                        "productCategory": "str",
+                        "productName": "str",
+                        "serverName": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getMethodTypes": {
+                    "input": "str",
+                    "name": "getMethodTypes",
+                    "output": "str",
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getPowerSettings": {
+                    "input": {
+                        "target": "str"
+                    },
+                    "name": "getPowerSettings",
+                    "output": {
+                        "candidate": "GeneralSettingsCandidate[]",
+                        "currentValue": "str",
+                        "deviceUIInfo": "str",
+                        "isAvailable": "bool",
+                        "target": "str",
+                        "title": "str",
+                        "titleTextID": "str",
+                        "type": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getPowerStatus": {
+                    "input": null,
+                    "name": "getPowerStatus",
+                    "output": {
+                        "standbyDetail": "str",
+                        "status": "str"
+                    },
+                    "service": "system",
+                    "version": "1.1"
+                },
+                "getSWUpdateInfo": {
+                    "input": {
+                        "network": "str"
+                    },
+                    "name": "getSWUpdateInfo",
+                    "output": {
+                        "isUpdatable": "str",
+                        "swInfo": "SWInfo[]"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getSettingsTree": {
+                    "input": {
+                        "usage": "str"
+                    },
+                    "name": "getSettingsTree",
+                    "output": {
+                        "settings": "SettingsTreeList[]"
+                    },
+                    "service": "system",
+                    "version": "1.1"
+                },
+                "getStorageList": {
+                    "input": {
+                        "uri": "str"
+                    },
+                    "name": "getStorageList",
+                    "output": {
+                        "deviceName": "str",
+                        "error": "str",
+                        "format": "str",
+                        "formattable": "str",
+                        "freeCapacityMB": "int",
+                        "isAvailable": "str",
+                        "lun": "int",
+                        "mounted": "str",
+                        "permission": "str",
+                        "position": "str",
+                        "protocol": "str",
+                        "systemAreaCapacityMB": "int",
+                        "type": "str",
+                        "uri": "str",
+                        "volumeLabel": "str",
+                        "wholeCapacityMB": "int"
+                    },
+                    "service": "system",
+                    "version": "1.2"
+                },
+                "getSupportedApplicationStatusList": {
+                    "input": null,
+                    "name": "getSupportedApplicationStatusList",
+                    "output": {
+                        "name": "str",
+                        "status": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getSystemInformation": {
+                    "input": null,
+                    "name": "getSystemInformation",
+                    "output": {
+                        "area": "str",
+                        "bdAddr": "str",
+                        "bleID": "str",
+                        "cid": "str",
+                        "deviceID": "str",
+                        "duid": "str",
+                        "esn": "str",
+                        "generation": "str",
+                        "helpUrl": "str",
+                        "iconUrl": "str",
+                        "initialPowerOnTime": "str",
+                        "language": "str",
+                        "lastPowerOnTime": "str",
+                        "macAddr": "str",
+                        "model": "str",
+                        "name": "str",
+                        "product": "str",
+                        "region": "str",
+                        "serial": "str",
+                        "ssid": "str",
+                        "version": "str",
+                        "wirelessMacAddr": "str"
+                    },
+                    "service": "system",
+                    "version": "1.4"
+                },
+                "getSystemSupportedFeature": {
+                    "input": {
+                        "name": "str"
+                    },
+                    "name": "getSystemSupportedFeature",
+                    "output": {
+                        "name": "str",
+                        "supported": "bool",
+                        "value": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getVersions": {
+                    "input": null,
+                    "name": "getVersions",
+                    "output": "str",
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getVoiceCommandGuide": {
+                    "input": {
+                        "service": "str"
+                    },
+                    "name": "getVoiceCommandGuide",
+                    "output": {
+                        "samples": "string*"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "getWuTangInfo": {
+                    "input": {
+                        "target": "str"
+                    },
+                    "name": "getWuTangInfo",
+                    "output": {
+                        "candidate": "GeneralSettingsCandidate[]",
+                        "currentValue": "str",
+                        "deviceUIInfo": "str",
+                        "isAvailable": "bool",
+                        "target": "str",
+                        "title": "str",
+                        "titleTextID": "str",
+                        "type": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "setAlexaRegistrationInfo": {
+                    "input": {
+                        "authorizationCode": "str",
+                        "clientID": "str",
+                        "encKey": "str",
+                        "redirectUri": "str"
+                    },
+                    "name": "setAlexaRegistrationInfo",
+                    "output": null,
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "setClientInfo": {
+                    "input": {
+                        "target": "str",
+                        "value": "str"
+                    },
+                    "name": "setClientInfo",
+                    "output": null,
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "setDeviceMiscSettings": {
+                    "input": {
+                        "settings": "GeneralSettings[]"
+                    },
+                    "name": "setDeviceMiscSettings",
+                    "output": null,
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "setPowerSettings": {
+                    "input": {
+                        "settings": "GeneralSettings[]"
+                    },
+                    "name": "setPowerSettings",
+                    "output": null,
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "setPowerStatus": {
+                    "input": {
+                        "standbyDetail": "str",
+                        "status": "str"
+                    },
+                    "name": "setPowerStatus",
+                    "output": null,
+                    "service": "system",
+                    "version": "1.1"
+                },
+                "setSleepTimerSettings": {
+                    "input": {
+                        "settings": "GeneralSettings[]"
+                    },
+                    "name": "setSleepTimerSettings",
+                    "output": null,
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "setWuTangInfo": {
+                    "input": {
+                        "settings": "GeneralSettings[]"
+                    },
+                    "name": "setWuTangInfo",
+                    "output": null,
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "switchNotifications": {
+                    "input": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]"
+                    },
+                    "name": "switchNotifications",
+                    "output": {
+                        "disabled": "ApiIdentity[]",
+                        "enabled": "ApiIdentity[]",
+                        "rejected": "ApiIdentity[]",
+                        "unsupported": "ApiIdentity[]"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                },
+                "unregistAlexaDevice": {
+                    "input": null,
+                    "name": "unregistAlexaDevice",
+                    "output": {
+                        "status": "str"
+                    },
+                    "service": "system",
+                    "version": "1.0"
+                }
+            },
+            "notifications": {
+                "notifyAlexaRegistrationStatus": {
+                    "name": "notifyAlexaRegistrationStatus",
+                    "version": "1.0"
+                },
+                "notifyPowerStatus": {
+                    "name": "notifyPowerStatus",
+                    "version": "1.0"
+                },
+                "notifySWUpdateInfo": {
+                    "name": "notifySWUpdateInfo",
+                    "version": "1.0"
+                },
+                "notifySettingsUpdate": {
+                    "name": "notifySettingsUpdate",
+                    "version": "1.1"
+                },
+                "notifyStorageStatus": {
+                    "name": "notifyStorageStatus",
+                    "version": "1.1"
+                }
+            },
+            "protocols": []
+        }
+    },
+    "sysinfo": {
+        "bdAddr": "38:7c:76:xx:xx:xx",
+        "bleID": "xxyyzzqq",
+        "bssid": null,
+        "generation": "",
+        "macAddr": "f8:4e:17:xx:xx:xx",
+        "model": "STR-AZ5000ES",
+        "serialNumber": "1234567",
+        "ssid": null,
+        "version": "001.238",
+        "wirelessMacAddr": "38:7c:76:xx:xx:xx"
+    }
+}
