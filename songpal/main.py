@@ -109,10 +109,11 @@ pass_dev = click.make_pass_decorator(Device)
 @click.option("-d", "--debug", default=False, count=True)
 @click.option("--post", is_flag=True, required=False)
 @click.option("--websocket", is_flag=True, required=False)
+@click.option("--devinfo-file", type=click.File("r"), required=False)
 @click.pass_context
 @click.version_option(package_name="python-songpal")
 @coro
-async def cli(ctx, endpoint, debug, websocket, post):
+async def cli(ctx, endpoint, debug, websocket, post, devinfo_file):
     """Songpal CLI."""
     lvl = logging.INFO
     if debug:
@@ -138,7 +139,9 @@ async def cli(ctx, endpoint, debug, websocket, post):
         protocol = ProtocolType.XHRPost
 
     logging.debug("Using endpoint %s", endpoint)
-    x = Device(endpoint, force_protocol=protocol, debug=debug)
+    x = Device(
+        endpoint, force_protocol=protocol, debug=debug, devinfo_file=devinfo_file
+    )
     try:
         await x.get_supported_methods()
     except SongpalException as ex:

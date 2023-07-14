@@ -74,7 +74,7 @@ class Service:
 
         protocols = payload["protocols"]
         _LOGGER.debug("Available protocols for %s: %s", service_name, protocols)
-        if force_protocol and force_protocol.value in protocols:
+        if force_protocol:
             protocol = force_protocol
         elif "websocket:jsonizer" in protocols:
             protocol = ProtocolType.WebSocket
