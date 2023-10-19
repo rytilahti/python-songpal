@@ -267,7 +267,25 @@ class Device:
         """Start a system update if available."""
         return await self.services["system"]["actSWUpdate"]()
 
+    async def is_api_method_version_supported(self, method, version) -> bool:
+        """Return True if method version is supported."""
+        for service in self.services.values():
+            for api in service.methods:
+                if api.name == method and api.version == version:
+                    return True
+        return False
+
     async def get_inputs(self) -> List[Input]:
+        """Return list of available outputs."""
+        support_v1_2 = await self.is_api_method_version_supported(
+            "getCurrentExternalTerminalsStatus", "1.2"
+        )
+        if support_v1_2:
+            return await self.get_inputs_v1_2()
+        else:
+            return await self.get_inputs_v1_0()
+
+    async def get_inputs_v1_0(self) -> List[Input]:
         """Return list of available outputs."""
         res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
         return [
@@ -276,9 +294,41 @@ class Device:
             if "meta:zone:output" not in x["meta"]
         ]
 
+    async def get_inputs_v1_2(self) -> List[Input]:
+        """Return list of available outputs."""
+        inputs = []
+        active_input_uri = ""
+        for z in await self.get_zones():
+            if z.active:
+                active_input_uri = (
+                    await self.get_available_playback_functions(output=z.uri)
+                )[0]["uri"]
+                break
+        res = await self.services["avContent"]["getCurrentExternalTerminalsStatus_1.2"](
+            {}
+        )
+        for x in res:
+            if ("iconId" in x and x["iconId"] != "") and "meta:zone:output" not in x[
+                "meta"
+            ]:
+                input = Input.make(services=self.services, **x)
+                input.active = True if input.uri == active_input_uri else False
+                inputs.append(input)
+        return inputs
+
     async def get_zones(self) -> List[Zone]:
         """Return list of available zones."""
-        res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
+        support_v1_2 = await self.is_api_method_version_supported(
+            "getCurrentExternalTerminalsStatus", "1.2"
+        )
+        if support_v1_2:
+            res = await self.services["avContent"][
+                "getCurrentExternalTerminalsStatus_1.2"
+            ]({})
+        else:
+            res = await self.services["avContent"][
+                "getCurrentExternalTerminalsStatus"
+            ]()
         zones = [
             Zone.make(services=self.services, **x)
             for x in res
@@ -436,7 +486,9 @@ class Device:
 
         If no output is given the current is assumed.
         """
-        await self.services["avContent"]["getAvailablePlaybackFunction"](output=output)
+        return await self.services["avContent"]["getAvailablePlaybackFunction"](
+            output=output
+        )
 
     def on_notification(self, type_, callback: NotificationCallback) -> None:
         """Register a notification callback.

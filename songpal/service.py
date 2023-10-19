@@ -103,13 +103,16 @@ class Service:
 
         for sig in sigs["results"]:
             name = sig[0]
+            version = sig[3]
             parsed_sig = MethodSignature.from_payload(*sig)
             if name in methods:
                 _LOGGER.debug(
-                    "Got duplicate signature for %s, existing was %s, keeping it.",
+                    "Got another signature for %s, previous was %s, adding as %s.",
                     parsed_sig,
                     methods[name],
+                    f"{name}_{version}",
                 )
+                methods[f"{name}_{version}"] = Method(service, parsed_sig, debug)
             else:
                 methods[name] = Method(service, parsed_sig, debug)
 
