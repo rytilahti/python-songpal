@@ -366,9 +366,11 @@ class Device:
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["avContent"]["setBluetoothSettings"](params)
 
-    async def get_custom_eq(self):
+    async def get_custom_eq(self, target=""):
         """Get custom EQ settings."""
-        return await self.services["audio"]["getCustomEqualizerSettings"]({})
+        return await self.services["audio"]["getCustomEqualizerSettings"](
+            {"target": target}
+        )
 
     async def set_custom_eq(self, target: str, value: str) -> None:
         """Set custom EQ settings."""
@@ -471,9 +473,11 @@ class Device:
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["audio"]["setSoundSettings"](params)
 
-    async def get_speaker_settings(self) -> List[Setting]:
+    async def get_speaker_settings(self, target="") -> List[Setting]:
         """Return speaker settings."""
-        speaker_settings = await self.services["audio"]["getSpeakerSettings"]({})
+        speaker_settings = await self.services["audio"]["getSpeakerSettings"](
+            {"target": target}
+        )
         return [Setting.make(**x) for x in speaker_settings]
 
     async def set_speaker_settings(self, target: str, value: str):
