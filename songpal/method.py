@@ -93,23 +93,25 @@ class Method:
     invoke the method.
     """
 
-    def __init__(self, service, signature: MethodSignature, debug=0):
+    def __init__(
+        self, service, signature: MethodSignature, supported_versions, debug=0
+    ):
         """Construct a method."""
-        self.versions = signature.version
+        self.supported_versions = supported_versions
+        self.versions = {}
         self.name = signature.name
         self.service = service
+        self.versions[signature.version] = MethodVersion(service, signature, debug)
 
         self.debug = debug
-        self.signature = signature
-
-        self.version = self.signature.version
+        self.default_version = next(iter(self.versions.values())).version
 
     def asdict(self) -> Dict[str, Union[Dict, Union[str, Dict]]]:
         """Return a dictionary describing the method.
 
         This can be used to dump the information into a JSON file.
         """
-        return {"service": self.service.name, **self.signature.serialize()}
+        return {"service": self.service.name}
 
     async def __call__(self, *args, **kwargs):
         """Call the method with given parameters.
@@ -150,6 +152,30 @@ class Method:
 
         return res[0]
 
+    def __repr__(self):
+        return f"<Method {self.service.name}.{self.name}>"
+
+
+class MethodVersion:
+    """A Method Version (int. API) represents a single Versioned API method."""
+
+    def __init__(self, service, signature: MethodSignature, debug=0):
+        """Construct a methodVersion."""
+        self.name = signature.name
+        self.service = service
+
+        self.debug = debug
+        self.signature = signature
+
+        self.version = self.signature.version
+
+    def asdict(self) -> Dict[str, Union[Dict, Union[str, Dict]]]:
+        """Return a dictionary describing the method.
+
+        This can be used to dump the information into a JSON file.
+        """
+        return {"service": self.service.name, **self.signature.serialize()}
+
     @property
     def inputs(self) -> Dict[str, type]:
         """Input parameters for this method."""
@@ -161,7 +187,7 @@ class Method:
         return self.signature.output
 
     def __repr__(self):
-        return "<Method {}.{}({}) -> {}>".format(
+        return "<MethodVersion {}.{}({}) -> {}>".format(
             self.service.name,
             self.name,
             pf(self.inputs),

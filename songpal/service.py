@@ -5,7 +5,7 @@ from typing import List
 import aiohttp
 
 from songpal.common import ProtocolType, SongpalException
-from songpal.method import Method, MethodSignature
+from songpal.method import Method, MethodSignature, MethodVersion
 from songpal.notification import (
     ContentChange,
     Notification,
@@ -100,18 +100,26 @@ class Service:
             return None
 
         methods = {}
+        supported_versions = {}
+
+        for api in payload["apis"]:
+            versions = []
+            for v in api["versions"]:
+                versions.append(v["version"])  # Can support multiple method versions
+            supported_versions[api["name"]] = versions
 
         for sig in sigs["results"]:
             name = sig[0]
+            version = sig[3]
             parsed_sig = MethodSignature.from_payload(*sig)
             if name in methods:
-                _LOGGER.debug(
-                    "Got duplicate signature for %s, existing was %s, keeping it.",
-                    parsed_sig,
-                    methods[name],
+                methods[name].versions[version] = MethodVersion(
+                    service, parsed_sig, debug
                 )
             else:
-                methods[name] = Method(service, parsed_sig, debug)
+                methods[name] = Method(
+                    service, parsed_sig, supported_versions.get(name), debug
+                )
 
         service.methods = methods
 
@@ -126,6 +134,12 @@ class Service:
             _LOGGER.debug("Got notifications: %s" % notifications)
 
         return service
+
+    async def is_method_version_supported(self, method, version) -> bool:
+        """Return True if method version is supported."""
+        if version in self._methods[method].supported_versions:
+            return True
+        return False
 
     async def call_method(self, method, *args, **kwargs):
         """Call a method (internal).
@@ -147,6 +161,13 @@ class Service:
             _consumer = kwargs["_consumer"]
             del kwargs["_consumer"]
 
+        _version = None
+        if "version" in kwargs:
+            _version = str(kwargs["version"])
+            del kwargs["version"]
+        else:
+            _version = method.default_version
+
         if len(kwargs) == 0 and len(args) == 0:
             params = []  # params need to be empty array, if none is given
         elif len(kwargs) > 0:
@@ -155,6 +176,16 @@ class Service:
             params = [args[0]]
         else:
             params = []
+
+        # Log that device supports newer method version than being used.
+        latest_version_supported = sorted(method.supported_versions, reverse=True)[0]
+        if latest_version_supported != _version:
+            _LOGGER.debug(
+                "Device supports method %s version %s, but is using version %s!",
+                method.name,
+                latest_version_supported,
+                _version,
+            )
 
         # TODO check for type correctness
         # TODO note parameters are not always necessary, see getPlaybackModeSettings
@@ -169,7 +200,7 @@ class Service:
             req = {
                 "method": method.name,
                 "params": params,
-                "version": method.version,
+                "version": _version,
                 "id": next(self.idgen),
             }
             if self.debug > 1:
