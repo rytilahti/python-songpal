@@ -155,7 +155,11 @@ class ContentChange(ChangeNotification, PlayInfo):
     @property
     def is_input(self):
         """Return if the change was related to input."""
-        return self.contentKind == "input"
+        return (
+            self.contentKind == "input"
+            if self.contentKind is not None
+            else self.kind == "input"
+        )
 
 
 @attr.s

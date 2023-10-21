@@ -11,6 +11,7 @@ import aiohttp
 
 from songpal.common import SongpalException
 from songpal.containers import (
+    AvailableFunctions,
     Content,
     ContentInfo,
     Input,
@@ -269,16 +270,47 @@ class Device:
 
     async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
-        res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        return [
-            Input.make(services=self.services, **x)
-            for x in res
-            if "meta:zone:output" not in x["meta"]
-        ]
+        active_input_uri = ""
+        for z in await self.get_zones():
+            if z.active:
+                active_input_uri = (
+                    await self.get_available_playback_functions(output=z.uri)
+                )[0].uri
+                break
+
+        if await self.services["avContent"].is_method_version_supported(
+            "getCurrentExternalTerminalsStatus", "1.2"
+        ):
+            res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"](
+                {}, version=1.2
+            )
+        else:
+            res = await self.services["avContent"][
+                "getCurrentExternalTerminalsStatus"
+            ]()
+        inputs = []
+        for x in res:
+            # Hidden inputs (device settings) return with title=""
+            if ("title" in x and x["title"] != "") and "meta:zone:output" not in x[
+                "meta"
+            ]:
+                input = Input.make(services=self.services, **x)
+                input.active = True if input.uri == active_input_uri else False
+                inputs.append(input)
+        return inputs
 
     async def get_zones(self) -> List[Zone]:
         """Return list of available zones."""
-        res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
+        if await self.services["avContent"].is_method_version_supported(
+            "getCurrentExternalTerminalsStatus", "1.2"
+        ):
+            res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"](
+                {}, version=1.2
+            )
+        else:
+            res = await self.services["avContent"][
+                "getCurrentExternalTerminalsStatus"
+            ]()
         zones = [
             Zone.make(services=self.services, **x)
             for x in res
@@ -435,12 +467,19 @@ class Device:
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["audio"]["setSpeakerSettings"](params)
 
-    async def get_available_playback_functions(self, output=""):
+    async def get_available_playback_functions(
+        self, output=""
+    ) -> List[AvailableFunctions]:
         """Return available playback functions.
 
         If no output is given the current is assumed.
         """
-        await self.services["avContent"]["getAvailablePlaybackFunction"](output=output)
+        return [
+            AvailableFunctions.make(**x)
+            for x in await self.services["avContent"]["getAvailablePlaybackFunction"](
+                output=output
+            )
+        ]
 
     def on_notification(self, type_, callback: NotificationCallback) -> None:
         """Register a notification callback.
