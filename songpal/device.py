@@ -391,7 +391,18 @@ class Device:
 
     async def get_source_list(self, scheme: str = "") -> List[Source]:
         """Return available sources for playback."""
-        res = await self.services["avContent"]["getSourceList"](scheme=scheme)
+        if await self.services["avContent"].is_method_version_supported(
+            "getSourceList", "1.3"
+        ):
+            if scheme == "extInput":
+                raise SongpalException(
+                    "Scheme not supported in version 1.3, use get_inputs() instead"
+                )
+            res = await self.services["avContent"]["getSourceList"](
+                scheme=scheme, version=1.3
+            )
+        else:
+            res = await self.services["avContent"]["getSourceList"](scheme=scheme)
         return [Source.make(**x) for x in res]
 
     async def get_content_count(self, source: str):
