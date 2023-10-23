@@ -102,16 +102,14 @@ class Method:
         self.signatures[signature.version] = signature
 
         self.debug = debug
-
-        # Maintain backwards compatibility
-        self._version = next(iter(self.signatures.values())).version
+        self._version = signature.version
 
     def asdict(self) -> Dict[str, Union[Dict, Union[str, Dict]]]:
         """Return a dictionary describing the method.
 
         This can be used to dump the information into a JSON file.
         """
-        return {"service": self.service.name}
+        return {"service": self.service.name, **self.signature.serialize()}
 
     async def __call__(self, *args, **kwargs):
         """Call the method with given parameters.
