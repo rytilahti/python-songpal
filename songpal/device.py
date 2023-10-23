@@ -278,8 +278,11 @@ class Device:
                 )[0].uri
                 break
 
-        if await self.services["avContent"].is_method_version_supported(
-            "getCurrentExternalTerminalsStatus", "1.2"
+        if (
+            "1.2"
+            in self.services["avContent"][
+                "getCurrentExternalTerminalsStatus"
+            ].supported_versions
         ):
             res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"](
                 {}, version=1.2
@@ -301,8 +304,11 @@ class Device:
 
     async def get_zones(self) -> List[Zone]:
         """Return list of available zones."""
-        if await self.services["avContent"].is_method_version_supported(
-            "getCurrentExternalTerminalsStatus", "1.2"
+        if (
+            "1.2"
+            in self.services["avContent"][
+                "getCurrentExternalTerminalsStatus"
+            ].supported_versions
         ):
             res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"](
                 {}, version=1.2
@@ -391,9 +397,7 @@ class Device:
 
     async def get_source_list(self, scheme: str = "") -> List[Source]:
         """Return available sources for playback."""
-        if await self.services["avContent"].is_method_version_supported(
-            "getSourceList", "1.3"
-        ):
+        if "1.3" in self.services["avContent"]["getSourceList"].supported_versions:
             if scheme == "extInput":
                 raise SongpalException(
                     "Scheme not supported in version 1.3, use get_inputs() instead"

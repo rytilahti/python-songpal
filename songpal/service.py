@@ -100,13 +100,6 @@ class Service:
             return None
 
         methods = {}
-        supported_versions = {}
-
-        for api in payload["apis"]:
-            versions = []
-            for v in api["versions"]:
-                versions.append(v["version"])  # Can support multiple method versions
-            supported_versions[api["name"]] = versions
 
         for sig in sigs["results"]:
             name = sig[0]
@@ -117,9 +110,12 @@ class Service:
                     service, parsed_sig, debug
                 )
             else:
-                methods[name] = Method(
-                    service, parsed_sig, supported_versions.get(name), debug
-                )
+                methods[name] = Method(service, parsed_sig, debug)
+
+        # Populate supported versions for method if available
+        for api in payload["apis"]:
+            for v in api["versions"]:
+                methods[api["name"]].supported_version(v["version"])
 
         service.methods = methods
 
@@ -135,13 +131,7 @@ class Service:
 
         return service
 
-    async def is_method_version_supported(self, method, version) -> bool:
-        """Return True if method version is supported."""
-        if version in self._methods[method].supported_versions:
-            return True
-        return False
-
-    async def call_method(self, method, *args, **kwargs):
+    async def call_method(self, method: Method, *args, **kwargs):
         """Call a method (internal).
 
         This is an internal implementation, which formats the parameters if necessary
@@ -178,12 +168,11 @@ class Service:
             params = []
 
         # Log that device supports newer method version than being used.
-        latest_version_supported = sorted(method.supported_versions, reverse=True)[0]
-        if latest_version_supported != _version:
+        if method.latest_supported_version != _version:
             _LOGGER.debug(
                 "Device supports method %s version %s, but is using version %s!",
                 method.name,
-                latest_version_supported,
+                method.latest_supported_version,
                 _version,
             )
 

@@ -2,7 +2,7 @@
 import json
 import logging
 from pprint import pformat as pf
-from typing import Dict, Union
+from typing import Dict, List, Union
 
 import attr
 
@@ -93,18 +93,18 @@ class Method:
     invoke the method.
     """
 
-    def __init__(
-        self, service, signature: MethodSignature, supported_versions, debug=0
-    ):
+    def __init__(self, service, signature: MethodSignature, debug=0):
         """Construct a method."""
-        self.supported_versions = supported_versions
+        self._supported_versions = ["none"]
         self.versions = {}
         self.name = signature.name
         self.service = service
         self.versions[signature.version] = MethodVersion(service, signature, debug)
 
         self.debug = debug
-        self.default_version = next(iter(self.versions.values())).version
+
+        # Maintain backwards compatibility
+        self._default_version = next(iter(self.versions.values())).version
 
     def asdict(self) -> Dict[str, Union[Dict, Union[str, Dict]]]:
         """Return a dictionary describing the method.
@@ -151,6 +151,26 @@ class Method:
             return True
 
         return res[0]
+
+    @property
+    def default_version(self) -> str:
+        """Version of the first Method signature"""
+        return self._default_version
+
+    @property
+    def latest_supported_version(self) -> str:
+        """Latest version supported by this method."""
+        return sorted(self._supported_versions, reverse=True)[0]
+
+    @property
+    def supported_versions(self) -> List[str]:
+        """List of supported version numbers for this method."""
+        return self._supported_versions
+
+    def supported_version(self, version: str):
+        """Add a supported version for this method."""
+        if version not in self._supported_versions:
+            self._supported_versions.append(version)
 
     def __repr__(self):
         return f"<Method {self.service.name}.{self.name}>"
