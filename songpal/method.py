@@ -95,7 +95,7 @@ class Method:
 
     def __init__(self, service, signature: MethodSignature, debug=0):
         """Construct a method."""
-        self._supported_versions = ["none"]
+        self._supported_versions: List[str] = []
         self.versions = {}
         self.name = signature.name
         self.service = service
@@ -160,7 +160,11 @@ class Method:
     @property
     def latest_supported_version(self) -> str:
         """Latest version supported by this method."""
-        return sorted(self._supported_versions, reverse=True)[0]
+        return (
+            sorted(self._supported_versions, reverse=True)[0]
+            if len(self._supported_versions) > 0
+            else None
+        )
 
     @property
     def supported_versions(self) -> List[str]:
