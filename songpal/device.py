@@ -284,8 +284,11 @@ class Device:
                 "getCurrentExternalTerminalsStatus"
             ].supported_versions
         ):
+            self.services["avContent"]["getCurrentExternalTerminalsStatus"].use_version(
+                "1.2"
+            )
             res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"](
-                {}, version=1.2
+                {}
             )
         else:
             res = await self.services["avContent"][
@@ -310,8 +313,11 @@ class Device:
                 "getCurrentExternalTerminalsStatus"
             ].supported_versions
         ):
+            self.services["avContent"]["getCurrentExternalTerminalsStatus"].use_version(
+                "1.2"
+            )
             res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"](
-                {}, version=1.2
+                {}
             )
         else:
             res = await self.services["avContent"][
@@ -402,9 +408,8 @@ class Device:
                 raise SongpalException(
                     "Scheme not supported in version 1.3, use get_inputs() instead"
                 )
-            res = await self.services["avContent"]["getSourceList"](
-                scheme=scheme, version=1.3
-            )
+            self.services["avContent"]["getSourceList"].use_version("1.3")
+            res = await self.services["avContent"]["getSourceList"](scheme=scheme)
         else:
             res = await self.services["avContent"]["getSourceList"](scheme=scheme)
         return [Source.make(**x) for x in res]

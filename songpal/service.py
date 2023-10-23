@@ -5,7 +5,7 @@ from typing import List
 import aiohttp
 
 from songpal.common import ProtocolType, SongpalException
-from songpal.method import Method, MethodSignature, MethodVersion
+from songpal.method import Method, MethodSignature
 from songpal.notification import (
     ContentChange,
     Notification,
@@ -106,16 +106,14 @@ class Service:
             version = sig[3]
             parsed_sig = MethodSignature.from_payload(*sig)
             if name in methods:
-                methods[name].versions[version] = MethodVersion(
-                    service, parsed_sig, debug
-                )
+                methods[name].signatures[version] = parsed_sig
             else:
                 methods[name] = Method(service, parsed_sig, debug)
 
         # Populate supported versions for method if available
         for api in payload["apis"]:
             for v in api["versions"]:
-                methods[api["name"]].supported_version(v["version"])
+                methods[api["name"]].add_supported_version(v["version"])
 
         service.methods = methods
 
@@ -151,13 +149,6 @@ class Service:
             _consumer = kwargs["_consumer"]
             del kwargs["_consumer"]
 
-        _version = None
-        if "version" in kwargs:
-            _version = str(kwargs["version"])
-            del kwargs["version"]
-        else:
-            _version = method.default_version
-
         if len(kwargs) == 0 and len(args) == 0:
             params = []  # params need to be empty array, if none is given
         elif len(kwargs) > 0:
@@ -168,28 +159,29 @@ class Service:
             params = []
 
         # Log that device supports newer method version than being used.
-        if method.latest_supported_version != _version:
+        if method.latest_supported_version != method.version:
             _LOGGER.debug(
                 "Device supports method %s version %s, but is using version %s!",
                 method.name,
                 method.latest_supported_version,
-                _version,
+                method.version,
             )
 
         # TODO check for type correctness
         # TODO note parameters are not always necessary, see getPlaybackModeSettings
         # which has 'target' and 'uri' but works just fine without anything (wildcard)
-        # if len(params) != len(self._inputs):
-        #    _LOGGER.error("args: %s signature: %s" % (args,
-        #                                              self.signature.input))
-        #    raise Exception("Invalid number of inputs, wanted %s got %s / %s" % (
-        #        len(self.signature.input), len(args), len(kwargs)))
+        # if len(params) != len(method.signature.input):
+        #     _LOGGER.error(f"args: {args} signature: {method.signature.input}")
+        #     raise Exception(
+        #         "Invalid number of inputs, wanted %s got %s / %s"
+        #         % (len(method.signature.input), len(args), len(kwargs))
+        #     )
 
         async with aiohttp.ClientSession() as session:
             req = {
                 "method": method.name,
                 "params": params,
-                "version": _version,
+                "version": method.version,
                 "id": next(self.idgen),
             }
             if self.debug > 1:

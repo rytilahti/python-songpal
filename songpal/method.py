@@ -96,15 +96,15 @@ class Method:
     def __init__(self, service, signature: MethodSignature, debug=0):
         """Construct a method."""
         self._supported_versions: List[str] = []
-        self.versions = {}
+        self.signatures: Dict[str, MethodSignature] = {}
         self.name = signature.name
         self.service = service
-        self.versions[signature.version] = MethodVersion(service, signature, debug)
+        self.signatures[signature.version] = signature
 
         self.debug = debug
 
         # Maintain backwards compatibility
-        self._default_version = next(iter(self.versions.values())).version
+        self._version = next(iter(self.signatures.values())).version
 
     def asdict(self) -> Dict[str, Union[Dict, Union[str, Dict]]]:
         """Return a dictionary describing the method.
@@ -153,9 +153,13 @@ class Method:
         return res[0]
 
     @property
-    def default_version(self) -> str:
-        """Version of the first Method signature"""
-        return self._default_version
+    def inputs(self) -> Dict[str, type]:
+        """Input parameters for this method version."""
+        return (
+            self.signatures[self._version].input
+            if self.signatures[self._version].input is not None
+            else ""
+        )
 
     @property
     def latest_supported_version(self) -> str:
@@ -167,53 +171,43 @@ class Method:
         )
 
     @property
+    def outputs(self) -> Dict[str, type]:
+        """Output parameters for this method version."""
+        return (
+            self.signatures[self._version].output
+            if self.signatures[self._version].output is not None
+            else ""
+        )
+
+    @property
+    def signature(self) -> MethodSignature:
+        """Method version signature."""
+        return self.signatures[self._version]
+
+    @property
     def supported_versions(self) -> List[str]:
         """List of supported version numbers for this method."""
         return self._supported_versions
 
-    def supported_version(self, version: str):
-        """Add a supported version for this method."""
+    @property
+    def version(self) -> str:
+        """Method signature version number."""
+        return self._version
+
+    def add_supported_version(self, version: str):
+        """Add a supported version number for this method."""
         if version not in self._supported_versions:
             self._supported_versions.append(version)
 
-    def __repr__(self):
-        return f"<Method {self.service.name}.{self.name}>"
-
-
-class MethodVersion:
-    """A Method Version (int. API) represents a single Versioned API method."""
-
-    def __init__(self, service, signature: MethodSignature, debug=0):
-        """Construct a methodVersion."""
-        self.name = signature.name
-        self.service = service
-
-        self.debug = debug
-        self.signature = signature
-
-        self.version = self.signature.version
-
-    def asdict(self) -> Dict[str, Union[Dict, Union[str, Dict]]]:
-        """Return a dictionary describing the method.
-
-        This can be used to dump the information into a JSON file.
-        """
-        return {"service": self.service.name, **self.signature.serialize()}
-
-    @property
-    def inputs(self) -> Dict[str, type]:
-        """Input parameters for this method."""
-        return self.signature.input
-
-    @property
-    def outputs(self) -> Dict[str, type]:
-        """Output parameters for this method."""
-        return self.signature.output
+    def use_version(self, version: str):
+        """Specify method signature version to use."""
+        self._version = version
 
     def __repr__(self):
-        return "<MethodVersion {}.{}({}) -> {}>".format(
+        return "<Method {}.{}({}) -> {} version {}>".format(
             self.service.name,
             self.name,
             pf(self.inputs),
             pf(self.outputs),
+            self.version,
         )
