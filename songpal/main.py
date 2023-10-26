@@ -632,7 +632,7 @@ async def dump_devinfo(dev: Device, file):
     """
     import attr
 
-    methods = await dev.get_supported_methods()
+    methods = await dev.get_supported_methods(True)
     res = {
         "supported_methods": {k: v.asdict() for k, v in methods.items()},
         "settings": [attr.asdict(x) for x in await dev.get_settings()],

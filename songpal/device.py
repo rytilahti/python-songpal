@@ -130,7 +130,7 @@ class Device:
         """Return JSON formatted supported API."""
         return await self.create_post_request("getSupportedApiInfo")
 
-    async def get_supported_methods(self):
+    async def get_supported_methods(self, default_latest: bool = False):
         """Get information about supported methods.
 
         Calling this as the first thing before doing anything else is
@@ -158,6 +158,16 @@ class Device:
                     # self.logger.debug("%s > %s" % (service, api))
                     if self.debug > 1:
                         _LOGGER.debug("> %s" % api)
+                    if api.latest_supported_version is None:
+                        _LOGGER.debug(
+                            "No supported version for %s.%s, using %s",
+                            service.name,
+                            api.name,
+                            api.version,
+                        )
+                    else:
+                        if default_latest:
+                            api.use_version(api.latest_supported_version)
             return self.services
 
         return None
@@ -409,9 +419,7 @@ class Device:
                     "Scheme not supported in version 1.3, use get_inputs() instead"
                 )
             self.services["avContent"]["getSourceList"].use_version("1.3")
-            res = await self.services["avContent"]["getSourceList"](scheme=scheme)
-        else:
-            res = await self.services["avContent"]["getSourceList"](scheme=scheme)
+        res = await self.services["avContent"]["getSourceList"](scheme=scheme)
         return [Source.make(**x) for x in res]
 
     async def get_content_count(self, source: str):
