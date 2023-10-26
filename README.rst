@@ -27,6 +27,7 @@ The library has been tested to work with following devices:
 * SRS-X77, SRS-X88, SRS-X99
 * STR-DN1060, STR-DN1070, STR-DN1080
 * STR-AZ5000ES (not reporting all inputs)
+* STR-AN1000
 
 .. NOTE::
 
