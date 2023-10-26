@@ -130,7 +130,7 @@ class Device:
         """Return JSON formatted supported API."""
         return await self.create_post_request("getSupportedApiInfo")
 
-    async def get_supported_methods(self, default_latest: bool = False):
+    async def get_supported_methods(self, *, default_latest: bool = False):
         """Get information about supported methods.
 
         Calling this as the first thing before doing anything else is
@@ -288,22 +288,12 @@ class Device:
                 )[0].uri
                 break
 
-        if (
-            "1.2"
-            in self.services["avContent"][
-                "getCurrentExternalTerminalsStatus"
-            ].supported_versions
-        ):
-            self.services["avContent"]["getCurrentExternalTerminalsStatus"].use_version(
-                "1.2"
-            )
-            res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"](
-                {}
-            )
+        method = self.services["avContent"]["getCurrentExternalTerminalsStatus"]
+        if method.supports_version("1.2"):
+            method.use_version("1.2")
+            res = await method({})
         else:
-            res = await self.services["avContent"][
-                "getCurrentExternalTerminalsStatus"
-            ]()
+            res = await method()
         inputs = []
         for x in res:
             # Hidden inputs (device settings) return with title=""
@@ -317,22 +307,12 @@ class Device:
 
     async def get_zones(self) -> List[Zone]:
         """Return list of available zones."""
-        if (
-            "1.2"
-            in self.services["avContent"][
-                "getCurrentExternalTerminalsStatus"
-            ].supported_versions
-        ):
-            self.services["avContent"]["getCurrentExternalTerminalsStatus"].use_version(
-                "1.2"
-            )
-            res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"](
-                {}
-            )
+        method = self.services["avContent"]["getCurrentExternalTerminalsStatus"]
+        if method.supports_version("1.2"):
+            method.use_version("1.2")
+            res = await method({})
         else:
-            res = await self.services["avContent"][
-                "getCurrentExternalTerminalsStatus"
-            ]()
+            res = await method()
         zones = [
             Zone.make(services=self.services, **x)
             for x in res
@@ -413,13 +393,14 @@ class Device:
 
     async def get_source_list(self, scheme: str = "") -> List[Source]:
         """Return available sources for playback."""
-        if "1.3" in self.services["avContent"]["getSourceList"].supported_versions:
+        method = self.services["avContent"]["getSourceList"]
+        if method.supports_version("1.3"):
             if scheme == "extInput":
                 raise SongpalException(
                     "Scheme not supported in version 1.3, use get_inputs() instead"
                 )
-            self.services["avContent"]["getSourceList"].use_version("1.3")
-        res = await self.services["avContent"]["getSourceList"](scheme=scheme)
+            method.use_version("1.3")
+        res = await method(scheme=scheme)
         return [Source.make(**x) for x in res]
 
     async def get_content_count(self, source: str):

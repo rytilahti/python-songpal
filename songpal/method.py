@@ -2,7 +2,7 @@
 import json
 import logging
 from pprint import pformat as pf
-from typing import Dict, List, Union
+from typing import Dict, Set, Union
 
 import attr
 
@@ -95,7 +95,7 @@ class Method:
 
     def __init__(self, service, signature: MethodSignature, debug=0):
         """Construct a method."""
-        self._supported_versions: List[str] = []
+        self._supported_versions: Set[str] = set()
         self.signatures: Dict[str, MethodSignature] = {}
         self.name = signature.name
         self.service = service
@@ -183,7 +183,7 @@ class Method:
         return self.signatures[self._version]
 
     @property
-    def supported_versions(self) -> List[str]:
+    def supported_versions(self) -> Set[str]:
         """List of supported version numbers for this method."""
         return self._supported_versions
 
@@ -194,8 +194,11 @@ class Method:
 
     def add_supported_version(self, version: str):
         """Add a supported version number for this method."""
-        if version not in self._supported_versions:
-            self._supported_versions.append(version)
+        self._supported_versions.add(version)
+
+    def supports_version(self, version: str) -> bool:
+        """Is this method version supported."""
+        return True if (version in self._supported_versions) else False
 
     def use_version(self, version: str):
         """Specify method signature version to use."""
