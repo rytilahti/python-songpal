@@ -202,7 +202,22 @@ class Method:
 
     def use_version(self, version: str):
         """Specify method signature version to use."""
-        self._version = version
+        if self.supports_version(version):
+            if version in self.signatures:
+                self._version = version
+            else:
+                raise SongpalException(
+                    "Version %s of %s.%s is supported, but no signature is available"
+                    % (version, self.service.name, self.name)
+                )
+        else:
+            _LOGGER.error(
+                "Version %s of %s.%s is not supported, version %s will be used instead",
+                version,
+                self.service.name,
+                self.name,
+                self.version,
+            )
 
     def __repr__(self):
         return "<Method {}.{}({}) -> {} version {}>".format(

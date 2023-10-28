@@ -124,7 +124,6 @@ class Content:
     isBrowsable = attr.ib()
     uri = attr.ib()
     contentKind = attr.ib()
-    kind = attr.ib()  # for newer devices
 
     isPlayable = attr.ib()
     index = attr.ib()
@@ -140,8 +139,7 @@ class Content:
     broadcastFreq = attr.ib()
 
     def __str__(self):
-        contentKind = self.contentKind if self.contentKind is not None else self.kind
-        return f"{self.title} ({self.uri}, kind: {contentKind})"
+        return f"{self.title} ({self.uri}, kind: {self.contentKind})"
 
 
 @attr.s
@@ -187,7 +185,6 @@ class PlayInfo:
 
     stateInfo = attr.ib(converter=_make)
     contentKind = attr.ib()
-    kind = attr.ib()  # for newer devices
     uri = attr.ib()
     output = attr.ib()
 
