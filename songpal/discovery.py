@@ -23,7 +23,7 @@ class DiscoveredDevice:
 
 class Discover:
     @staticmethod
-    async def discover(timeout, debug=0, callback=None):
+    async def discover(timeout, debug=0, callback=None, source_address=None):
         """Discover supported devices."""
         ST = "urn:schemas-sony-com:service:ScalarWebAPI:1"
         _LOGGER.info("Discovering for %s seconds" % timeout)
@@ -75,6 +75,12 @@ class Discover:
             if callback is not None:
                 await callback(dev)
 
+        if source_address is not None:
+            source_address = (source_address, 0)
+
         await async_search(
-            timeout=timeout, search_target=ST, async_callback=parse_device
+            timeout=timeout,
+            search_target=ST,
+            async_callback=parse_device,
+            source=source_address,
         )
