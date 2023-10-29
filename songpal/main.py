@@ -180,8 +180,9 @@ async def status(dev: Device):
 
 @cli.command()
 @coro
+@click.option("--source-address", required=False)
 @click.pass_context
-async def discover(ctx):
+async def discover(ctx, source_address):
     """Discover supported devices."""
     TIMEOUT = 5
 
@@ -202,7 +203,12 @@ async def discover(ctx):
             click.echo("    - Service: %s" % serv)
 
     click.echo("Discovering for %s seconds" % TIMEOUT)
-    await Discover.discover(TIMEOUT, ctx.obj["debug"] or 0, callback=print_discovered)
+    await Discover.discover(
+        TIMEOUT,
+        ctx.obj["debug"] or 0,
+        callback=print_discovered,
+        source_address=source_address,
+    )
 
 
 @cli.command()
