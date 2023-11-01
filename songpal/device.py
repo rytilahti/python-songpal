@@ -59,10 +59,10 @@ class Device:
         self.debug = debug
         endpoint = urlparse(endpoint)
         self.endpoint = endpoint.geturl()
-        _LOGGER.debug("Endpoint: %s" % self.endpoint)
+        _LOGGER.debug("Endpoint: %s", self.endpoint)
 
         self.guide_endpoint = endpoint._replace(path="/sony/guide").geturl()
-        _LOGGER.debug("Guide endpoint: %s" % self.guide_endpoint)
+        _LOGGER.debug("Guide endpoint: %s", self.guide_endpoint)
 
         if force_protocol:
             _LOGGER.warning("Forcing protocol %s", force_protocol)
@@ -103,7 +103,7 @@ class Device:
                     self.guide_endpoint, json=payload, headers=headers
                 )
                 if self.debug > 1:
-                    _LOGGER.debug(f"Received {res.status}: {res.text}")
+                    _LOGGER.debug("Received %s: %s", res.status, res.text)
                 if res.status != 200:
                     res_json = await res.json(content_type=None)
                     raise SongpalException(
@@ -140,7 +140,7 @@ class Device:
 
         if "result" in response:
             services = response["result"][0]
-            _LOGGER.debug("Got %s services!" % len(services))
+            _LOGGER.debug("Got %s services!", len(services))
 
             for x in services:
                 serv = await Service.from_payload(
@@ -157,7 +157,7 @@ class Device:
                 for api in service.methods:
                     # self.logger.debug("%s > %s" % (service, api))
                     if self.debug > 1:
-                        _LOGGER.debug("> %s" % api)
+                        _LOGGER.debug("> %s", api)
                     if api.latest_supported_version is None:
                         _LOGGER.debug(
                             "No supported version for %s.%s, using %s",
@@ -280,14 +280,7 @@ class Device:
 
     async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
-        active_input_uri = ""
-        for z in await self.get_zones():
-            if z.active:
-                active_input_uri = (
-                    await self.get_available_playback_functions(output=z.uri)
-                )[0].uri
-                break
-
+        active_input_uri = (await self.get_available_playback_functions())[0].uri
         method = self.services["avContent"]["getCurrentExternalTerminalsStatus"]
         if method.supports_version("1.2"):
             method.use_version("1.2")
@@ -300,9 +293,9 @@ class Device:
             if ("title" in x and x["title"] != "") and "meta:zone:output" not in x[
                 "meta"
             ]:
-                input = Input.make(services=self.services, **x)
-                input.active = True if input.uri == active_input_uri else False
-                inputs.append(input)
+                input_ = Input.make(services=self.services, **x)
+                input_.active = True if input_.uri == active_input_uri else False
+                inputs.append(input_)
         return inputs
 
     async def get_zones(self) -> List[Zone]:
