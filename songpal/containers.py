@@ -80,29 +80,28 @@ class PlaybackFunction:
 
 
 @attr.s
-class AvailableFunctions:
+class PlaybackFunctions:
+    """Container for playback functions."""
+
+    make = classmethod(make)
+
+    def _convert_playback_functions(x) -> List[PlaybackFunction]:
+        return [PlaybackFunction.make(**y) for y in x]  # type: ignore
+
+    uri = attr.ib()
+    functions = attr.ib(converter=_convert_playback_functions)
+
+
+class AvailablePlaybackFunctions(PlaybackFunctions):
     """Container for available playback functions."""
 
-    make = classmethod(make)
 
-    def _convert_playback_functions(x) -> List[PlaybackFunction]:
-        return [PlaybackFunction.make(**y) for y in x]  # type: ignore
-
-    uri = attr.ib()
-    functions = attr.ib(converter=_convert_playback_functions)
-
-
-@attr.s
-class SupportedFunctions:
+class SupportedPlaybackFunctions(PlaybackFunctions):
     """Container for supported playback functions."""
 
-    make = classmethod(make)
 
-    def _convert_playback_functions(x) -> List[PlaybackFunction]:
-        return [PlaybackFunction.make(**y) for y in x]  # type: ignore
-
-    uri = attr.ib()
-    functions = attr.ib(converter=_convert_playback_functions)
+# Name change backwards compatibility
+SupportedFunctions = SupportedPlaybackFunctions
 
 
 @attr.s

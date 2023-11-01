@@ -11,7 +11,7 @@ import aiohttp
 
 from songpal.common import SongpalException
 from songpal.containers import (
-    AvailableFunctions,
+    AvailablePlaybackFunctions,
     Content,
     ContentInfo,
     Input,
@@ -24,7 +24,7 @@ from songpal.containers import (
     SoftwareUpdateInfo,
     Source,
     Storage,
-    SupportedFunctions,
+    SupportedPlaybackFunctions,
     Sysinfo,
     Volume,
     Zone,
@@ -356,10 +356,10 @@ class Device:
 
     async def get_supported_playback_functions(
         self, uri=""
-    ) -> List[SupportedFunctions]:
+    ) -> List[SupportedPlaybackFunctions]:
         """Return list of inputs and their supported functions."""
         return [
-            SupportedFunctions.make(**x)
+            SupportedPlaybackFunctions.make(**x)
             for x in await self.services["avContent"]["getSupportedPlaybackFunction"](
                 uri=uri
             )
@@ -471,13 +471,13 @@ class Device:
 
     async def get_available_playback_functions(
         self, output=""
-    ) -> List[AvailableFunctions]:
+    ) -> List[AvailablePlaybackFunctions]:
         """Return available playback functions.
 
         If no output is given the current is assumed.
         """
         return [
-            AvailableFunctions.make(**x)
+            AvailablePlaybackFunctions.make(**x)
             for x in await self.services["avContent"]["getAvailablePlaybackFunction"](
                 output=output
             )
