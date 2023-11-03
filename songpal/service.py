@@ -170,11 +170,11 @@ class Service:
         # TODO check for type correctness
         # TODO note parameters are not always necessary, see getPlaybackModeSettings
         # which has 'target' and 'uri' but works just fine without anything (wildcard)
-        # if len(params) != len(method.signature.input):
-        #     _LOGGER.error(f"args: {args} signature: {method.signature.input}")
+        # if len(params) != len(method.inputs):
+        #     _LOGGER.error(f"args: {args} signature: {method.inputs}")
         #     raise Exception(
         #         "Invalid number of inputs, wanted %s got %s / %s"
-        #         % (len(method.signature.input), len(args), len(kwargs))
+        #         % (len(method.inputs), len(args), len(kwargs))
         #     )
 
         async with aiohttp.ClientSession() as session:

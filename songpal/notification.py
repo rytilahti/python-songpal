@@ -152,7 +152,8 @@ class ContentChange(ChangeNotification, PlayInfo):
 
     make = classmethod(make)
 
-    kind = attr.ib()  # for newer devices
+    kind = attr.ib()
+    """Used by newer devices, continue to access via `contentKind`"""
 
     def __attrs_post_init__(self):
         if self.contentKind is None:

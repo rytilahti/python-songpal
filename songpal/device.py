@@ -165,9 +165,8 @@ class Device:
                             api.name,
                             api.version,
                         )
-                    else:
-                        if default_latest:
-                            api.use_version(api.latest_supported_version)
+                    elif default_latest:
+                        api.use_version(api.latest_supported_version)
             return self.services
 
         return None
@@ -290,11 +289,9 @@ class Device:
         inputs = []
         for x in res:
             # Hidden inputs (device settings) return with title=""
-            if ("title" in x and x["title"] != "") and "meta:zone:output" not in x[
-                "meta"
-            ]:
+            if x.get("title") and "meta:zone:output" not in x["meta"]:
                 input_ = Input.make(services=self.services, **x)
-                input_.active = True if input_.uri == active_input_uri else False
+                input_.active = input_.uri == active_input_uri
                 inputs.append(input_)
         return inputs
 

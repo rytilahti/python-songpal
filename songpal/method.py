@@ -2,7 +2,7 @@
 import json
 import logging
 from pprint import pformat as pf
-from typing import Dict, Set, Union
+from typing import Dict, Optional, Set, Union
 
 import attr
 
@@ -109,7 +109,10 @@ class Method:
 
         This can be used to dump the information into a JSON file.
         """
-        return {"service": self.service.name, **self.signature.serialize()}
+        return {
+            "service": self.service.name,
+            **self.signatures[self._version].serialize(),
+        }
 
     async def __call__(self, *args, **kwargs):
         """Call the method with given parameters.
@@ -124,7 +127,7 @@ class Method:
             raise SongpalException("Unable to make a request: %s" % ex) from ex
 
         if self.debug > 1:
-            _LOGGER.debug("got payload: %s" % res)
+            _LOGGER.debug("got payload: %s", res)
 
         if "error" in res:
             _LOGGER.debug(self)
@@ -134,15 +137,15 @@ class Method:
             )
 
         if self.debug > 0:
-            _LOGGER.debug("got res: %s" % pf(res))
+            _LOGGER.debug("got res: %s", pf(res))
 
         if "result" not in res:
-            _LOGGER.error("No result in response, how to handle? %s" % res)
+            _LOGGER.error("No result in response, how to handle? %s", res)
             return
 
         res = res["result"]
         if len(res) > 1:
-            _LOGGER.warning("Got a response with len >  1: %s" % res)
+            _LOGGER.warning("Got a response with len >  1: %s", res)
             return res
         elif len(res) < 1:
             _LOGGER.debug("Got no response, assuming success")
@@ -153,34 +156,19 @@ class Method:
     @property
     def inputs(self) -> Dict[str, type]:
         """Input parameters for this method version."""
-        return (
-            self.signatures[self._version].input
-            if self.signatures[self._version].input is not None
-            else ""
-        )
+        return self.signatures[self._version].input or {}
 
     @property
-    def latest_supported_version(self) -> str:
+    def latest_supported_version(self) -> Optional[str]:
         """Latest version supported by this method."""
         return (
-            sorted(self._supported_versions, reverse=True)[0]
-            if len(self._supported_versions) > 0
-            else None
+            max(self._supported_versions) if len(self._supported_versions) > 0 else None
         )
 
     @property
     def outputs(self) -> Dict[str, type]:
         """Output parameters for this method version."""
-        return (
-            self.signatures[self._version].output
-            if self.signatures[self._version].output is not None
-            else ""
-        )
-
-    @property
-    def signature(self) -> MethodSignature:
-        """Method version signature."""
-        return self.signatures[self._version]
+        return self.signatures[self._version].output or {}
 
     @property
     def supported_versions(self) -> Set[str]:
@@ -198,7 +186,7 @@ class Method:
 
     def supports_version(self, version: str) -> bool:
         """Is this method version supported."""
-        return True if (version in self._supported_versions) else False
+        return version in self._supported_versions
 
     def use_version(self, version: str):
         """Specify method signature version to use."""
