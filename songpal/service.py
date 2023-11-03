@@ -84,7 +84,7 @@ class Service:
             raise SongpalException(
                 f"No known protocols for {service_name}, got: {protocols}"
             )
-        _LOGGER.debug("Using protocol: %s" % protocol)
+        _LOGGER.debug("Using protocol: %s", protocol)
 
         service_endpoint = f"{endpoint}/{service_name}"
 
@@ -125,7 +125,7 @@ class Service:
                 for notification in payload["notifications"]
             ]
             service.notifications = notifications
-            _LOGGER.debug("Got notifications: %s" % notifications)
+            _LOGGER.debug("Got notifications: %s", notifications)
 
         return service
 
@@ -137,7 +137,13 @@ class Service:
          The return values are JSON objects.
         Use :func:__call__: provides external API leveraging this.
         """
-        _LOGGER.debug(f"{method.name} got called with args ({args}) kwargs ({kwargs})")
+        _LOGGER.debug(
+            "%s version %s got called with args (%s) kwargs (%s)",
+            method.name,
+            method.version,
+            args,
+            kwargs,
+        )
 
         # Used for allowing keeping reading from the socket
         _consumer = None
@@ -301,7 +307,7 @@ class Service:
             _LOGGER.debug("No notifications available for %s", self.name)
 
     async def stop_listen_notifications(self):
-        _LOGGER.debug("Stop listening on %s" % self.name)
+        _LOGGER.debug("Stop listening on %s", self.name)
         self.listening = False
 
     def asdict(self):
