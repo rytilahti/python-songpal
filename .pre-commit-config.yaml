@@ -1,29 +1,10 @@
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.1.4
   hooks:
-  - id: trailing-whitespace
-  - id: end-of-file-fixer
-  - id: check-docstring-first
-  - id: check-yaml
-  - id: debug-statements
-  - id: check-ast
-
-- repo: https://github.com/ambv/black
-  rev: 23.10.1
-  hooks:
-  - id: black
-    language_version: python3
-
-- repo: https://github.com/PyCQA/flake8
-  rev: 6.1.0
-  hooks:
-  - id: flake8
-
-- repo: https://github.com/pre-commit/mirrors-isort
-  rev: v5.10.1
-  hooks:
-  - id: isort
+    - id: ruff
+      args: [--fix, --exit-non-zero-on-fix]
+    - id: ruff-format
 
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v1.6.1
@@ -32,9 +13,3 @@ repos:
     args: [--no-strict-optional, --ignore-missing-imports]
     additional_dependencies:
       - types-attrs
-
-- repo: https://github.com/asottile/pyupgrade
-  rev: v3.15.0
-  hooks:
-  - id: pyupgrade
-    args: ['--py38-plus']
