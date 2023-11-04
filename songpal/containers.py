@@ -80,8 +80,8 @@ class PlaybackFunction:
 
 
 @attr.s
-class SupportedFunctions:
-    """Container for supported playback functions."""
+class PlaybackFunctions:
+    """Container for playback functions."""
 
     make = classmethod(make)
 
@@ -90,6 +90,18 @@ class SupportedFunctions:
 
     uri = attr.ib()
     functions = attr.ib(converter=_convert_playback_functions)
+
+
+class AvailablePlaybackFunctions(PlaybackFunctions):
+    """Container for available playback functions."""
+
+
+class SupportedPlaybackFunctions(PlaybackFunctions):
+    """Container for supported playback functions."""
+
+
+# Name change backwards compatibility
+SupportedFunctions = SupportedPlaybackFunctions
 
 
 @attr.s

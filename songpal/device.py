@@ -11,6 +11,7 @@ import aiohttp
 
 from songpal.common import SongpalException
 from songpal.containers import (
+    AvailablePlaybackFunctions,
     Content,
     ContentInfo,
     Input,
@@ -23,7 +24,7 @@ from songpal.containers import (
     SoftwareUpdateInfo,
     Source,
     Storage,
-    SupportedFunctions,
+    SupportedPlaybackFunctions,
     Sysinfo,
     Volume,
     Zone,
@@ -58,10 +59,10 @@ class Device:
         self.debug = debug
         endpoint = urlparse(endpoint)
         self.endpoint = endpoint.geturl()
-        _LOGGER.debug("Endpoint: %s" % self.endpoint)
+        _LOGGER.debug("Endpoint: %s", self.endpoint)
 
         self.guide_endpoint = endpoint._replace(path="/sony/guide").geturl()
-        _LOGGER.debug("Guide endpoint: %s" % self.guide_endpoint)
+        _LOGGER.debug("Guide endpoint: %s", self.guide_endpoint)
 
         if force_protocol:
             _LOGGER.warning("Forcing protocol %s", force_protocol)
@@ -102,7 +103,7 @@ class Device:
                     self.guide_endpoint, json=payload, headers=headers
                 )
                 if self.debug > 1:
-                    _LOGGER.debug(f"Received {res.status}: {res.text}")
+                    _LOGGER.debug("Received %s: %s", res.status, res.text)
                 if res.status != 200:
                     res_json = await res.json(content_type=None)
                     raise SongpalException(
@@ -129,7 +130,7 @@ class Device:
         """Return JSON formatted supported API."""
         return await self.create_post_request("getSupportedApiInfo")
 
-    async def get_supported_methods(self):
+    async def get_supported_methods(self, *, default_latest: bool = False):
         """Get information about supported methods.
 
         Calling this as the first thing before doing anything else is
@@ -139,7 +140,7 @@ class Device:
 
         if "result" in response:
             services = response["result"][0]
-            _LOGGER.debug("Got %s services!" % len(services))
+            _LOGGER.debug("Got %s services!", len(services))
 
             for x in services:
                 serv = await Service.from_payload(
@@ -156,7 +157,16 @@ class Device:
                 for api in service.methods:
                     # self.logger.debug("%s > %s" % (service, api))
                     if self.debug > 1:
-                        _LOGGER.debug("> %s" % api)
+                        _LOGGER.debug("> %s", api)
+                    if api.latest_supported_version is None:
+                        _LOGGER.debug(
+                            "No supported version for %s.%s, using %s",
+                            service.name,
+                            api.name,
+                            api.version,
+                        )
+                    elif default_latest:
+                        api.use_version(api.latest_supported_version)
             return self.services
 
         return None
@@ -269,16 +279,30 @@ class Device:
 
     async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
-        res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
-        return [
-            Input.make(services=self.services, **x)
-            for x in res
-            if "meta:zone:output" not in x["meta"]
-        ]
+        active_input_uri = (await self.get_available_playback_functions())[0].uri
+        method = self.services["avContent"]["getCurrentExternalTerminalsStatus"]
+        if method.supports_version("1.2"):
+            method.use_version("1.2")
+            res = await method({})
+        else:
+            res = await method()
+        inputs = []
+        for x in res:
+            # Hidden inputs (device settings) return with title=""
+            if x.get("title") and "meta:zone:output" not in x["meta"]:
+                input_ = Input.make(services=self.services, **x)
+                input_.active = input_.uri == active_input_uri
+                inputs.append(input_)
+        return inputs
 
     async def get_zones(self) -> List[Zone]:
         """Return list of available zones."""
-        res = await self.services["avContent"]["getCurrentExternalTerminalsStatus"]()
+        method = self.services["avContent"]["getCurrentExternalTerminalsStatus"]
+        if method.supports_version("1.2"):
+            method.use_version("1.2")
+            res = await method({})
+        else:
+            res = await method()
         zones = [
             Zone.make(services=self.services, **x)
             for x in res
@@ -316,9 +340,11 @@ class Device:
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["avContent"]["setBluetoothSettings"](params)
 
-    async def get_custom_eq(self):
+    async def get_custom_eq(self, target=""):
         """Get custom EQ settings."""
-        return await self.services["audio"]["getCustomEqualizerSettings"]({})
+        return await self.services["audio"]["getCustomEqualizerSettings"](
+            {"target": target}
+        )
 
     async def set_custom_eq(self, target: str, value: str) -> None:
         """Set custom EQ settings."""
@@ -327,10 +353,10 @@ class Device:
 
     async def get_supported_playback_functions(
         self, uri=""
-    ) -> List[SupportedFunctions]:
+    ) -> List[SupportedPlaybackFunctions]:
         """Return list of inputs and their supported functions."""
         return [
-            SupportedFunctions.make(**x)
+            SupportedPlaybackFunctions.make(**x)
             for x in await self.services["avContent"]["getSupportedPlaybackFunction"](
                 uri=uri
             )
@@ -357,7 +383,14 @@ class Device:
 
     async def get_source_list(self, scheme: str = "") -> List[Source]:
         """Return available sources for playback."""
-        res = await self.services["avContent"]["getSourceList"](scheme=scheme)
+        method = self.services["avContent"]["getSourceList"]
+        if method.supports_version("1.3"):
+            if scheme == "extInput":
+                raise SongpalException(
+                    "Scheme not supported in version 1.3, use get_inputs() instead"
+                )
+            method.use_version("1.3")
+        res = await method(scheme=scheme)
         return [Source.make(**x) for x in res]
 
     async def get_content_count(self, source: str):
@@ -421,9 +454,11 @@ class Device:
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["audio"]["setSoundSettings"](params)
 
-    async def get_speaker_settings(self) -> List[Setting]:
+    async def get_speaker_settings(self, target="") -> List[Setting]:
         """Return speaker settings."""
-        speaker_settings = await self.services["audio"]["getSpeakerSettings"]({})
+        speaker_settings = await self.services["audio"]["getSpeakerSettings"](
+            {"target": target}
+        )
         return [Setting.make(**x) for x in speaker_settings]
 
     async def set_speaker_settings(self, target: str, value: str):
@@ -431,12 +466,19 @@ class Device:
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["audio"]["setSpeakerSettings"](params)
 
-    async def get_available_playback_functions(self, output=""):
+    async def get_available_playback_functions(
+        self, output=""
+    ) -> List[AvailablePlaybackFunctions]:
         """Return available playback functions.
 
         If no output is given the current is assumed.
         """
-        await self.services["avContent"]["getAvailablePlaybackFunction"](output=output)
+        return [
+            AvailablePlaybackFunctions.make(**x)
+            for x in await self.services["avContent"]["getAvailablePlaybackFunction"](
+                output=output
+            )
+        ]
 
     def on_notification(self, type_, callback: NotificationCallback) -> None:
         """Register a notification callback.

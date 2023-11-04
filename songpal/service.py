@@ -84,7 +84,7 @@ class Service:
             raise SongpalException(
                 f"No known protocols for {service_name}, got: {protocols}"
             )
-        _LOGGER.debug("Using protocol: %s" % protocol)
+        _LOGGER.debug("Using protocol: %s", protocol)
 
         service_endpoint = f"{endpoint}/{service_name}"
 
@@ -103,15 +103,17 @@ class Service:
 
         for sig in sigs["results"]:
             name = sig[0]
+            version = sig[3]
             parsed_sig = MethodSignature.from_payload(*sig)
             if name in methods:
-                _LOGGER.debug(
-                    "Got duplicate signature for %s, existing was %s, keeping it.",
-                    parsed_sig,
-                    methods[name],
-                )
+                methods[name].signatures[version] = parsed_sig
             else:
                 methods[name] = Method(service, parsed_sig, debug)
+
+        # Populate supported versions for method if available
+        for api in payload["apis"]:
+            for v in api["versions"]:
+                methods[api["name"]].add_supported_version(v["version"])
 
         service.methods = methods
 
@@ -123,11 +125,11 @@ class Service:
                 for notification in payload["notifications"]
             ]
             service.notifications = notifications
-            _LOGGER.debug("Got notifications: %s" % notifications)
+            _LOGGER.debug("Got notifications: %s", notifications)
 
         return service
 
-    async def call_method(self, method, *args, **kwargs):
+    async def call_method(self, method: Method, *args, **kwargs):
         """Call a method (internal).
 
         This is an internal implementation, which formats the parameters if necessary
@@ -135,7 +137,13 @@ class Service:
          The return values are JSON objects.
         Use :func:__call__: provides external API leveraging this.
         """
-        _LOGGER.debug(f"{method.name} got called with args ({args}) kwargs ({kwargs})")
+        _LOGGER.debug(
+            "%s version %s got called with args (%s) kwargs (%s)",
+            method.name,
+            method.version,
+            args,
+            kwargs,
+        )
 
         # Used for allowing keeping reading from the socket
         _consumer = None
@@ -156,14 +164,24 @@ class Service:
         else:
             params = []
 
+        # Log that device supports newer method version than being used.
+        if method.latest_supported_version != method.version:
+            _LOGGER.debug(
+                "Device supports method %s version %s, but is using version %s!",
+                method.name,
+                method.latest_supported_version,
+                method.version,
+            )
+
         # TODO check for type correctness
         # TODO note parameters are not always necessary, see getPlaybackModeSettings
         # which has 'target' and 'uri' but works just fine without anything (wildcard)
-        # if len(params) != len(self._inputs):
-        #    _LOGGER.error("args: %s signature: %s" % (args,
-        #                                              self.signature.input))
-        #    raise Exception("Invalid number of inputs, wanted %s got %s / %s" % (
-        #        len(self.signature.input), len(args), len(kwargs)))
+        # if len(params) != len(method.inputs):
+        #     _LOGGER.error(f"args: {args} signature: {method.inputs}")
+        #     raise Exception(
+        #         "Invalid number of inputs, wanted %s got %s / %s"
+        #         % (len(method.inputs), len(args), len(kwargs))
+        #     )
 
         async with aiohttp.ClientSession() as session:
             req = {
@@ -289,7 +307,7 @@ class Service:
             _LOGGER.debug("No notifications available for %s", self.name)
 
     async def stop_listen_notifications(self):
-        _LOGGER.debug("Stop listening on %s" % self.name)
+        _LOGGER.debug("Stop listening on %s", self.name)
         self.listening = False
 
     def asdict(self):

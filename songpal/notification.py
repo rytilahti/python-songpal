@@ -152,6 +152,13 @@ class ContentChange(ChangeNotification, PlayInfo):
 
     make = classmethod(make)
 
+    kind = attr.ib()
+    """Used by newer devices, continue to access via `contentKind`"""
+
+    def __attrs_post_init__(self):
+        if self.contentKind is None:
+            self.contentKind = self.kind
+
     @property
     def is_input(self):
         """Return if the change was related to input."""

@@ -2,7 +2,7 @@
 import json
 import logging
 from pprint import pformat as pf
-from typing import Dict, Union
+from typing import Dict, Optional, Set, Union
 
 import attr
 
@@ -95,21 +95,24 @@ class Method:
 
     def __init__(self, service, signature: MethodSignature, debug=0):
         """Construct a method."""
-        self.versions = signature.version
+        self._supported_versions: Set[str] = set()
+        self.signatures: Dict[str, MethodSignature] = {}
         self.name = signature.name
         self.service = service
+        self.signatures[signature.version] = signature
 
         self.debug = debug
-        self.signature = signature
-
-        self.version = self.signature.version
+        self._version = signature.version
 
     def asdict(self) -> Dict[str, Union[Dict, Union[str, Dict]]]:
         """Return a dictionary describing the method.
 
         This can be used to dump the information into a JSON file.
         """
-        return {"service": self.service.name, **self.signature.serialize()}
+        return {
+            "service": self.service.name,
+            **self.signatures[self._version].serialize(),
+        }
 
     async def __call__(self, *args, **kwargs):
         """Call the method with given parameters.
@@ -124,7 +127,7 @@ class Method:
             raise SongpalException("Unable to make a request: %s" % ex) from ex
 
         if self.debug > 1:
-            _LOGGER.debug("got payload: %s" % res)
+            _LOGGER.debug("got payload: %s", res)
 
         if "error" in res:
             _LOGGER.debug(self)
@@ -134,15 +137,15 @@ class Method:
             )
 
         if self.debug > 0:
-            _LOGGER.debug("got res: %s" % pf(res))
+            _LOGGER.debug("got res: %s", pf(res))
 
         if "result" not in res:
-            _LOGGER.error("No result in response, how to handle? %s" % res)
+            _LOGGER.error("No result in response, how to handle? %s", res)
             return
 
         res = res["result"]
         if len(res) > 1:
-            _LOGGER.warning("Got a response with len >  1: %s" % res)
+            _LOGGER.warning("Got a response with len >  1: %s", res)
             return res
         elif len(res) < 1:
             _LOGGER.debug("Got no response, assuming success")
@@ -152,18 +155,46 @@ class Method:
 
     @property
     def inputs(self) -> Dict[str, type]:
-        """Input parameters for this method."""
-        return self.signature.input
+        """Input parameters for this method version."""
+        return self.signatures[self._version].input or {}
+
+    @property
+    def latest_supported_version(self) -> Optional[str]:
+        """Latest version supported by this method."""
+        return max(self._supported_versions) if self._supported_versions else None
 
     @property
     def outputs(self) -> Dict[str, type]:
-        """Output parameters for this method."""
-        return self.signature.output
+        """Output parameters for this method version."""
+        return self.signatures[self._version].output or {}
+
+    @property
+    def supported_versions(self) -> Set[str]:
+        """List of supported version numbers for this method."""
+        return self._supported_versions
+
+    @property
+    def version(self) -> str:
+        """Method signature version number."""
+        return self._version
+
+    def add_supported_version(self, version: str):
+        """Add a supported version number for this method."""
+        self._supported_versions.add(version)
+
+    def supports_version(self, version: str) -> bool:
+        """Is this method version supported."""
+        return version in self._supported_versions
+
+    def use_version(self, version: str):
+        """Specify method signature version to use."""
+        self._version = version
 
     def __repr__(self):
-        return "<Method {}.{}({}) -> {}>".format(
+        return "<Method {}.{}({}) -> {} version {}>".format(
             self.service.name,
             self.name,
             pf(self.inputs),
             pf(self.outputs),
+            self.version,
         )
