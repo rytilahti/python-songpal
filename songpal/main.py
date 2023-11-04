@@ -741,11 +741,11 @@ async def remove(gc: GroupControl, slaves):
     click.echo(await gc.remove(slaves))
 
 
-@group.command()  # type: ignore # noqa: F811
+@group.command(name="volume")
 @pass_groupctl
 @click.argument("volume", type=int)
 @coro
-async def volume(gc: GroupControl, volume):  # noqa: F811
+async def groupctl_volume(gc: GroupControl, volume):  # noqa: F811
     """Adjust volume [-100, 100]"""
     click.echo("Setting volume to %s" % volume)
     click.echo(await gc.set_group_volume(volume))
