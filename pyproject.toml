@@ -20,7 +20,6 @@ click = ">=8"
 aiohttp = "*"
 attrs = "*"
 async_upnp_client = ">=0.32"
-importlib-metadata = "*"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "*"
