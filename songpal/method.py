@@ -161,9 +161,7 @@ class Method:
     @property
     def latest_supported_version(self) -> Optional[str]:
         """Latest version supported by this method."""
-        return (
-            max(self._supported_versions) if len(self._supported_versions) > 0 else None
-        )
+        return max(self._supported_versions) if self._supported_versions else None
 
     @property
     def outputs(self) -> Dict[str, type]:
@@ -190,22 +188,7 @@ class Method:
 
     def use_version(self, version: str):
         """Specify method signature version to use."""
-        if self.supports_version(version):
-            if version in self.signatures:
-                self._version = version
-            else:
-                raise SongpalException(
-                    "Version %s of %s.%s is supported, but no signature is available"
-                    % (version, self.service.name, self.name)
-                )
-        else:
-            _LOGGER.error(
-                "Version %s of %s.%s is not supported, version %s will be used instead",
-                version,
-                self.service.name,
-                self.name,
-                self.version,
-            )
+        self._version = version
 
     def __repr__(self):
         return "<Method {}.{}({}) -> {} version {}>".format(
