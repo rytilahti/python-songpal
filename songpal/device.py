@@ -197,7 +197,7 @@ class Device:
             for x in await self.services["system"]["getPowerSettings"]({})
         ]
 
-    async def set_power_settings(self, target: str, value: str) -> None:
+    async def set_power_settings(self, target: str, value: str) -> bool:
         """Set power settings."""
         params = {"settings": [{"target": target, "value": value}]}
         return await self.services["system"]["setPowerSettings"](params)
@@ -273,7 +273,7 @@ class Device:
         info = await self.services["system"]["getSWUpdateInfo"](network=from_network)
         return SoftwareUpdateInfo.make(**info)
 
-    async def activate_system_update(self) -> None:
+    async def activate_system_update(self) -> bool:
         """Start a system update if available."""
         return await self.services["system"]["actSWUpdate"]()
 
