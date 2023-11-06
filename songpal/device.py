@@ -107,8 +107,7 @@ class Device:
                 if res.status != 200:
                     res_json = await res.json(content_type=None)
                     raise SongpalException(
-                        "Got a non-ok (status %s) response for %s"
-                        % (res.status, method),
+                        f"Got a non-ok (status {res.status}) response for {method}",
                         error=res_json.get("error"),
                     )
 
@@ -313,12 +312,13 @@ class Device:
         return zones
 
     async def get_zone(self, name) -> Zone:
+        """Get zone by name."""
         zones = await self.get_zones()
         try:
             zone = next(x for x in zones if x.title == name)
             return zone
         except StopIteration:
-            raise SongpalException("Unable to find zone %s" % name)
+            raise SongpalException(f"Unable to find zone {name}")
 
     async def get_setting(self, service: str, method: str, target: str):
         """Get a single setting for service.

@@ -16,9 +16,12 @@ from songpal.group import GroupControl
 
 
 class OnOffBoolParamType(click.ParamType):
+    """Custom boolean type for click."""
+
     name = "boolean"
 
     def convert(self, value, param, ctx):
+        """Convert on/off to boolean."""
         if value == "on":
             return True
         elif value == "off":
@@ -80,8 +83,7 @@ def print_settings(settings, depth=0):
     for setting in settings:
         cur = setting.currentValue
         print(
-            "%s* %s (%s, value: %s, type: %s)"
-            % (
+            "{}* {} ({}, value: {}, type: {})".format(
                 " " * depth,
                 setting.title,
                 setting.target,
@@ -660,6 +662,7 @@ pass_groupctl = click.make_pass_decorator(GroupControl)
 @click.option("--url", required=True)
 @coro
 async def group(ctx, url):
+    """Control device groups."""
     gc = GroupControl(url)
     await gc.connect()
     ctx.obj = gc
@@ -677,7 +680,7 @@ async def info(gc: GroupControl):
 @pass_groupctl
 @coro
 async def state(gc: GroupControl):
-    """Current group state."""
+    """Return current group state."""
     state = await gc.state()
     click.echo(state)
     click.echo("Full state info: %s" % repr(state))
@@ -707,7 +710,7 @@ async def memory(gc: GroupControl):
 @pass_groupctl
 @coro
 async def create(gc: GroupControl, name, slaves):
-    """Create new group"""
+    """Create new group."""
     click.echo(f"Creating group {name} with slaves: {slaves}")
     click.echo(await gc.create(name, slaves))
 
@@ -746,7 +749,7 @@ async def remove(gc: GroupControl, slaves):
 @click.argument("volume", type=int)
 @coro
 async def groupctl_volume(gc: GroupControl, volume):  # noqa: F811
-    """Adjust volume [-100, 100]"""
+    """Adjust volume [-100, 100]."""
     click.echo("Setting volume to %s" % volume)
     click.echo(await gc.set_group_volume(volume))
 
@@ -765,7 +768,7 @@ async def mute(gc: GroupControl, mute):
 @pass_groupctl
 @coro
 async def play(gc: GroupControl):
-    """Play?"""
+    """Play."""
     click.echo("Sending play command: %s" % await gc.play())
 
 
@@ -773,7 +776,7 @@ async def play(gc: GroupControl):
 @pass_groupctl
 @coro
 async def stop(gc: GroupControl):
-    """Stop playing?"""
+    """Stop playing."""
     click.echo("Sending stop command: %s" % await gc.stop())
 
 

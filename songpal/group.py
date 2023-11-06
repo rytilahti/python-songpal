@@ -1,3 +1,9 @@
+"""
+This module provides an interface to control device groups..
+
+In contrast to most of the features in the library, the groups are controlled using
+UPnP. This class implements urn:schemas-sony-com:service:Group:1 UPnP service.
+"""
 import logging
 
 import attr
@@ -11,6 +17,8 @@ _LOGGER = logging.getLogger(__name__)
 
 @attr.s
 class GroupState:
+    """Container for group state information."""
+
     make = classmethod(make)
 
     """{'Discoverable': 'NO',
@@ -77,10 +85,20 @@ class GroupState:
 
 
 class GroupControl:
+    """Class for controlling speaker groups.
+
+    This provides an interface to control device groups
+    using UPnP interface 'urn:schemas-sony-com:service:Group:1'.
+    """
+
     def __init__(self, url):
         self.url = url
 
     async def connect(self):
+        """Connect and initialize the controls.
+
+        Returns False if the UPnP service is not found.
+        """
         requester = AiohttpRequester()
         factory = UpnpFactory(requester)
         device = await factory.async_create_device(self.url)
@@ -148,7 +166,7 @@ class GroupControl:
         return res
 
     async def state(self) -> GroupState:
-        """Return the current group state"""
+        """Return the current group state."""
         act = self.service.action("X_GetState")
         res = await act.async_call()
         return GroupState.make(**res)
@@ -169,7 +187,10 @@ class GroupControl:
     async def update_group_memory(
         self, memory_id, mode, name, slaves, codectype=0x0040, bitrate=0x0003
     ):
-        """Update existing memory? Can be used to create new ones, too?"""
+        """Update existing memory.
+
+        Unknown if this can be used to create new ones, too.
+        """
         act = self.service.action("X_UpdateGroupMemory")
         res = await act.async_call(
             MemoryID=memory_id,
@@ -206,13 +227,13 @@ class GroupControl:
         return res
 
     async def stop(self):
-        """Stop playback?"""
+        """Stop playback."""
         state = await self.state()
         res = await self.call("X_Stop", MasterSessionID=state.SessionID)
         return res
 
     async def play(self):
-        """Start playback?"""
+        """Start playback."""
         state = await self.state()
         res = await self.call("X_Play", MasterSessionID=state.SessionID)
         return res

@@ -1,3 +1,9 @@
+"""Discovery module.
+
+This module uses async_upnp_client to discover devices supporting the
+urn:schemas-sony-com:service:ScalarWebAPI:1 service used by this library.
+"""
+
 import logging
 from xml import etree
 
@@ -11,6 +17,8 @@ _LOGGER = logging.getLogger(__name__)
 
 @attr.s
 class DiscoveredDevice:
+    """Container for discovered device information."""
+
     name = attr.ib()
     model_number = attr.ib()
     udn = attr.ib()
@@ -22,6 +30,8 @@ class DiscoveredDevice:
 
 
 class Discover:
+    """Implementation of UPnP discoverer for supported devices."""
+
     @staticmethod
     async def discover(timeout, debug=0, callback=None, source_address=None):
         """Discover supported devices."""

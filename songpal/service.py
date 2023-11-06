@@ -296,6 +296,8 @@ class Service:
     async def listen_all_notifications(self, callback):
         """Enable all exposed notifications.
 
+        Use :meth:`stop_listen_notifications` to quit the listening loop.
+
         :param callback: Callback to call when a notification is received.
         """
         everything = [noti.asdict() for noti in self.notifications]
@@ -307,6 +309,10 @@ class Service:
             _LOGGER.debug("No notifications available for %s", self.name)
 
     async def stop_listen_notifications(self):
+        """Stop listening for notifications.
+
+        Calling this will set a flag to inform the notification loop to stop listening.
+        """
         _LOGGER.debug("Stop listening on %s", self.name)
         self.listening = False
 
@@ -322,13 +328,10 @@ class Service:
         }
 
     def __repr__(self):
-        return (
-            "<Service %s: %s methods, %s notifications, protocols: %s (active: %s)"
-            % (
-                self.name,
-                len(self.methods),
-                len(self.notifications),
-                self.protocols,
-                self.active_protocol,
-            )
+        return "<Service {}: {} methods, {} notifications, protocols: {} (active: {})".format(  # noqa: E501
+            self.name,
+            len(self.methods),
+            len(self.notifications),
+            self.protocols,
+            self.active_protocol,
         )
