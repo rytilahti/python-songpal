@@ -57,7 +57,7 @@ def convert_is_active(x) -> bool:
 
 
 def convert_title(x) -> str:
-    """Trim trailing characters on the title"""
+    """Trim trailing characters on the title."""
     return x.strip()
 
 

@@ -47,6 +47,7 @@ class MethodSignature:
 
     @staticmethod
     def from_payload(name, inputs, outputs, version):
+        """Construct a method signature."""
         ins = None
         outs = None
         if len(inputs) != 0:
@@ -73,6 +74,7 @@ class MethodSignature:
         return serialized
 
     def serialize(self):
+        """Serialize the signature for JSON output."""
         return {
             "name": self.name,
             "input": self._serialize_types(self.input),

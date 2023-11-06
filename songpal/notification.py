@@ -62,6 +62,11 @@ NotificationCallback = Callable[[ChangeNotification], Awaitable[None]]
 
 @attr.s
 class ConnectChange(ChangeNotification):
+    """Notification for connection status.
+
+    This is used to inform listeners if the device connectivity drops.
+    """
+
     connected = attr.ib()
     exception = attr.ib(default=None)
 
