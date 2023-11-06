@@ -22,9 +22,8 @@ async_upnp_client = ">=0.32"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "*"
+ruff = "*"
 mypy = "*"
-isort = "*"
-tox = "*"
 
 [tool.ruff]
 exclude = [

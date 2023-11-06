@@ -1,7 +1,0 @@
-include *.md
-include *.txt
-include *.yaml
-include *.yml
-include LICENSE
-include tox.ini
-recursive-include devinfos *.json
