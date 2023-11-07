@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-songpal"
-version = "0.15.2"
+version = "0.16"
 description = "Python library for interfacing with Sony's Songpal devices"
 authors = ["Teemu R <tpr@iki.fi>"]
 license = "GPL-3.0"
