@@ -1,8 +1,34 @@
 # Changelog
 
-## [0.15.2](https://github.com/rytilahti/python-songpal/tree/0.15.2) (2023-03-17)
+## [0.16](https://github.com/rytilahti/python-songpal/tree/0.16) (2023-11-06)
 
-[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.15.1...0.15.2)
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.15.2...0.16)
+
+**Implemented enhancements:**
+
+- Add defining source-address for discover [\#133](https://github.com/rytilahti/python-songpal/pull/133) (@rytilahti)
+- Add support for versioned methods used by newer devices [\#132](https://github.com/rytilahti/python-songpal/pull/132) (@allistermaguire)
+
+**Closed issues:**
+
+- Support for TA-AN1000 [\#130](https://github.com/rytilahti/python-songpal/issues/130)
+- Support for SRS-XB23?  [\#127](https://github.com/rytilahti/python-songpal/issues/127)
+- Apparently missing some dependency, bunch of errors [\#126](https://github.com/rytilahti/python-songpal/issues/126)
+- App doesn't work on latest python 3.11.1 [\#125](https://github.com/rytilahti/python-songpal/issues/125)
+- can't find the device [\#116](https://github.com/rytilahti/python-songpal/issues/116)
+
+**Merged pull requests:**
+
+- Use ruff for linting and formatting [\#139](https://github.com/rytilahti/python-songpal/pull/139) (@rytilahti)
+- Configure to use CI as trusted publisher [\#137](https://github.com/rytilahti/python-songpal/pull/137) (@rytilahti)
+- Drop importlib\_metadata dependency [\#136](https://github.com/rytilahti/python-songpal/pull/136) (@rytilahti)
+- Drop Python 3.7 support [\#135](https://github.com/rytilahti/python-songpal/pull/135) (@rytilahti)
+- Add updated devinfo with version info for HT-XT3 [\#134](https://github.com/rytilahti/python-songpal/pull/134) (@rytilahti)
+- Add devinfo for STR-AZ5000ES receiver [\#129](https://github.com/rytilahti/python-songpal/pull/129) (@ohmantics)
+
+## [release/0.15.2](https://github.com/rytilahti/python-songpal/tree/release/0.15.2) (2023-03-17)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.15.1...release/0.15.2)
 
 **Fixed bugs:**
 
@@ -13,6 +39,10 @@
 **Closed issues:**
 
 - SRS-ZR7 integration connection issues  [\#119](https://github.com/rytilahti/python-songpal/issues/119)
+
+**Merged pull requests:**
+
+- Prepare 0.15.2 [\#128](https://github.com/rytilahti/python-songpal/pull/128) (@rytilahti)
 
 ## [release/0.15.1](https://github.com/rytilahti/python-songpal/tree/release/0.15.1) (2022-09-12)
 
