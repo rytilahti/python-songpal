@@ -7,7 +7,10 @@ from songpal.notification import (
     ConnectChange,
     ContentChange,
     Notification,
+    NotificationChange,
     PowerChange,
+    SettingChange,
+    SoftwareUpdateChange,
     VolumeChange,
     ZoneActivatedChange,
 )
