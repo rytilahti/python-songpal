@@ -278,11 +278,11 @@ class Device:
 
     async def get_inputs(self) -> List[Input]:
         """Return list of available outputs."""
-        active_input_uri = (await self.get_available_playback_functions())[0].uri
         method = self.services["avContent"]["getCurrentExternalTerminalsStatus"]
         if method.supports_version("1.2"):
             method.use_version("1.2")
             res = await method({})
+            active_input_uri = (await self.get_available_playback_functions())[0].uri
         else:
             res = await method()
         inputs = []
@@ -290,7 +290,8 @@ class Device:
             # Hidden inputs (device settings) return with title=""
             if x.get("title") and "meta:zone:output" not in x["meta"]:
                 input_ = Input.make(services=self.services, **x)
-                input_.active = input_.uri == active_input_uri
+                if method.supports_version("1.2"):
+                    input_.active = input_.uri == active_input_uri
                 inputs.append(input_)
         return inputs
 
