@@ -1,8 +1,27 @@
 # Changelog
 
-## [0.16](https://github.com/rytilahti/python-songpal/tree/0.16) (2023-11-06)
+## [0.16.1](https://github.com/rytilahti/python-songpal/tree/0.16.1) (2024-01-22)
 
-[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.15.2...0.16)
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.16...0.16.1)
+
+**Fixed bugs:**
+
+- Only call get\_available\_playback\_functions\(\) for version 1.2 [\#145](https://github.com/rytilahti/python-songpal/pull/145) (@allistermaguire)
+
+**Closed issues:**
+
+- https://github.com/rytilahti/python-songpal/pull/132 breaks support for SRS-X77 [\#144](https://github.com/rytilahti/python-songpal/issues/144)
+- Can't Add STRDN1080 Amp - But Home Assistant Pi Can cURL, and see as Chromecast Device [\#142](https://github.com/rytilahti/python-songpal/issues/142)
+- Support for BDV-E2100 [\#138](https://github.com/rytilahti/python-songpal/issues/138)
+- Heartbeat timeout HT-ZF9 [\#94](https://github.com/rytilahti/python-songpal/issues/94)
+
+**Merged pull requests:**
+
+- Add missing NotificationChange,SettingChange,SoftwareUpdateChange imports in \_\_init\_\_ [\#143](https://github.com/rytilahti/python-songpal/pull/143) (@BestPig)
+
+## [release/0.16](https://github.com/rytilahti/python-songpal/tree/release/0.16) (2023-11-07)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.15.2...release/0.16)
 
 **Implemented enhancements:**
 
@@ -19,6 +38,7 @@
 
 **Merged pull requests:**
 
+- Prepare 0.16 [\#140](https://github.com/rytilahti/python-songpal/pull/140) (@rytilahti)
 - Use ruff for linting and formatting [\#139](https://github.com/rytilahti/python-songpal/pull/139) (@rytilahti)
 - Configure to use CI as trusted publisher [\#137](https://github.com/rytilahti/python-songpal/pull/137) (@rytilahti)
 - Drop importlib\_metadata dependency [\#136](https://github.com/rytilahti/python-songpal/pull/136) (@rytilahti)
