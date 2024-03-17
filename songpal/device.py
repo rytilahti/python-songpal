@@ -159,7 +159,7 @@ class Device:
                         _LOGGER.debug("> %s", api)
                     if api.latest_supported_version is None:
                         _LOGGER.debug(
-                            "No supported version for %s.%s, using %s",
+                            "No supported version specified for %s.%s, using %s",
                             service.name,
                             api.name,
                             api.version,
