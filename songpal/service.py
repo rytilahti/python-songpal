@@ -113,7 +113,14 @@ class Service:
         # Populate supported versions for method if available
         for api in payload["apis"]:
             for v in api["versions"]:
-                methods[api["name"]].add_supported_version(v["version"])
+                if api["name"] in methods:
+                    methods[api["name"]].add_supported_version(v["version"])
+                else:
+                    _LOGGER.info(
+                        "No matching method %s for supported version %s.",
+                        api["name"],
+                        v["version"],
+                    )
 
         service.methods = methods
 
