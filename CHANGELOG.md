@@ -1,8 +1,22 @@
 # Changelog
 
-## [0.16.1](https://github.com/rytilahti/python-songpal/tree/0.16.1) (2024-01-22)
+## [0.16.2](https://github.com/rytilahti/python-songpal/tree/0.16.2) (2024-03-31)
 
-[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.16...0.16.1)
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.16.1...0.16.2)
+
+**Closed issues:**
+
+- Trying to use songpal for Sony HT-X8500 [\#154](https://github.com/rytilahti/python-songpal/issues/154)
+- Errors with version 0.16.1 -\> SRS-XB402g [\#152](https://github.com/rytilahti/python-songpal/issues/152)
+- SRS-X88:  'unsupported operation' [\#149](https://github.com/rytilahti/python-songpal/issues/149)
+
+**Merged pull requests:**
+
+- Fix methods dict keyerror [\#153](https://github.com/rytilahti/python-songpal/pull/153) (@allistermaguire)
+
+## [release/0.16.1](https://github.com/rytilahti/python-songpal/tree/release/0.16.1) (2024-01-22)
+
+[Full Changelog](https://github.com/rytilahti/python-songpal/compare/release/0.16...release/0.16.1)
 
 **Fixed bugs:**
 
@@ -17,6 +31,7 @@
 
 **Merged pull requests:**
 
+- Prepare 0.16.1 [\#146](https://github.com/rytilahti/python-songpal/pull/146) (@rytilahti)
 - Add missing NotificationChange,SettingChange,SoftwareUpdateChange imports in \_\_init\_\_ [\#143](https://github.com/rytilahti/python-songpal/pull/143) (@BestPig)
 
 ## [release/0.16](https://github.com/rytilahti/python-songpal/tree/release/0.16) (2023-11-07)
