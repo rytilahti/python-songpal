@@ -19,6 +19,7 @@ The library has been tested to work with following devices:
 
 * BDV-N9200W
 * CMT-SX7B
+* LSPX-S2
 * HT-XT2, HT-XT3
 * HT-NT5
 * HT-MT500
