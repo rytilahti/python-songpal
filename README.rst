@@ -25,7 +25,7 @@ The library has been tested to work with following devices:
 * HT-MT500
 * HT-ZF9
 * HT-ST5000
-* SRS-X77, SRS-X88, SRS-X99
+* SRS-X77, SRS-X88, SRS-X99, SRS-ZR5
 * STR-DN1060, STR-DN1070, STR-DN1080
 * STR-AZ5000ES
 * STR-AN1000, TA-AN1000
