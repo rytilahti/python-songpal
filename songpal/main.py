@@ -45,7 +45,11 @@ def coro(f):
     """
 
     def wrapper(*args, **kwargs):
-        loop = asyncio.get_event_loop()
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
         try:
             return loop.run_until_complete(f(*args, **kwargs))
         except KeyboardInterrupt:
