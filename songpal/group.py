@@ -15,6 +15,13 @@ from .containers import make
 _LOGGER = logging.getLogger(__name__)
 
 
+def _slave_list(slaves):
+    """Return the comma separated UUIDs the group service expects."""
+    if isinstance(slaves, str):
+        return slaves
+    return ",".join(slaves)
+
+
 @attr.s
 class GroupState:
     """Container for group state information."""
@@ -239,15 +246,20 @@ class GroupControl:
         return res
 
     async def create(self, name, slaves):
-        """Create a group."""
-        # NOTE: codectype and codecbitrate were simply chosen from an example..
+        """Create a group led by this device.
+
+        The slaves are identified by their UPnP UDN including the "uuid:" prefix.
+        """
+        # NOTE: this is the codec Sony's app uses. Groups created with
+        # CodecType 0x0040 and CodecBitrate 0x0003 had audio dropouts after
+        # resuming playback from pause (seen with an HT-ZF9 leading an SRS-X77).
         res = await self.call(
             "X_Start",
             GroupMode="GROUP",
             GroupName=name,
-            SlaveList=",".join(slaves),
-            CodecType=0x0040,
-            CodecBitrate=0x0003,
+            SlaveList=_slave_list(slaves),
+            CodecType=0x0030,
+            CodecBitrate=0x0000,
         )
         return res
 
@@ -255,7 +267,7 @@ class GroupControl:
         """Add slaves to the current group."""
         state = await self.state()
         res = await self.call(
-            "X_Entry", MasterSessionID=state.SessionID, SlaveList=slaves
+            "X_Entry", MasterSessionID=state.SessionID, SlaveList=_slave_list(slaves)
         )
         return res
 
@@ -263,22 +275,31 @@ class GroupControl:
         """Unknown usage."""
         state = await self.state()
         return await self.call(
-            "X_EntryM", MasterSessionID=state.SessionID, SlaveList=slaves
+            "X_EntryM", MasterSessionID=state.SessionID, SlaveList=_slave_list(slaves)
         )
 
     async def remove(self, slaves):
         """Remove slaves from the current group."""
         state = await self.state()
         return await self.call(
-            "X_Leave", MasterSessionID=state.SessionID, SlaveList=slaves
+            "X_Leave", MasterSessionID=state.SessionID, SlaveList=_slave_list(slaves)
         )
 
     async def remove_m(self, slaves):
         """Unknown usage."""
         state = await self.state()
         return await self.call(
-            "X_LeaveM", MasterSessionID=state.SessionID, SlaveList=slaves
+            "X_LeaveM", MasterSessionID=state.SessionID, SlaveList=_slave_list(slaves)
         )
+
+    async def exit(self):
+        """Leave the group this device is a member of.
+
+        The leader keeps listing the device as a member, use remove() on the
+        leader to remove it from the group completely.
+        """
+        state = await self.state()
+        return await self.call("X_Exit", SlaveSessionID=state.SessionID)
 
     async def set_mute(self, activate):
         """Set group mute."""
